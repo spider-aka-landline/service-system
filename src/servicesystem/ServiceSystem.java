@@ -33,8 +33,8 @@ public class ServiceSystem {
      * - identify user in request;
      * - change request generation; */
     private void initTaskQueue() {
-        for (long i = 0; i < 100; i++) {
-            TaskQueue.add(new Task());
+        for (long i = 0; i < 2; i++) {
+            TaskQueue.add(new Task(UserSet.get(0)));
         }
     }
 

@@ -12,6 +12,12 @@ public class Task implements Comparable<Task>{
     public Task(){
         creationTime = new Long(System.currentTimeMillis());
     }
+    
+    public Task(User who){
+        this();
+        sender = who;
+    }
+    
     public User getUser() {
         return sender;
     }
