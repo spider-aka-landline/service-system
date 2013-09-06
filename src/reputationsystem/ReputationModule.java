@@ -107,6 +107,7 @@ public class ReputationModule {
     }
 
     private DataEntity max_value(Map<ServiceProvider, DataEntity> map, Comparator<DataEntity> my_cmp) {
+        if (map.isEmpty()) return null;
         return Collections.max(map.values(), my_cmp);
     }
     
