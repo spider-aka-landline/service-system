@@ -4,15 +4,18 @@ import messages.ProviderResponse;
 
 public class TriggeredServiceProvider extends ServiceProvider {
 
-    private Boolean isGoodTrigger;
+    private Boolean isGoodTrigger = true;
+    Double quality_min_value = 0.01;
 
-    TriggeredServiceProvider() {
+    TriggeredServiceProvider(Double q) {
+        super(q);
         changeTrigger();
     }
 
     @Override
     public ProviderResponse processUserTask(Task userTask) {
-        ProviderResponse pR = new ProviderResponse(isGoodTrigger);
+        Params p = new Params((isGoodTrigger)? ServiceQuality: quality_min_value);
+        ProviderResponse pR = new ProviderResponse(p);
         changeTrigger();
         return pR;
     }

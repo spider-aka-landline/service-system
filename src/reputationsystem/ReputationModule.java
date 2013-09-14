@@ -21,10 +21,12 @@ public class ReputationModule {
     public static final double cooperation_factor = 0.4;
     public static final double non_cooperation_factor = -0.2;
 
+    Map<ServiceProvider, DataEntity> ServiceProviders;
+    
     public double alpha_td;
     public double epsilon_explore;
-
-    Map<ServiceProvider, DataEntity> ServiceProviders;
+    private final double delta_epsilon =  0.03;
+    private final double epsilon_min = 0.3;
 
     public ReputationModule() {
         ServiceProviders = new HashMap<>();
@@ -109,15 +111,24 @@ public class ReputationModule {
     /* epsilon-жадная стратегия выбора провайдера */
     public ServiceProvider chooseProvider(Task t) {
 
-        if (StdRandom.bernoulli(epsilon_explore))
+        if (StdRandom.bernoulli(epsilon_explore)){
+            update_epsilon();
             return chooseProviderRandom(t);
+        }
         else
             return chooseProviderLogic(t);
+    }
+    
+    /* epsilon-decreasing strategy */
+    private void update_epsilon(){
+        if (epsilon_explore >= epsilon_min)
+        epsilon_explore -= delta_epsilon;
     }
 
     /* Выбор провайдера случайным образом */
     private ServiceProvider chooseProviderRandom(Task t) {
-        return ServiceProviders.entrySet().iterator().next().getKey();
+        System.out.print("here ");
+        return (ServiceProvider) ServiceProviders.keySet().toArray()[StdRandom.uniform(ServiceProviders.size())];
     }
 
     /* Выбор множества провайдеров, по которому ищем */
@@ -155,7 +166,8 @@ public class ReputationModule {
                 = (x, y) -> (x.getReputation() < y.getReputation()) ? -1 : (x.getReputation() > y.getReputation()) ? 1 : 0;
 
         double max_reputation
-                = max_value(bestProviders,rep_cmp).getReputation();
+                = max_value(bestProviders, rep_cmp).getReputation();
+        
         //и среди найденных еще и выбрать того, у кого максимальная репутация
         Set<ServiceProvider> best
                 = UtilFunctions.mapFilterPredicate(

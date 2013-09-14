@@ -4,6 +4,7 @@ import entities.ServiceProvider;
 import entities.Task;
 import entities.User;
 import java.util.ArrayList;
+import java.util.Collection;
 import reputationsystem.ReputationModule;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -19,33 +20,29 @@ public class ServiceSystem {
 
     public ReputationModule ProvidersReputations;
     boolean initTrigger = true;
-
-    ServiceSystem() {
-        ProvidersReputations = new ReputationModule();
+ 
+    public ServiceSystem(Collection<ServiceProvider> pr_list, 
+            Collection<User> us_list, Collection<Task> tasks) {
+        
+        //Users. Useless at this point.
         UserSet = new ArrayList();
-        UserSet.add(new User());
+        us_list.forEach(b -> UserSet.add(b));
+        
+        //Tasks
         TaskQueue = new PriorityQueue();
+        tasks.forEach(b -> TaskQueue.add(b));
+        
+        //Providers -> to reputation module
+        ProvidersReputations = new ReputationModule(pr_list);
     }
 
-    /*1. Initiate user request queue.
-     * While 1 user: simply add random;
-     * While more users:  
-     * - identify user in request;
-     * - change request generation; */
-    private void initTaskQueue() {
-        for (long i = 0; i < 2; i++) {
-            TaskQueue.add(new Task(UserSet.get(0)));
-        }
-    }
 
     private void submitTask(Task t) throws NullPointerException {
         TaskQueue.add(t);
     }
 
     public void run() {
-        //init whole system
-        initTaskQueue();
-        initProvidersSet();
+        
         processingAllRequests();
     }
 
@@ -73,9 +70,5 @@ public class ServiceSystem {
         return ProvidersReputations.chooseProvider(task);
     }
 
-    private void initProvidersSet() {
-        ProvidersReputations.addServiceProvider(new ServiceProvider());
-        ProvidersReputations.addServiceProvider(new ServiceProvider());
-    }
 
 }

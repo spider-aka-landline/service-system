@@ -1,18 +1,16 @@
 package messages;
 
+import entities.Params;
+
 public class ProviderResponse {
     
-    //TaskType - enum //FIXME
-    //Smth like result;
-    //Smth like time of service;
-    private final Boolean ServiceQualityStub; //FIXME: Next step
+    Params service_parameters;
     
-    public ProviderResponse(Boolean serviceQuality){
-        ServiceQualityStub = serviceQuality;
+    public ProviderResponse(Params par){
+        service_parameters = par;
     }
     
-    //FIXME: Stub
-    public Boolean getServiceQuality(){
-        return ServiceQualityStub;
+    public Params getResponseParameters(){
+        return service_parameters;
     }
 }

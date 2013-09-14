@@ -4,19 +4,20 @@ import java.util.Random;
 
 public class Poisson {
 
-    private double lambda;
-    private Random rand;
+    private final Double lambda;
+    private final Random rand;
 	
-        /** Creates a variable with a given mean. */
-    public Poisson(double lambda) {
-        this.lambda = lambda;
+    /** Creates a variable with a given mean.
+     * @param lambda1 */
+    public Poisson(Double lambda1) {
+        lambda = lambda1;
         rand = new Random();
     }
 
-    public int next() {
-        double product = 0;
-        int count =  0;
-        int result = 0;
+    public Integer next() {
+        Double product = 0.0;
+        Integer count =  0;
+        Integer result = 0;
         while(product < 1.0) {
             product -= Math.log(rand.nextDouble()) / lambda;
             result = count;
@@ -26,10 +27,10 @@ public class Poisson {
     }
 
     public static final void test_main() {
-        int size = 20;
+        Integer size = 20;
 
         Poisson test = new Poisson(2.5 * 1000);
-        double total = 0.0;
+        Double total = 0.0;
 
         for(int line = 0; line < size; ++line) {
             for(int col = 0; col < size; ++col) {

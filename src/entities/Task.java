@@ -1,20 +1,15 @@
 package entities;
 
-public class Task implements Comparable<Task>{
+public class Task implements Entity, Comparable<Task>{
 
     User sender;
-    Long creationTime;
+    Integer creationTime;
     //some inner data
     //some result
-    Integer complitionTime;
+    //Integer complitionTime;
     
-
-    public Task(){
-        creationTime = new Long(System.currentTimeMillis());
-    }
-    
-    public Task(User who){
-        this();
+    public Task(User who, Integer time){
+        creationTime = time;
         sender = who;
     }
     
@@ -22,12 +17,19 @@ public class Task implements Comparable<Task>{
         return sender;
     }
 
+    /*
     public Integer getComplitionTime() {
         return complitionTime;
     }
+    */
 
     @Override
     public int compareTo(Task t2) {
        return this.creationTime.compareTo(t2.creationTime);
+    }
+
+    @Override
+    public void printProperty() {
+        System.out.print(creationTime+" ");
     }
 }
