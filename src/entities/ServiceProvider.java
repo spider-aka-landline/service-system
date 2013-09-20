@@ -4,19 +4,19 @@ import messages.ProviderResponse;
 
 public class ServiceProvider implements Entity {
 
-    Double ServiceQuality;
+    Double serviceQuality;
     
     public ServiceProvider(Double sq) {
-        ServiceQuality = sq;
+        serviceQuality = sq;
     }
 
     public ProviderResponse processUserTask(Task userTask) {
-        return new ProviderResponse(new Params(ServiceQuality));
+        return new ProviderResponse(new Params(serviceQuality));
     }
 
     @Override
     public void printProperty() {
-        System.out.format("%.3f ",ServiceQuality);
+        System.out.format("%.3f ",serviceQuality);
     }
 
 }
