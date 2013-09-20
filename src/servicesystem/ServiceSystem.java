@@ -15,30 +15,36 @@ import messages.UserResponse;
 //11.08: Task entity was added, reputation-hashmap handling, UserSet
 public class ServiceSystem {
 
-    List<User> UserSet;
-    Queue<Task> TaskQueue;
+    private List<User> UserSet;
+    private Queue<Task> TaskQueue;
 
-    public ReputationModule ProvidersReputations;
-    boolean initTrigger = true;
+    private ReputationModule ProvidersReputations;
+    //boolean initTrigger = true;
  
-    public ServiceSystem(Collection<ServiceProvider> pr_list, 
-            Collection<User> us_list, Collection<Task> tasks) {
-        
-        //Users. Useless at this point.
+    public ServiceSystem() {
         UserSet = new ArrayList();
-        us_list.forEach(b -> UserSet.add(b));
-        
-        //Tasks
         TaskQueue = new PriorityQueue();
+        ProvidersReputations = new ReputationModule();
+    }
+    
+    public void initServiceSystem(Collection<ServiceProvider> pr_list, 
+        Collection<User> us_list, Collection<Task> tasks) {
+        us_list.forEach(b -> UserSet.add(b));        
         tasks.forEach(b -> TaskQueue.add(b));
-        
-        //Providers -> to reputation module
-        ProvidersReputations = new ReputationModule(pr_list);
+        ProvidersReputations.initProviders(pr_list);
     }
 
 
-    private void submitTask(Task t) throws NullPointerException {
+    public void submitTask(Task t) {
         TaskQueue.add(t);
+    }
+    
+    public void addUser(User u) {
+        UserSet.add(u);
+    }
+    
+    public void addProvider(ServiceProvider sp) {
+        ProvidersReputations.addServiceProvider(sp);
     }
 
     public void run() {
@@ -68,6 +74,14 @@ public class ServiceSystem {
 
     private ServiceProvider chooseProvider(Task task) {
         return ProvidersReputations.chooseProvider(task);
+    }
+
+    public void resetToState(Collection<ServiceProvider> pr_list, 
+            Collection<User> us_list, Collection<Task> tasks) {
+        UserSet.clear();
+        TaskQueue.clear();
+        ProvidersReputations.clear();
+        initServiceSystem(pr_list, us_list, tasks);
     }
 
 

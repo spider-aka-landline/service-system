@@ -24,13 +24,13 @@ public class Main {
     static Boolean generateAll;
 
     public static void main(String... args) {
-        iterations_number = 100;
+        iterations_number = 1;
 
         generateAll = true;
 
-        user_number = 10;
-        providers_number = 20;
-        tasks_number = 5000;
+        user_number = 2;
+        providers_number = 4;
+        tasks_number = 50;
 
         if (generateAll) {
             us_list = initUsers(user_number);

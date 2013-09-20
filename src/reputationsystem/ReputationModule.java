@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Collection;
 import entities.ServiceProvider;
 import entities.Task;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 
@@ -24,19 +23,21 @@ public class ReputationModule {
 
     Map<ServiceProvider, DataEntity> ServiceProviders;
 
-    public double gamma_td;
-    public double epsilon_explore;
-    private final double delta_epsilon = 0.03;
-    private final double epsilon_min = 0.1;
+    private double gamma_td;
+    public  double gamma_td_init = 0.5;
+    
+    private double epsilon_explore;
+    public  double epsilon_explore_init = 1;
+    public final double delta_epsilon = 0.03;
+    public final double epsilon_min = 0.1;
 
     public ReputationModule() {
         ServiceProviders = new HashMap<>();
-        epsilon_explore = 1;
-        gamma_td = 0.5;
+        epsilon_explore = epsilon_explore_init;
+        gamma_td = gamma_td_init;
     }
-
-    public ReputationModule(Collection<ServiceProvider> pr_list) {
-        this();
+    
+    public void initProviders(Collection<ServiceProvider> pr_list){
         pr_list.forEach(b -> addNewServiceProvider(b));
     }
 
@@ -70,8 +71,6 @@ public class ReputationModule {
         // update values in database
         tempEntity.setReputation(new_reputation);
         tempEntity.setExpectation(new_expectation);
-        ServiceProviders.remove(sp);
-        ServiceProviders.put(sp, tempEntity);
     }
 
     /* Правило пересчета репутации провайдера */
@@ -85,7 +84,7 @@ public class ReputationModule {
         }
 
         Double result;
-        result = old_reputation + k * (1 + sign * old_reputation);
+        result = old_reputation + k * (1 - sign * old_reputation);
         return result;
     }
 
@@ -189,5 +188,11 @@ public class ReputationModule {
 
         //Если не один - вернуть первого
         return (K) UtilFunctions.chooseRandomElement(inner_best);
+    }
+
+    public void clear() {
+        ServiceProviders.clear();
+        epsilon_explore = epsilon_explore_init;
+        gamma_td = gamma_td_init;
     }
 }
