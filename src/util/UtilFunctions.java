@@ -33,10 +33,5 @@ public class UtilFunctions {
         return (V) set.toArray()[StdRandom.uniform(set.size())];
     }
     
-    public static <V> Collection<V> readFromFile(String filepath) {
-        Collection<V> result= new HashSet<>();
-        //FIXME
-        return result;
-    }
 
 }
