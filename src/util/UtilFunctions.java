@@ -1,7 +1,9 @@
 package util;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -29,6 +31,12 @@ public class UtilFunctions {
     public static <V> V chooseRandomElement(Set<V> set) {
         if (set.isEmpty()) return null;
         return (V) set.toArray()[StdRandom.uniform(set.size())];
+    }
+    
+    public static <V> Collection<V> readFromFile(String filepath) {
+        Collection<V> result= new HashSet<>();
+        //FIXME
+        return result;
     }
 
 }
