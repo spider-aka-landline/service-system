@@ -7,10 +7,14 @@ package util;
 
 import Jama.Matrix;
 import entities.Entity;
+import entities.ServiceProvider;
+import entities.Task;
+import entities.User;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import static java.lang.System.out;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
 
@@ -57,12 +61,13 @@ public class IO {
         }
     }
 
-    public static void printCollection(Collection<? extends Entity> smth) {
-        smth.forEach(b -> b.printProperty());
-        System.out.println();
+    public static <V extends Entity> void printCollection(Collection<V> smth, String filePath) throws FileNotFoundException {
+        try (PrintWriter writer = new PrintWriter(new File(filePath))) {
+            smth.forEach(b -> writer.append(b.getProperties()).append("\n"));
+        }
     }
 
-    public static void printTotalResult() throws FileNotFoundException {
+    public static void printTotalResult(String fileName) throws FileNotFoundException {
         Matrix end_result = new Matrix(1, y);
 
         for (int i = 0; i < y; i++) {
@@ -73,7 +78,7 @@ public class IO {
         }
 
         //public void print(PrintWriter writer, NumberFormat nf, int i)
-        String filePath = getFilePath("average_profit.txt");
+        String filePath = getFilePath(fileName);
         File f = new File(filePath);
 
         try (PrintWriter pw = new PrintWriter(f);) {
@@ -111,4 +116,61 @@ public class IO {
         return data.toString();
     }
 
+    public static String readFromFile(String fileName) throws FileNotFoundException {
+        StringBuilder data;
+        try (Scanner reader = new Scanner(new File(fileName))) {
+            reader.useDelimiter("\\n");
+            data = new StringBuilder();
+            while (reader.hasNext()) {
+                data.append(reader.next()).append("\n");
+            }
+        }
+        return data.toString();
+    }
+    
+    public static Collection<Double> readDoubleVectorFromFile(String fileName) throws FileNotFoundException {
+        Collection<Double> res = new ArrayList<>();
+         StringBuilder data;
+        try (Scanner reader = new Scanner(new File(fileName))) {
+            reader.useDelimiter("\\n");
+            data = new StringBuilder();
+            while (reader.hasNext()) {
+                res.add(Double.valueOf(reader.next()));
+            }
+        }
+        return res;
+    }
+
+    //FIXME!!!
+    public static Collection<Integer> readIntegerVectorFromFile(String fileName) throws FileNotFoundException {
+        Collection<Integer> res = new ArrayList<>();
+         StringBuilder data;
+        try (Scanner reader = new Scanner(new File(fileName))) {
+            reader.useDelimiter("\\n");
+            data = new StringBuilder();
+            while (reader.hasNext()) {
+                res.add(Integer.valueOf(reader.next()));
+            }
+        }
+        return res;
+    }
+    
+    public static Collection<Integer> readTasks(String tasksFileName) throws FileNotFoundException {
+        return readIntegerVectorFromFile(tasksFileName);
+    }
+
+    public static Collection<User> readUsers(String fileName) throws FileNotFoundException {
+        Collection<User> res = new ArrayList<>();
+        Collection<Double> smth = readDoubleVectorFromFile(fileName);
+        smth.forEach(b -> res.add(new User(b)));
+        return res;
+    }
+
+    public static Collection<ServiceProvider> readProviders(String fileName) throws FileNotFoundException {
+        Collection<ServiceProvider> res = new ArrayList<>();
+        Collection<Double> smth = readDoubleVectorFromFile(fileName);
+        smth.forEach(b -> res.add(new ServiceProvider(b)));
+        return res;
+    }
+    
 }
