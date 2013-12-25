@@ -2,14 +2,14 @@ package entities;
 
 public class Params {
 
-    private final Double ServiceQuality;
+    private final Double serviceQuality;
     
     Params(Double sq){
-        ServiceQuality = sq;
+        serviceQuality = sq;
     }
     
     public Double getServiceQuality(){
-        return ServiceQuality;
+        return serviceQuality;
     }
     
 }
