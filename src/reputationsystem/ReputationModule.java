@@ -21,7 +21,7 @@ public class ReputationModule {
     public static final double cooperation_factor = 0.4;
     public static final double non_cooperation_factor = -0.2;
 
-    Map<ServiceProvider, DataEntity> ServiceProviders;
+    Map<ServiceProvider, DataEntity> serviceProviders;
 
     private double gamma_td;
     public  double gamma_td_init = 0.5;
@@ -32,7 +32,7 @@ public class ReputationModule {
     public final double epsilon_min = 0.1;
 
     public ReputationModule() {
-        ServiceProviders = new HashMap<>();
+        serviceProviders = new HashMap<>();
         epsilon_explore = epsilon_explore_init;
         gamma_td = gamma_td_init;
     }
@@ -42,8 +42,8 @@ public class ReputationModule {
     }
 
     private void addNewServiceProvider(ServiceProvider sp) {
-        if (!ServiceProviders.containsKey(sp)) {
-            ServiceProviders.put(sp,
+        if (!serviceProviders.containsKey(sp)) {
+            serviceProviders.put(sp,
                     new DataEntity(initReputation, initExpectation));
         }
     }
@@ -54,17 +54,17 @@ public class ReputationModule {
     }
 
     public void removeServiceProvider(ServiceProvider sp) {
-        if (ServiceProviders.containsKey(sp)) {
-            ServiceProviders.remove(sp);
+        if (serviceProviders.containsKey(sp)) {
+            serviceProviders.remove(sp);
         }
     }
 
     /* Обновление хранимых значений репутации и ожидаемых величин */
     public void update(ServiceProvider sp, Double estimate, Boolean isDifferencePositive) {
-        if (!ServiceProviders.containsKey(sp)) {
+        if (!serviceProviders.containsKey(sp)) {
             throw new IllegalArgumentException();
         }
-        DataEntity tempEntity = ServiceProviders.get(sp);
+        DataEntity tempEntity = serviceProviders.get(sp);
         //count new values for except and reputation
         Double new_reputation = reputation_update_rule(tempEntity.getReputation(), isDifferencePositive);
         Double new_expectation = expectation_update_rule(tempEntity.getExpectation(), estimate);
@@ -97,7 +97,7 @@ public class ReputationModule {
 
     /* epsilon-decreasing стратегия выбора провайдера */
     public ServiceProvider chooseProvider(Task t) {
-        if (ServiceProviders.isEmpty()) throw new RuntimeException("No service providers were found. Can't serve request.");
+        if (serviceProviders.isEmpty()) throw new RuntimeException("No service providers were found. Can't serve request.");
         if (StdRandom.bernoulli(epsilon_explore)) {
             update_epsilon();
             return chooseProviderRandom(t);
@@ -115,13 +115,13 @@ public class ReputationModule {
 
     /* Выбор провайдера случайным образом */
     private ServiceProvider chooseProviderRandom(Task t) {
-        return UtilFunctions.chooseRandomElement(ServiceProviders);
+        return UtilFunctions.chooseRandomElement(serviceProviders);
     }
     
     /* вернуть множество авторитетных провайдеров (репутация выше минимального порога для авторитетных) */
     private Map<ServiceProvider, DataEntity> getReputableProviders() {
         return UtilFunctions.mapFilterPredicate(
-                ServiceProviders, e
+                serviceProviders, e
                 -> e.getValue().getReputation() > min_reputation);
     }
 
@@ -133,7 +133,7 @@ public class ReputationModule {
                 = getReputableProviders();
         //когда множество авторитетных пусто, выбираем среди всех
         if (reputableProviders.isEmpty()) {
-            reputableProviders = ServiceProviders;
+            reputableProviders = serviceProviders;
         }
 
         return reputableProviders;
@@ -191,7 +191,7 @@ public class ReputationModule {
     }
 
     public void clear() {
-        ServiceProviders.clear();
+        serviceProviders.clear();
         epsilon_explore = epsilon_explore_init;
         gamma_td = gamma_td_init;
     }
