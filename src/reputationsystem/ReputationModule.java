@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import util.StdRandom;
+import math.StdRandom;
 import util.UtilFunctions;
 
 import entities.providers.ServiceProvider;
@@ -197,9 +197,4 @@ public class ReputationModule {
         return (K) UtilFunctions.chooseRandomElement(choice);
     }
 
-    public void clear() {
-        serviceProviders.clear();
-        epsilon = EPSILON_INIT;
-        gammaTd = GAMMA_TD_INIT;
-    }
 }

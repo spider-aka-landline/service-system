@@ -1,88 +1,81 @@
 package servicesystem;
 
-import entities.providers.ServiceProvider;
-import entities.Task;
-import entities.users.User;
+import entities.Params;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+
+import entities.providers.ServiceProvider;
+import entities.users.User;
+import entities.Task;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import util.IO;
-import util.Poisson;
-import util.StdRandom;
+import math.Poisson;
+import math.StdRandom;
+import util.Generator;
 
 public class Main {
 
-    static Integer iterations_number;
-
-    static Collection<User> us_list;
-    static Collection<ServiceProvider> pr_list;
+    static Collection<User> users;
+    static Collection<ServiceProvider> providers;
     static Collection<Task> tasks;
 
-    static Integer user_number;
-    static Integer providers_number;
-    static Integer tasks_number;
-    static Boolean generateAll;
+    static String USERS_FILENAME = "users.txt";
+    static String PROVIDERS_FILENAME = "providers.txt";
+    static String TASKS_FILENAME = "tasks.txt";
+
+    static String RESULTS_FILENAME = "results.txt";
+
+    static Integer ITERATIONS_NUMBER = 1;
+    static Integer USERS_NUMBER = 2;
+    static Integer PROVIDERS_NUMBER = 4;
+    static Integer TASKS_NUMBER = 50;
+
+    static Boolean generateAll = true; //didn't work for false now
 
     public static void main(String... args) {
-        iterations_number = 1;
-
-        generateAll = true;
-
-        user_number = 2;
-        providers_number = 4;
-        tasks_number = 50;
 
         if (generateAll) {
-            us_list = initUsers(user_number);
-            pr_list = initProviders(providers_number);
-            tasks = generateTasks(tasks_number);
-            printSystemInitState();
+
+            Generator gen = new Generator();
+            users = gen.generateUsers(USERS_NUMBER);
+            providers = gen.generateProviders(PROVIDERS_NUMBER);
+            tasks = gen.generateTasks(users, TASKS_NUMBER);
+            try {
+                IO.printCollection(users, USERS_FILENAME);
+                IO.printCollection(providers, PROVIDERS_FILENAME);
+                IO.printCollection(tasks, TASKS_FILENAME);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                users = IO.readUsers(USERS_FILENAME);
+                providers = IO.readProviders(PROVIDERS_FILENAME);
+                //tasks = IO.readTasks(TASKS_FILENAME);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
-        ServiceSystem Test = new ServiceSystem();
-        Test.initServiceSystem(pr_list, us_list, tasks);
-        
-        IO.initMatrix(iterations_number, tasks_number);
-        for (int i = 0; i < iterations_number; i++) {
+        ServiceSystem Test;
+
+        IO.initMatrix(ITERATIONS_NUMBER, tasks.size());
+        for (int i = 0; i < ITERATIONS_NUMBER; i++) {
+            Test = new ServiceSystem(providers, users, tasks);
             Test.run();
-            Test.resetToState(pr_list, us_list, tasks);
             IO.nextIteration();
         }
-       IO.printTotalResult();
-    }
 
-    private static Collection<User> initUsers(Integer us_n) {
-        Collection<User> tempU = new HashSet();
-        for (int i = 0; i < us_n; i++) {
-            tempU.add(new User(StdRandom.uniform(0, 1)));
+        try {
+            IO.printTotalResult(RESULTS_FILENAME);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return tempU;
-    }
-
-    private static Collection<ServiceProvider> initProviders(Integer pr_n) {
-        Collection<ServiceProvider> tempP = new HashSet();
-        for (int i = 0; i < pr_n; i++) {
-            tempP.add(new ServiceProvider(StdRandom.uniform(0, 1)));
-        }
-        return tempP;
-    }
-
-    private static Collection<Task> generateTasks(Integer t_n) {
-        Collection<Task> tempT = new ArrayList();
-        Poisson generator = new Poisson(42.0);
-        for (int i = 0; i < t_n; i++) {
-            tempT.add(new Task(us_list.iterator().next(), generator.next()));
-        }
-        return tempT;
-    }
-
-    private static void printSystemInitState() {
-        System.out.println("Users, needed_quality");
-        IO.printCollection(us_list);
-        System.out.println("Providers, service_quality");
-        IO.printCollection(pr_list);
-        System.out.println("Tasks, creationTime");
-        IO.printCollection(tasks);
     }
 
 }

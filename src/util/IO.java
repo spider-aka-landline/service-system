@@ -1,13 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package util;
 
-import Jama.Matrix;
-import entities.providers.ServiceProvider;
-import entities.users.User;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -15,6 +7,12 @@ import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
+
+import Jama.Matrix;
+
+import entities.providers.ServiceProvider;
+import entities.users.User;
+import entities.Params;
 
 public class IO {
 
@@ -58,11 +56,11 @@ public class IO {
     }
 
     public static void printTotalResult(String fileName) throws FileNotFoundException {
-        Matrix end_result = new Matrix(1, y);
+        Matrix result = new Matrix(1, y);
 
         for (int i = 0; i < y; i++) {
             zeros.set(i, 0, 1.0);
-            end_result.set(0, i, (ones.times(results.times(zeros))).det() / x);
+            result.set(0, i, (ones.times(results.times(zeros))).det() / x);
 
             zeros.set(i, 0, 0.0);
         }
@@ -72,7 +70,7 @@ public class IO {
         File f = new File(filePath);
 
         try (PrintWriter pw = new PrintWriter(f);) {
-            end_result.transpose().print(pw, 1, 3);
+            result.transpose().print(pw, 1, 3);
         }
     }
 
@@ -120,10 +118,8 @@ public class IO {
     
     public static Collection<Double> readDoubleVectorFromFile(String fileName) throws FileNotFoundException {
         Collection<Double> res = new ArrayList<>();
-         StringBuilder data;
         try (Scanner reader = new Scanner(new File(fileName))) {
             reader.useDelimiter("\\n");
-            data = new StringBuilder();
             while (reader.hasNext()) {
                 res.add(Double.valueOf(reader.next()));
             }
@@ -134,10 +130,8 @@ public class IO {
     //FIXME!!!
     public static Collection<Integer> readIntegerVectorFromFile(String fileName) throws FileNotFoundException {
         Collection<Integer> res = new ArrayList<>();
-        StringBuilder data;
         try (Scanner reader = new Scanner(new File(fileName))) {
             reader.useDelimiter("\\n");
-            data = new StringBuilder();
             while (reader.hasNext()) {
                 res.add(Integer.valueOf(reader.next()));
             }
@@ -145,6 +139,7 @@ public class IO {
         return res;
     }
     
+    //FIXME: didn't work
     public static Collection<Integer> readTasks(String tasksFileName) throws FileNotFoundException {
         return readIntegerVectorFromFile(tasksFileName);
     }
@@ -152,14 +147,14 @@ public class IO {
     public static Collection<User> readUsers(String fileName) throws FileNotFoundException {
         Collection<User> res = new ArrayList<>();
         Collection<Double> smth = readDoubleVectorFromFile(fileName);
-        smth.forEach(b -> res.add(new User(b)));
+        smth.forEach(b -> res.add(new User(new Params(b))));
         return res;
     }
 
     public static Collection<ServiceProvider> readProviders(String fileName) throws FileNotFoundException {
         Collection<ServiceProvider> res = new ArrayList<>();
         Collection<Double> smth = readDoubleVectorFromFile(fileName);
-        smth.forEach(b -> res.add(new ServiceProvider(b)));
+        smth.forEach(b -> res.add(new ServiceProvider(new Params(b))));
         return res;
     }
     

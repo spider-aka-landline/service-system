@@ -1,17 +1,16 @@
-package util;
+package math;
 
 import java.util.Random;
 
 public class Poisson {
 
     private final Double lambda;
-    private final Random rand;
+    private final Random rand = new Random();
 	
     /** Creates a variable with a given mean.
      * @param lambda1 */
     public Poisson(Double lambda1) {
         lambda = lambda1;
-        rand = new Random();
     }
 
     public Integer next() {
@@ -26,7 +25,8 @@ public class Poisson {
         return result;
     }
 
-    public static final void test_main() {
+    //TODO: remove this. old "testing" method from another class
+    public static final void testMain() {
         Integer size = 20;
 
         Poisson test = new Poisson(2.5 * 1000);
