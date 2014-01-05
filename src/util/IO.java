@@ -6,10 +6,8 @@
 package util;
 
 import Jama.Matrix;
-import entities.Entity;
-import entities.ServiceProvider;
-import entities.Task;
-import entities.User;
+import entities.providers.ServiceProvider;
+import entities.users.User;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -26,44 +24,36 @@ public class IO {
     private static Matrix results;
     private static Matrix ones;
     private static Matrix zeros;
-    private static Integer iteration_cycle = 0;
-    private static Integer task_number = 0;
+    private static Integer iterationCycle = 0;
+    private static Integer taskNumber = 0;
 
-    public static void initMatrix(Integer iterations_number, Integer task_number) {
-        x = iterations_number;
-        y = task_number;
+    public static void initMatrix(Integer iterations, Integer tasks) {
+        x = iterations;
+        y = tasks;
         results = new Matrix(x, y);
         ones = new Matrix(1, results.getRowDimension(), 1.0);
         zeros = new Matrix(results.getColumnDimension(), 1);
     }
 
-    public static void log(Object o) {
-        if (o instanceof Number) {
-            logNumber((Double) o);
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private static void logNumber(Double value) {
-        results.set(iteration_cycle, task_number, value);
+    public static void log(Double value) {
+        results.set(iterationCycle, taskNumber, value);
         if (debug) {
             out.format("%.3f%n", value);
         }
-        task_number++;
+        taskNumber++;
     }
 
     public static void nextIteration() {
-        iteration_cycle++;
-        task_number = 0;
+        iterationCycle++;
+        taskNumber = 0;
         if (debug) {
-            out.format("=== Iteration %d === %n", iteration_cycle);
+            out.format("=== Iteration %d === %n", iterationCycle);
         }
     }
 
-    public static <V extends Entity> void printCollection(Collection<V> smth, String filePath) throws FileNotFoundException {
+    public static <V> void printCollection(Collection<V> smth, String filePath) throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(new File(filePath))) {
-            smth.forEach(b -> writer.append(b.getProperties()).append("\n"));
+            smth.forEach(b -> writer.append(b.toString()).append("\n"));
         }
     }
 
@@ -144,7 +134,7 @@ public class IO {
     //FIXME!!!
     public static Collection<Integer> readIntegerVectorFromFile(String fileName) throws FileNotFoundException {
         Collection<Integer> res = new ArrayList<>();
-         StringBuilder data;
+        StringBuilder data;
         try (Scanner reader = new Scanner(new File(fileName))) {
             reader.useDelimiter("\\n");
             data = new StringBuilder();

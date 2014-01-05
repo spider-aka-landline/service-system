@@ -1,9 +1,9 @@
 package reputationsystem;
 
-class DataEntity {
+public class DataEntity {
 
     private Double reputation;
-    private Double expect_value; 
+    private Double expectation; 
     
     DataEntity(){
         this(0.0,0.0);
@@ -11,7 +11,7 @@ class DataEntity {
      
     DataEntity(Double rep, Double expect){
         reputation = rep;
-        expect_value = expect;
+        expectation = expect;
     }
     
     public Double getReputation(){
@@ -19,7 +19,7 @@ class DataEntity {
     }
     
     public Double getExpectation(){
-        return expect_value;
+        return expectation;
     }
     
     public void setReputation (Double estimate){
@@ -27,7 +27,7 @@ class DataEntity {
     }
     
     public void setExpectation (Double expect){
-        expect_value = expect;
+        expectation = expect;
     }    
 
 }

@@ -4,7 +4,7 @@ public class Params {
 
     private final Double serviceQuality;
     
-    Params(Double sq){
+    public Params(Double sq){
         serviceQuality = sq;
     }
     

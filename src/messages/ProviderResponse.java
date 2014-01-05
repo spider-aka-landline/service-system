@@ -3,14 +3,14 @@ package messages;
 import entities.Params;
 
 public class ProviderResponse {
-    
-    Params service_parameters;
-    
-    public ProviderResponse(Params par){
-        service_parameters = par;
+
+    Params serviceParameters;
+
+    public ProviderResponse(Params par) {
+        serviceParameters = par;
     }
-    
-    public Params getResponseParameters(){
-        return service_parameters;
+
+    public Params getServiceParameters() {
+        return serviceParameters;
     }
 }

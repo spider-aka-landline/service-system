@@ -1,53 +1,59 @@
 package reputationsystem;
 
-import util.UtilFunctions;
-import util.StdRandom;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collection;
-import entities.ServiceProvider;
-import entities.Task;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+
+import util.StdRandom;
+import util.UtilFunctions;
+
+import entities.providers.ServiceProvider;
+import entities.Task;
 
 public class ReputationModule {
 
-    public static final Boolean chooseRandomlyFromReputable = true;
-    public static final double initReputation = 0;
-    public static final double initExpectation = 0;
+    //FIXME: indicates strategy. should be tramsformed into smth else.
+    public static final Boolean CHOOSE_RANDOMLY_FROM_REPUTABLE = true;
 
-    public static final double min_reputation = 0;
+    public static final double REPUTATION_INIT = 0;
+    public static final double EXPECTATION_INIT = 0;
+    public static final double REPUTATION_MIN_LEVEL = 0;
 
-    public static final double cooperation_factor = 0.4;
-    public static final double non_cooperation_factor = -0.2;
+    public static final double COOPERATION_FACTOR = 0.4;
+    public static final double NON_COOPERATION_FACTOR = -0.2;
 
-    Map<ServiceProvider, DataEntity> serviceProviders;
+    //FIXME: indicates exploration/exploitation strategy. should be tramsformed.
+    public final double EPSILON_INIT = 1;
+    public final double EPSILON_STEP = 0.03;
+    public final double EPSILON_MIN = 0.1;
 
-    private double gamma_td;
-    public  double gamma_td_init = 0.5;
-    
-    private double epsilon_explore;
-    public  double epsilon_explore_init = 1;
-    public final double delta_epsilon = 0.03;
-    public final double epsilon_min = 0.1;
+    public final double GAMMA_TD_INIT = 0.5;
+
+    Map<ServiceProvider, DataEntity> serviceProviders = new HashMap<>();
+    private double epsilon;
+    private double gammaTd;
 
     public ReputationModule() {
-        serviceProviders = new HashMap<>();
-        epsilon_explore = epsilon_explore_init;
-        gamma_td = gamma_td_init;
+        epsilon = EPSILON_INIT;
+        gammaTd = GAMMA_TD_INIT;
+
     }
-    
-    public void initProviders(Collection<ServiceProvider> pr_list){
-        pr_list.forEach(b -> addNewServiceProvider(b));
+
+    //TODO: move logic to constructor. may affect main and other classes
+    public void initProviders(Collection<ServiceProvider> pr) {
+        pr.forEach(b -> addNewServiceProvider(b));
     }
 
     private void addNewServiceProvider(ServiceProvider sp) {
         if (!serviceProviders.containsKey(sp)) {
             serviceProviders.put(sp,
-                    new DataEntity(initReputation, initExpectation));
+                    new DataEntity(REPUTATION_INIT, EXPECTATION_INIT));
         }
     }
 
+    //TODO: развязать клубок методов
     /* внешний вызов добавления нового провайдера */
     public void addServiceProvider(ServiceProvider sp) {
         addNewServiceProvider(sp);
@@ -64,42 +70,43 @@ public class ReputationModule {
         if (!serviceProviders.containsKey(sp)) {
             throw new IllegalArgumentException();
         }
-        DataEntity tempEntity = serviceProviders.get(sp);
+        DataEntity entity = serviceProviders.get(sp);
         //count new values for except and reputation
-        Double new_reputation = reputation_update_rule(tempEntity.getReputation(), isDifferencePositive);
-        Double new_expectation = expectation_update_rule(tempEntity.getExpectation(), estimate);
+        Double reputation = updateReputation(entity.getReputation(), isDifferencePositive);
+        Double expectation = updateExpectation(entity.getExpectation(), estimate);
         // update values in database
-        tempEntity.setReputation(new_reputation);
-        tempEntity.setExpectation(new_expectation);
+        entity.setReputation(reputation);
+        entity.setExpectation(expectation);
     }
 
     /* Правило пересчета репутации провайдера */
-    private Double reputation_update_rule(Double old_reputation, Boolean differencePositive) {
-        Double k = (differencePositive) ? cooperation_factor : non_cooperation_factor;
+    private Double updateReputation(Double old, Boolean differencePositive) {
+        Double k = (differencePositive) ? COOPERATION_FACTOR : NON_COOPERATION_FACTOR;
         Double sign;
-        if (old_reputation.equals(0.0)) {
+        if (old.equals(0.0)) {
             sign = 1.0;
         } else {
-            sign = Math.signum(old_reputation);
+            sign = Math.signum(old);
         }
 
-        Double result;
-        result = old_reputation + k * (1 - sign * old_reputation);
+        Double result = old + k * (1 - sign * old);
         return result;
     }
 
     /* TD-обучение returns new expectation */
-    private Double expectation_update_rule(Double old_expectation, Double estimate) {
-        Double delta = estimate - old_expectation;
-        Double new_expectation = old_expectation + gamma_td * delta;
-        return new_expectation;
+    private Double updateExpectation(Double old, Double estimate) {
+        Double delta = estimate - old;
+        Double temp = old + gammaTd * delta;
+        return temp;
     }
 
     /* epsilon-decreasing стратегия выбора провайдера */
     public ServiceProvider chooseProvider(Task t) {
-        if (serviceProviders.isEmpty()) throw new RuntimeException("No service providers were found. Can't serve request.");
-        if (StdRandom.bernoulli(epsilon_explore)) {
-            update_epsilon();
+        if (serviceProviders.isEmpty()) {
+            throw new RuntimeException("No service providers were found. Can't serve request.");
+        }
+        if (StdRandom.bernoulli(epsilon)) {
+            updateEpsilon();
             return chooseProviderRandom(t);
         } else {
             return chooseProviderLogic(t);
@@ -107,9 +114,9 @@ public class ReputationModule {
     }
 
     /* epsilon-decreasing strategy */
-    private void update_epsilon() {
-        if (epsilon_explore >= epsilon_min) {
-            epsilon_explore -= delta_epsilon;
+    private void updateEpsilon() {
+        if (epsilon >= EPSILON_MIN) {
+            epsilon -= EPSILON_STEP;
         }
     }
 
@@ -117,12 +124,12 @@ public class ReputationModule {
     private ServiceProvider chooseProviderRandom(Task t) {
         return UtilFunctions.chooseRandomElement(serviceProviders);
     }
-    
+
     /* вернуть множество авторитетных провайдеров (репутация выше минимального порога для авторитетных) */
     private Map<ServiceProvider, DataEntity> getReputableProviders() {
-        return UtilFunctions.mapFilterPredicate(
+        return UtilFunctions.filterMapByPredicate(
                 serviceProviders, e
-                -> e.getValue().getReputation() > min_reputation);
+                -> e.getValue().getReputation() > REPUTATION_MIN_LEVEL);
     }
 
     /* Выбор множества провайдеров, по которому ищем */
@@ -139,60 +146,60 @@ public class ReputationModule {
         return reputableProviders;
     }
 
+    //TODO: rename method
     /* Вернуть провайдера c макс. ожиданием из авторитетных */
     private ServiceProvider chooseProviderLogic(Task t) {
 
-        Map<ServiceProvider, DataEntity> search_set = selectProvidersSearchSet();
-
-        //Comparator for DataEntity - exp
-        Comparator<DataEntity> exp_cmp
-                = (x, y) -> (x.getExpectation() < y.getExpectation()) ? -1 
-                : (x.getExpectation() > y.getExpectation()) ? 1 : 0;
+        Map<ServiceProvider, DataEntity> search = selectProvidersSearchSet();
 
         //найти максимальное значение ожидаемой ценности в множестве поиска
-        double max_expectation
-                = UtilFunctions.max_value(search_set, exp_cmp).getExpectation();
+        Double max
+                = UtilFunctions.getMaxValue(search, new ExpectationComparator()).getExpectation();
         //выбрать среди множества поиска провайдеров с максимальной ожидаемой ценностью
         Map<ServiceProvider, DataEntity> ReputableProvidersSet
-                = UtilFunctions.mapFilterPredicate(
-                search_set, e
-                -> e.getValue().getExpectation() == max_expectation);
+                = UtilFunctions.filterMapByPredicate(
+                        search, e
+                        -> e.getValue().getExpectation() == max);
 
-        return (ServiceProvider) chooseFromReputableSet(ReputableProvidersSet);
+        return (ServiceProvider) chooseProviderFromReputable(ReputableProvidersSet);
 
     }
 
-    private <T extends ServiceProvider, V extends DataEntity> T chooseFromReputableSet(Map<T, V> best) {
-            if (chooseRandomlyFromReputable) {
-                return UtilFunctions.chooseRandomElement(best);
-            } else {
-                return chooseFromReputableSetMaxReputation(best);
-            }
+    private <K extends ServiceProvider, V extends DataEntity> K
+            chooseProviderFromReputable(Map<K, V> reputable) {
+        if (CHOOSE_RANDOMLY_FROM_REPUTABLE) {
+            //TODO: почему похожие методы разнесены по классам?
+            return UtilFunctions.chooseRandomElement(reputable);
+        } else {
+            return chooseProviderFromReputableWithMaxReputation(reputable);
         }
-    
-    
+    }
 
-    private <K extends ServiceProvider, V extends DataEntity> K chooseFromReputableSetMaxReputation(Map<K, V> best) {
+    private <K extends ServiceProvider, V extends DataEntity> K
+            chooseProviderFromReputableWithMaxReputation(Map<K, V> reputable) {
+
         //Comparator for DataEntity - rep
-        Comparator<V> rep_cmp
-                = (x, y) -> (x.getReputation() < y.getReputation()) ? -1 : (x.getReputation() > y.getReputation()) ? 1 : 0;
+        Comparator<V> cmp
+                = (x, y) -> (x.getReputation() < y.getReputation()) 
+                        ? -1 
+                        : (x.getReputation() > y.getReputation()) 
+                                ? 1 : 0;
 
-        double max_reputation
-                = UtilFunctions.max_value(best, rep_cmp).getReputation();
+        Double max = UtilFunctions.getMaxValue(reputable, cmp).getReputation();
 
         //и среди найденных еще и выбрать того, у кого максимальная репутация
-        Set<K> inner_best
-                = UtilFunctions.mapFilterPredicate(
-                best, e
-                -> e.getValue().getReputation() == max_reputation).keySet();
+        Set<K> choice
+                = UtilFunctions.filterMapByPredicate(
+                        reputable, e
+                        -> e.getValue().getReputation() == max).keySet();
 
         //Если не один - вернуть первого
-        return (K) UtilFunctions.chooseRandomElement(inner_best);
+        return (K) UtilFunctions.chooseRandomElement(choice);
     }
 
     public void clear() {
         serviceProviders.clear();
-        epsilon_explore = epsilon_explore_init;
-        gamma_td = gamma_td_init;
+        epsilon = EPSILON_INIT;
+        gammaTd = GAMMA_TD_INIT;
     }
 }

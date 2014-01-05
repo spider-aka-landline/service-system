@@ -1,8 +1,8 @@
 package servicesystem;
 
-import entities.ServiceProvider;
+import entities.providers.ServiceProvider;
 import entities.Task;
-import entities.User;
+import entities.users.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

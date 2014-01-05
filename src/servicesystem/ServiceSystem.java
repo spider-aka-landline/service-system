@@ -1,8 +1,8 @@
 package servicesystem;
 
-import entities.ServiceProvider;
+import entities.providers.ServiceProvider;
 import entities.Task;
-import entities.User;
+import entities.users.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import reputationsystem.ReputationModule;
@@ -62,7 +62,7 @@ public class ServiceSystem {
         //выбрать провайдера
         ServiceProvider worker = chooseProvider(task);
         //узнать, кто пользователь
-        User sender = task.getUser();
+        User sender = task.getSender();
         //предоставитиь сервис + узнать оценки
         UserResponse ans = sender.generateResponse(worker.processUserTask(task));
         
