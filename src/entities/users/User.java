@@ -17,9 +17,13 @@ public class User {
     public UserResponse generateResponse(ProviderResponse pr) {
         Double rvalue = estimator.evaluateEstimate(requirements);
         Double value = estimator.evaluateEstimate(pr.getServiceParameters());
-        Boolean diff = estimator.isPositiveDifference(value,rvalue);
+        Boolean diff = estimator.isPositiveDifference(value, rvalue);
         IO.log(value);
         return new UserResponse(value, diff);
     }
 
+    @Override
+    public String toString() {
+        return requirements.toString();
+    }
 }

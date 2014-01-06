@@ -13,6 +13,7 @@ import Jama.Matrix;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import entities.Params;
+import entities.Task;
 
 public class IO {
 
@@ -49,6 +50,7 @@ public class IO {
         }
     }
 
+    //FIXME: make this work without toString().
     public static <V> void printCollection(Collection<V> smth, String filePath) throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(new File(filePath))) {
             smth.forEach(b -> writer.append(b.toString()).append("\n"));
@@ -139,9 +141,13 @@ public class IO {
         return res;
     }
     
-    //FIXME: didn't work
-    public static Collection<Integer> readTasks(String tasksFileName) throws FileNotFoundException {
-        return readIntegerVectorFromFile(tasksFileName);
+    //FIXME: didn't work for more then one argument !!
+    public static Collection<Task> readTasks(String tasksFileName) throws FileNotFoundException {
+        Collection<Task> result = new ArrayList<>();
+        // Collection<Integer> itemp = readIntegerVectorFromFile(tasksFileName);
+        // or read matrix with 2 or more parameters
+        
+        return result;
     }
 
     public static Collection<User> readUsers(String fileName) throws FileNotFoundException {

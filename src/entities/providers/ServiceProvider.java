@@ -16,4 +16,9 @@ public class ServiceProvider {
     public ProviderResponse processUserTask(Task t) {
         return new ProviderResponse(properties);
     }
+
+    @Override
+    public String toString() {
+        return properties.toString();
+    }
 }

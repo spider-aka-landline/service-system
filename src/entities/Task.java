@@ -24,4 +24,10 @@ public class Task implements Comparable<Task> {
         return this.creationTime.compareTo(t2.creationTime);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder(sender.toString());
+        s.append(" ").append(creationTime);
+        return s.toString();
+    }
 }
