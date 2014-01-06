@@ -1,4 +1,4 @@
-entities.providers.ServiceProvider@42a57993
-entities.providers.ServiceProvider@3d4eac69
-entities.providers.ServiceProvider@75b84c92
-entities.providers.ServiceProvider@55f96302
+0.7437717387010504
+0.5502997735351892
+0.548720751561306
+0.004697931748238848

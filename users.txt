@@ -1,2 +1,2 @@
-entities.users.User@5c647e05
-entities.users.User@33909752
+0.5118992418759983
+0.8269727308630057
