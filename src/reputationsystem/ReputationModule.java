@@ -11,6 +11,7 @@ import util.UtilFunctions;
 
 import entities.providers.ServiceProvider;
 import entities.Task;
+import exploration.ExplorationStrategy;
 
 public class ReputationModule {
 
@@ -24,43 +25,40 @@ public class ReputationModule {
     public static final double COOPERATION_FACTOR = 0.4;
     public static final double NON_COOPERATION_FACTOR = -0.2;
 
-    //FIXME: indicates exploration/exploitation strategy. should be tramsformed.
-    public final double EPSILON_INIT = 1;
-    public final double EPSILON_STEP = 0.03;
-    public final double EPSILON_MIN = 0.1;
+    public final static double GAMMA_TD_INIT = 0.5;
 
-    public final double GAMMA_TD_INIT = 0.5;
-
-    Map<ServiceProvider, DataEntity> serviceProviders = new HashMap<>();
-    private double epsilon;
+    //exploration/exploitation strategy.
+    private final Map<ServiceProvider, DataEntity> serviceProviders = new HashMap<>();
+    private ExplorationStrategy exploration;
     private double gammaTd;
 
-    public ReputationModule() {
-        epsilon = EPSILON_INIT;
-        gammaTd = GAMMA_TD_INIT;
-
+    public ReputationModule(Collection<ServiceProvider> pr,
+            ExplorationStrategy str, Double g) {
+        exploration = str;
+        gammaTd = g;
+        pr.forEach(sp -> {
+            if (!serviceProviders.containsKey(sp)) {
+                serviceProviders.put(sp,
+                        new DataEntity(REPUTATION_INIT, EXPECTATION_INIT));
+            }
+        });
     }
 
-    //TODO: move logic to constructor. may affect main and other classes
-    public void initProviders(Collection<ServiceProvider> pr) {
-        pr.forEach(b -> addNewServiceProvider(b));
+    public ReputationModule(Collection<ServiceProvider> pr,
+            ExplorationStrategy str) {
+        this(pr, str, GAMMA_TD_INIT);
     }
 
-    private void addNewServiceProvider(ServiceProvider sp) {
+    /* внешний вызов добавления нового провайдера */
+    public void addServiceProvider(ServiceProvider sp) {
         if (!serviceProviders.containsKey(sp)) {
             serviceProviders.put(sp,
                     new DataEntity(REPUTATION_INIT, EXPECTATION_INIT));
         }
     }
 
-    //TODO: развязать клубок методов
-    /* внешний вызов добавления нового провайдера */
-    public void addServiceProvider(ServiceProvider sp) {
-        addNewServiceProvider(sp);
-    }
-
     public void removeServiceProvider(ServiceProvider sp) {
-        if (serviceProviders.containsKey(sp)) {
+        while (serviceProviders.containsKey(sp)) {
             serviceProviders.remove(sp);
         }
     }
@@ -93,30 +91,32 @@ public class ReputationModule {
         return result;
     }
 
-    /* TD-обучение returns new expectation */
+    /**
+     * TD-обучение
+     *
+     * @return new expectation
+     */
     private Double updateExpectation(Double old, Double estimate) {
         Double delta = estimate - old;
         Double temp = old + gammaTd * delta;
         return temp;
     }
 
-    /* epsilon-decreasing стратегия выбора провайдера */
+    /**
+     * epsilon-decreasing стратегия выбора провайдера
+     *
+     * @param t User task
+     * @return ServiceProvider, chosen for the task
+     */
     public ServiceProvider chooseProvider(Task t) {
         if (serviceProviders.isEmpty()) {
             throw new RuntimeException("No service providers were found. Can't serve request.");
         }
-        if (StdRandom.bernoulli(epsilon)) {
-            updateEpsilon();
+        if (StdRandom.bernoulli(exploration.getEpsilon())) {
+            exploration.updateEpsilon();
             return chooseProviderRandom(t);
         } else {
             return chooseProviderLogic(t);
-        }
-    }
-
-    /* epsilon-decreasing strategy */
-    private void updateEpsilon() {
-        if (epsilon >= EPSILON_MIN) {
-            epsilon -= EPSILON_STEP;
         }
     }
 
@@ -180,10 +180,10 @@ public class ReputationModule {
 
         //Comparator for DataEntity - rep
         Comparator<V> cmp
-                = (x, y) -> (x.getReputation() < y.getReputation()) 
-                        ? -1 
-                        : (x.getReputation() > y.getReputation()) 
-                                ? 1 : 0;
+                = (x, y) -> (x.getReputation() < y.getReputation())
+                ? -1
+                : (x.getReputation() > y.getReputation())
+                ? 1 : 0;
 
         Double max = UtilFunctions.getMaxValue(reputable, cmp).getReputation();
 

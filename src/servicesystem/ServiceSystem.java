@@ -3,6 +3,7 @@ package servicesystem;
 import entities.providers.ServiceProvider;
 import entities.Task;
 import entities.users.User;
+import exploration.EpsilonDecreasingStrategy;
 import java.util.ArrayList;
 import java.util.Collection;
 import reputationsystem.ReputationModule;
@@ -18,15 +19,16 @@ public class ServiceSystem {
     private final List<User> Users = new ArrayList<>();
     private final Queue<Task> Tasks = new PriorityQueue<>();
 
-    private final ReputationModule Reputations = new ReputationModule();
+    private final ReputationModule Reputations;
     //boolean initTrigger = true;
 
     public ServiceSystem(Collection<ServiceProvider> pr,
             Collection<User> us, Collection<Task> ts) {
         us.forEach(b -> Users.add(b));
         ts.forEach(b -> Tasks.add(b));
-        Reputations.initProviders(pr);
-    }    
+        // epsilon-decreasing exploration strategy - with default parameters
+        Reputations = new ReputationModule(pr, new EpsilonDecreasingStrategy());
+    }
 
     public void submitTask(Task t) {
         Tasks.add(t);
