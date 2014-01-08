@@ -150,6 +150,25 @@ public class IO {
         return res;
     }
 
+    //FIXME: should read Matrix from file
+    public static Collection<User> readUsers(String fileName)
+            throws FileNotFoundException {
+        Collection<User> res = new ArrayList<>();
+        //Collection<Double> smth = readDoubleVectorFromFile(fileName);
+
+        //smth.forEach(b -> res.add(new User(new Params(b))));
+        return res;
+    }
+
+    //FIXME: should read Matrix from file
+    public static Collection<ServiceProvider> readProviders(String fileName) throws FileNotFoundException {
+        Collection<ServiceProvider> res = new ArrayList<>();
+        //Collection<Double> smth = readDoubleVectorFromFile(fileName);
+
+        //smth.forEach(b -> res.add(new ServiceProvider(new Params(b))));
+        return res;
+    }
+
     //FIXME: didn't work for more then one argument !!
     public static Collection<Task> readTasks(String tasksFileName)
             throws FileNotFoundException {
@@ -158,23 +177,6 @@ public class IO {
         // or read matrix with 2 or more parameters
 
         return result;
-    }
-
-    public static Collection<User> readUsers(String fileName) 
-            throws FileNotFoundException {
-        Collection<User> res = new ArrayList<>();
-        Collection<Double> smth = readDoubleVectorFromFile(fileName);
-        //FIXME: should read Matrix from file
-        smth.forEach(b -> res.add(new User(new Params(b))));
-        return res;
-    }
-
-    public static Collection<ServiceProvider> readProviders(String fileName) throws FileNotFoundException {
-        Collection<ServiceProvider> res = new ArrayList<>();
-        Collection<Double> smth = readDoubleVectorFromFile(fileName);
-        //FIXME: should read Matrix from file
-        smth.forEach(b -> res.add(new ServiceProvider(new Params(b))));
-        return res;
     }
 
 }
