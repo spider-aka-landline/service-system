@@ -37,10 +37,8 @@ public class ReputationModule {
         exploration = str;
         gammaTd = g;
         pr.forEach(sp -> {
-            if (!serviceProviders.containsKey(sp)) {
-                serviceProviders.put(sp,
-                        new DataEntity(REPUTATION_INIT, EXPECTATION_INIT));
-            }
+            serviceProviders.put(sp,
+                    new DataEntity(REPUTATION_INIT, EXPECTATION_INIT));
         });
     }
 
