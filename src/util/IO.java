@@ -50,14 +50,15 @@ public class IO {
         }
     }
 
-    //FIXME: make this work without toString().
-    public static <V> void printCollection(Collection<V> smth, String filePath) throws FileNotFoundException {
+    public static <V> void printCollection(Collection<V> smth, String filePath)
+            throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(new File(filePath))) {
             smth.forEach(b -> writer.append(b.toString()).append("\n"));
         }
     }
 
-    public static void printTotalResult(String fileName) throws FileNotFoundException {
+    public static void printTotalResult(String fileName)
+            throws FileNotFoundException {
         Matrix result = new Matrix(1, y);
 
         for (int i = 0; i < y; i++) {
@@ -82,19 +83,20 @@ public class IO {
         return filePath;
     }
 
-    public static void writeToFile(File file, String data) throws FileNotFoundException {
+    public static void writeToFile(File file, String data)
+            throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(file)) {
             writer.write(data);
         }
     }
 
-    public static void writeToFile(String filePath, String data) throws FileNotFoundException {
-        try (PrintWriter writer = new PrintWriter(new File(filePath))) {
-            writer.write(data);
-        }
+    public static void writeToFile(String filePath, String data)
+            throws FileNotFoundException {
+        writeToFile(new File(filePath), data);
     }
 
-    public static String readFromFile(File file) throws FileNotFoundException {
+    public static String readFromFile(File file)
+            throws FileNotFoundException {
         StringBuilder data;
         try (Scanner reader = new Scanner(file)) {
             reader.useDelimiter("\\n");
@@ -106,19 +108,13 @@ public class IO {
         return data.toString();
     }
 
-    public static String readFromFile(String fileName) throws FileNotFoundException {
-        StringBuilder data;
-        try (Scanner reader = new Scanner(new File(fileName))) {
-            reader.useDelimiter("\\n");
-            data = new StringBuilder();
-            while (reader.hasNext()) {
-                data.append(reader.next()).append("\n");
-            }
-        }
-        return data.toString();
+    public static String readFromFile(String fileName)
+            throws FileNotFoundException {
+        return readFromFile(new File(fileName));
     }
-    
-    public static Collection<Double> readDoubleVectorFromFile(String fileName) throws FileNotFoundException {
+
+    public static Collection<Double> readDoubleVectorFromFile(String fileName)
+            throws FileNotFoundException {
         Collection<Double> res = new ArrayList<>();
         try (Scanner reader = new Scanner(new File(fileName))) {
             reader.useDelimiter("\\n");
@@ -130,7 +126,8 @@ public class IO {
     }
 
     //FIXME!!!
-    public static Collection<Integer> readIntegerVectorFromFile(String fileName) throws FileNotFoundException {
+    public static Collection<Integer> readIntegerVectorFromFile(String fileName)
+            throws FileNotFoundException {
         Collection<Integer> res = new ArrayList<>();
         try (Scanner reader = new Scanner(new File(fileName))) {
             reader.useDelimiter("\\n");
@@ -140,19 +137,34 @@ public class IO {
         }
         return res;
     }
-    
+
+    public static Collection<Integer> readDoubleMatrixFromFile(String fileName)
+            throws FileNotFoundException {
+        Collection<Integer> res = new ArrayList<>();
+        try (Scanner reader = new Scanner(new File(fileName))) {
+            reader.useDelimiter("\\n");
+            while (reader.hasNext()) {
+                res.add(Integer.valueOf(reader.next()));
+            }
+        }
+        return res;
+    }
+
     //FIXME: didn't work for more then one argument !!
-    public static Collection<Task> readTasks(String tasksFileName) throws FileNotFoundException {
+    public static Collection<Task> readTasks(String tasksFileName)
+            throws FileNotFoundException {
         Collection<Task> result = new ArrayList<>();
         // Collection<Integer> itemp = readIntegerVectorFromFile(tasksFileName);
         // or read matrix with 2 or more parameters
-        
+
         return result;
     }
 
-    public static Collection<User> readUsers(String fileName) throws FileNotFoundException {
+    public static Collection<User> readUsers(String fileName) 
+            throws FileNotFoundException {
         Collection<User> res = new ArrayList<>();
         Collection<Double> smth = readDoubleVectorFromFile(fileName);
+        //FIXME: should read Matrix from file
         smth.forEach(b -> res.add(new User(new Params(b))));
         return res;
     }
@@ -160,8 +172,9 @@ public class IO {
     public static Collection<ServiceProvider> readProviders(String fileName) throws FileNotFoundException {
         Collection<ServiceProvider> res = new ArrayList<>();
         Collection<Double> smth = readDoubleVectorFromFile(fileName);
+        //FIXME: should read Matrix from file
         smth.forEach(b -> res.add(new ServiceProvider(new Params(b))));
         return res;
     }
-    
+
 }
