@@ -1,9 +1,9 @@
 package util;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -32,11 +32,11 @@ public class UtilFunctions {
         return (K) chooseRandomElement(map.keySet());
     }
 
-    public static <V> V chooseRandomElement(Set<V> set) {
-        if (set.isEmpty()) {
+    public static <V> V chooseRandomElement(Collection<V> c) {
+        if (c.isEmpty()) {
             return null;
         }
-        return (V) set.toArray()[StdRandom.uniform(set.size())];
+        return (V) c.toArray()[StdRandom.uniform(c.size())];
     }
 
 }

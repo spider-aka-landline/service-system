@@ -12,11 +12,34 @@ import math.Poisson;
 import math.StdRandom;
 
 public class Generator {
-    
+
+    private long userCounter;
+    private long providerCounter;
+
+    public User createUser(Params p) {
+        return new User(++userCounter, p);
+    }
+
+    public User createUser() {
+        return createUser(getRandomParams());
+    }
+
+    public ServiceProvider createProvider(Params p) {
+        return new ServiceProvider(++providerCounter, p);
+    }
+
+    public ServiceProvider createProvider() {
+        return createProvider(getRandomParams());
+    }
+
+    private Params getRandomParams() {
+        return new Params(StdRandom.uniform(0, 1));
+    }
+
     public Collection<User> generateUsers(Integer num) {
         Collection<User> tempU = new HashSet();
         for (int i = 0; i < num; i++) {
-            tempU.add(new User(new Params(StdRandom.uniform(0, 1))));
+            tempU.add(createUser());
         }
         return tempU;
     }
@@ -24,7 +47,7 @@ public class Generator {
     public Collection<ServiceProvider> generateProviders(Integer num) {
         Collection<ServiceProvider> tempP = new HashSet();
         for (int i = 0; i < num; i++) {
-            tempP.add(new ServiceProvider(new Params(StdRandom.uniform(0, 1))));
+            tempP.add(createProvider());
         }
         return tempP;
     }
@@ -33,7 +56,7 @@ public class Generator {
         Collection<Task> tempT = new ArrayList();
         Poisson generator = new Poisson(42.0);
         for (int i = 0; i < num; i++) {
-            tempT.add(new Task(users.iterator().next(), generator.next()));
+            tempT.add(new Task(UtilFunctions.chooseRandomElement(users), generator.next()));
         }
         return tempT;
     }

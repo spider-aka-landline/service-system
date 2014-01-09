@@ -1,21 +1,17 @@
 package servicesystem;
 
-import entities.Params;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import entities.Task;
+import exploration.EpsilonDecreasingStrategy;
+import exploration.ExplorationStrategy;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import util.IO;
-import math.Poisson;
-import math.StdRandom;
 import util.Generator;
 
 public class Main {
@@ -62,12 +58,13 @@ public class Main {
             }
         }
 
-        ServiceSystem Test;
+        ExplorationStrategy strategy = new EpsilonDecreasingStrategy();
+        ServiceSystem test;
 
         IO.initMatrix(ITERATIONS_NUMBER, tasks.size());
         for (int i = 0; i < ITERATIONS_NUMBER; i++) {
-            Test = new ServiceSystem(providers, users, tasks);
-            Test.run();
+            test = new ServiceSystem(providers, users, tasks, strategy);
+            test.run();
             IO.nextIteration();
         }
 

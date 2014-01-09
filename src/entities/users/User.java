@@ -7,10 +7,17 @@ import util.IO;
 
 public class User {
 
+    private final long id;
+
     private final Estimator estimator = new Estimator();
     private final Params requirements;
 
-    public User(Params required) {
+    /**
+     * @param i - User ID
+     * @param required - requirements for service
+     */
+    public User(long i, Params required) {
+        id = i;
         requirements = required;
     }
 
@@ -22,8 +29,33 @@ public class User {
         return new UserResponse(value, diff);
     }
 
+    public long getID() {
+        return id;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 23 * hash + (int) (this.id ^ (this.id >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final User other = (User) obj;
+        return this.id == other.id;
+    }
+
     @Override
     public String toString() {
-        return requirements.toString();
+        StringBuilder s = new StringBuilder(String.valueOf(id));
+        s.append(" ").append(requirements);
+        return s.toString();
     }
 }

@@ -4,6 +4,7 @@ import entities.providers.ServiceProvider;
 import entities.Task;
 import entities.users.User;
 import exploration.EpsilonDecreasingStrategy;
+import exploration.ExplorationStrategy;
 import java.util.ArrayList;
 import java.util.Collection;
 import reputationsystem.ReputationModule;
@@ -13,38 +14,39 @@ import java.util.Queue;
 import messages.UserResponse;
 
 //08.08: one user, set of service providers. Stubs everywhere.
-//11.08: Task entity was added, reputation-hashmap handling, Users
+//11.08: Task entity was added, reputation-hashmap handling, users
 public class ServiceSystem {
 
-    private final List<User> Users = new ArrayList<>();
-    private final Queue<Task> Tasks = new PriorityQueue<>();
+    private final List<User> users = new ArrayList<>();
+    private final Queue<Task> tasks = new PriorityQueue<>();
 
-    private final ReputationModule Reputations;
+    private final ReputationModule reputationModule;
     //boolean initTrigger = true;
 
     public ServiceSystem(Collection<ServiceProvider> pr,
-            Collection<User> us, Collection<Task> ts) {
-        us.forEach(b -> Users.add(b));
-        ts.forEach(b -> Tasks.add(b));
+            Collection<User> us, Collection<Task> ts,
+            ExplorationStrategy strategy) {
+        us.forEach(b -> users.add(b));
+        ts.forEach(b -> tasks.add(b));
         // epsilon-decreasing exploration strategy - with default parameters
-        Reputations = new ReputationModule(pr, new EpsilonDecreasingStrategy());
+        reputationModule = new ReputationModule(pr, strategy);
     }
 
     public void submitTask(Task t) {
-        Tasks.add(t);
+        tasks.add(t);
     }
 
     public void addUser(User u) {
-        Users.add(u);
+        users.add(u);
     }
 
     public void addProvider(ServiceProvider sp) {
-        Reputations.addServiceProvider(sp);
+        reputationModule.addServiceProvider(sp);
     }
 
     public void run() {
-        while (!Tasks.isEmpty()) {
-            processCurrentRequest(Tasks.poll());
+        while (!tasks.isEmpty()) {
+            processCurrentRequest(tasks.poll());
         }
     }
 
@@ -58,12 +60,12 @@ public class ServiceSystem {
 
         //пересчитать ф-ю ожидаемой ценности
         //внести изменения в репутацию
-        Reputations.update(worker, ans.getEstimate(), ans.getDifferenceSign());
+        reputationModule.update(worker, ans.getEstimate(), ans.getDifferenceSign());
 
     }
 
     private ServiceProvider chooseProvider(Task task) {
-        return Reputations.chooseProvider(task);
+        return reputationModule.chooseProvider(task);
     }
 
 }
