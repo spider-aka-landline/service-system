@@ -13,6 +13,9 @@ import Jama.Matrix;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import entities.Task;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class IO {
 
@@ -111,6 +114,12 @@ public class IO {
             throws FileNotFoundException {
         return readFromFile(new File(fileName));
     }
+
+    public static Matrix readMatrixFromFile(String fileName) throws IOException {
+        return Matrix.read(new BufferedReader(new FileReader(fileName)));
+    }
+    
+    
 
     public static Collection<Double> readDoubleVectorFromFile(String fileName)
             throws FileNotFoundException {
