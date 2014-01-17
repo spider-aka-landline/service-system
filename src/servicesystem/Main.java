@@ -58,7 +58,10 @@ public class Main {
             }
         }
 
+        
+        //init strategy
         ExplorationStrategy strategy = new EpsilonDecreasingStrategy();
+        //create servicesystem instance
         ServiceSystem test;
 
         IO.initMatrix(ITERATIONS_NUMBER, tasks.size());
@@ -73,6 +76,12 @@ public class Main {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        //Experiment exp1 = new smthExperiment(int, int, int);
+        //Experiment exp2 = new smthExperiment(int, int, int);
+        //ServiceSystemRunner runner = new ServiceSystemRunner();
+        //runner.run();
+        
     }
 
 }

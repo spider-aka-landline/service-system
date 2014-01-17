@@ -19,39 +19,6 @@ import java.io.IOException;
 
 public class IO {
 
-    public static Boolean debug = false;
-
-    private static int x, y;
-    private static Matrix results;
-    private static Matrix ones;
-    private static Matrix zeros;
-    private static Integer iterationCycle = 0;
-    private static Integer taskNumber = 0;
-
-    public static void initMatrix(Integer iterations, Integer tasks) {
-        x = iterations;
-        y = tasks;
-        results = new Matrix(x, y);
-        ones = new Matrix(1, results.getRowDimension(), 1.0);
-        zeros = new Matrix(results.getColumnDimension(), 1);
-    }
-
-    public static void log(Double value) {
-        results.set(iterationCycle, taskNumber, value);
-        if (debug) {
-            out.format("%.3f%n", value);
-        }
-        taskNumber++;
-    }
-
-    public static void nextIteration() {
-        iterationCycle++;
-        taskNumber = 0;
-        if (debug) {
-            out.format("=== Iteration %d === %n", iterationCycle);
-        }
-    }
-
     public static <V> void printCollection(Collection<V> smth, String filePath)
             throws FileNotFoundException {
         try (PrintWriter writer = new PrintWriter(new File(filePath))) {
@@ -59,23 +26,13 @@ public class IO {
         }
     }
 
-    public static void printTotalResult(String fileName)
+    public static void printMatrixToFile(Matrix matrx, String fileName, int width, int d)
             throws FileNotFoundException {
-        Matrix result = new Matrix(1, y);
-
-        for (int i = 0; i < y; i++) {
-            zeros.set(i, 0, 1.0);
-            result.set(0, i, (ones.times(results.times(zeros))).det() / x);
-
-            zeros.set(i, 0, 0.0);
-        }
-
-        //public void print(PrintWriter writer, NumberFormat nf, int i)
+        
         String filePath = getFilePath(fileName);
         File f = new File(filePath);
-
         try (PrintWriter pw = new PrintWriter(f);) {
-            result.transpose().print(pw, 1, 3);
+            matrx.print(pw, 1, 3);
         }
     }
 
@@ -118,8 +75,6 @@ public class IO {
     public static Matrix readMatrixFromFile(String fileName) throws IOException {
         return Matrix.read(new BufferedReader(new FileReader(fileName)));
     }
-    
-    
 
     public static Collection<Double> readDoubleVectorFromFile(String fileName)
             throws FileNotFoundException {

@@ -3,7 +3,6 @@ package servicesystem;
 import entities.providers.ServiceProvider;
 import entities.Task;
 import entities.users.User;
-import exploration.EpsilonDecreasingStrategy;
 import exploration.ExplorationStrategy;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +10,7 @@ import reputationsystem.ReputationModule;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import messages.ProviderResponse;
 import messages.UserResponse;
 
 //08.08: one user, set of service providers. Stubs everywhere.
@@ -55,8 +55,10 @@ public class ServiceSystem {
         ServiceProvider worker = chooseProvider(task);
         //узнать, кто пользователь
         User sender = task.getSender();
-        //предоставитиь сервис + узнать оценки
-        UserResponse ans = sender.generateResponse(worker.processUserTask(task));
+        //предоставитиь сервис
+        ProviderResponse service = worker.processUserTask(task);
+        //узнать оценки
+        UserResponse ans = sender.generateResponse(service);
 
         //пересчитать ф-ю ожидаемой ценности
         //внести изменения в репутацию
