@@ -3,7 +3,6 @@ package util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import static java.lang.System.out;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
