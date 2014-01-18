@@ -6,18 +6,14 @@ public class ExperimentSettings {
     private final StringBuilder providersFilename = new StringBuilder();
     private final StringBuilder tasksFilename = new StringBuilder();
 
+    private final StringBuilder statisticsFilename = new StringBuilder();
     private final StringBuilder resultsFilename = new StringBuilder();
 
-    Integer ITERATIONS_NUMBER = 1;
-
-    Integer USERS_NUMBER = 2;
-    Integer PROVIDERS_NUMBER = 4;
-    Integer TASKS_NUMBER = 50;
-
-    ExperimentSettings(String name) {
+    public ExperimentSettings(String name) {
         usersFilename.append(name).append("/users.txt");
         providersFilename.append(name).append("/providers.txt");
         tasksFilename.append(name).append("/tasks.txt");
+        statisticsFilename.append(name).append("/statistics.txt");
         resultsFilename.append(name).append("/results.txt");
     }
 
@@ -26,14 +22,19 @@ public class ExperimentSettings {
     }
 
     public String getProvidersFilename() {
-        return usersFilename.toString();
+        return providersFilename.toString();
     }
 
     public String getTasksFilename() {
-        return usersFilename.toString();
+        return tasksFilename.toString();
     }
 
     public String getResultsFilename() {
         return resultsFilename.toString();
     }
+    
+    public String getStatisticsFilename() {
+        return statisticsFilename.toString();
+    }
+    
 }

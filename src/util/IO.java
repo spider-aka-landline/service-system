@@ -5,111 +5,53 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Scanner;
 
 import Jama.Matrix;
 
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import entities.Task;
+import experiments.ExperimentData;
+import experiments.ExperimentSettings;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class IO {
 
-    public static <V> void printCollection(Collection<V> smth, String filePath)
+    public static <V> void printCollection(Collection<V> smth, String filepath)
             throws FileNotFoundException {
-        try (PrintWriter writer = new PrintWriter(new File(filePath))) {
+        if (smth == null) {
+            throw new NullPointerException("Empty collection for print");
+        }
+        try (PrintWriter writer = new PrintWriter(new File(filepath))) {
             smth.forEach(b -> writer.append(b.toString()).append("\n"));
         }
     }
 
-    public static void printMatrixToFile(Matrix matrx, String fileName, int width, int d)
+    public static void printMatrixToFile(Matrix matrx, String filename, int width, int d)
             throws FileNotFoundException {
-        
-        String filePath = getFilePath(fileName);
+
+        String filePath = getFilePath(filename);
         File f = new File(filePath);
         try (PrintWriter pw = new PrintWriter(f);) {
             matrx.print(pw, 1, 3);
         }
     }
 
-    public static String getFilePath(String fileName) {
+    public static String getFilePath(String filename) {
+        if (filename == null) {
+            throw new NullPointerException("Empty filename");
+        }
         String baseDir = System.getProperty("user.dir");
-        String filePath = baseDir + "/results/" + fileName;
-        return filePath;
-    }
 
-    public static void writeToFile(File file, String data)
-            throws FileNotFoundException {
-        try (PrintWriter writer = new PrintWriter(file)) {
-            writer.write(data);
-        }
-    }
-
-    public static void writeToFile(String filePath, String data)
-            throws FileNotFoundException {
-        writeToFile(new File(filePath), data);
-    }
-
-    public static String readFromFile(File file)
-            throws FileNotFoundException {
-        StringBuilder data;
-        try (Scanner reader = new Scanner(file)) {
-            reader.useDelimiter("\\n");
-            data = new StringBuilder();
-            while (reader.hasNext()) {
-                data.append(reader.next()).append("\n");
-            }
-        }
-        return data.toString();
-    }
-
-    public static String readFromFile(String fileName)
-            throws FileNotFoundException {
-        return readFromFile(new File(fileName));
+        StringBuilder filepath = new StringBuilder(baseDir);
+        filepath.append("/results/").append(filename);
+        return filepath.toString();
     }
 
     public static Matrix readMatrixFromFile(String fileName) throws IOException {
         return Matrix.read(new BufferedReader(new FileReader(fileName)));
-    }
-
-    public static Collection<Double> readDoubleVectorFromFile(String fileName)
-            throws FileNotFoundException {
-        Collection<Double> res = new ArrayList<>();
-        try (Scanner reader = new Scanner(new File(fileName))) {
-            reader.useDelimiter("\\n");
-            while (reader.hasNext()) {
-                res.add(Double.valueOf(reader.next()));
-            }
-        }
-        return res;
-    }
-
-    //FIXME!!!
-    public static Collection<Integer> readIntegerVectorFromFile(String fileName)
-            throws FileNotFoundException {
-        Collection<Integer> res = new ArrayList<>();
-        try (Scanner reader = new Scanner(new File(fileName))) {
-            reader.useDelimiter("\\n");
-            while (reader.hasNext()) {
-                res.add(Integer.valueOf(reader.next()));
-            }
-        }
-        return res;
-    }
-
-    public static Collection<Integer> readDoubleMatrixFromFile(String fileName)
-            throws FileNotFoundException {
-        Collection<Integer> res = new ArrayList<>();
-        try (Scanner reader = new Scanner(new File(fileName))) {
-            reader.useDelimiter("\\n");
-            while (reader.hasNext()) {
-                res.add(Integer.valueOf(reader.next()));
-            }
-        }
-        return res;
     }
 
     //FIXME: should read Matrix from file
@@ -123,7 +65,8 @@ public class IO {
     }
 
     //FIXME: should read Matrix from file
-    public static Collection<ServiceProvider> readProviders(String fileName) throws FileNotFoundException {
+    public static Collection<ServiceProvider> readProviders(String fileName)
+            throws FileNotFoundException {
         Collection<ServiceProvider> res = new ArrayList<>();
         //Collection<Double> smth = readDoubleVectorFromFile(fileName);
 
@@ -139,6 +82,16 @@ public class IO {
         // or read matrix with 2 or more parameters
 
         return result;
+    }
+
+    public static void logExperimentInitData(ExperimentData data,
+            ExperimentSettings settings) throws FileNotFoundException {
+        printCollection(data.getUsers(),
+                getFilePath(settings.getUsersFilename()));
+        printCollection(data.getProviders(),
+                getFilePath(settings.getProvidersFilename()));
+        printCollection(data.getTasks(),
+                getFilePath(settings.getTasksFilename()));
     }
 
 }

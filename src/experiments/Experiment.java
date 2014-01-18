@@ -2,7 +2,7 @@ package experiments;
 
 import java.io.FileNotFoundException;
 import Jama.Matrix;
-import servicesystem.ServiceSystem;
+import exploration.ExplorationStrategy;
 import util.IO;
 
 public abstract class Experiment implements Comparable<Experiment> {
@@ -11,17 +11,29 @@ public abstract class Experiment implements Comparable<Experiment> {
     private final String description;
     private final ResultsCounter calculator;
 
-    //private final ServiceSystem system;
-    
     private Integer iterationCycle = 0;
     private Integer taskNumber = 0;
-    
 
-    public Experiment(Long i, String name, Integer iterations, Integer tasks) {
+    protected final ExperimentData data;
+    protected final ExperimentSettings settings;
+    protected final ExplorationStrategy explorationStrategy;
+
+    /**
+     *
+     * @param i ID of the experiment
+     * @param name experiment name, used for directory name
+     * @param strategy exploration strategy
+     * @param input experiment input data
+     */
+        public Experiment(Long i, String name, ExplorationStrategy strategy,
+            ExperimentData input) {
         id = i;
         description = name;
-        calculator = new ResultsCounter(iterations, tasks);
-
+        settings = new ExperimentSettings(description);
+        data = input;
+        explorationStrategy = strategy;
+        calculator = new ResultsCounter(input.getIterationsNumber(),
+                input.getTasksNumber());
     }
 
     public void logExperimentData(Double value) {
@@ -37,11 +49,15 @@ public abstract class Experiment implements Comparable<Experiment> {
          }*/
     }
 
-    public void printTotalResult(String fileName)
+    public void printTotalResult()
             throws FileNotFoundException {
 
         Matrix total = calculator.getAverages().transpose();
-        IO.printMatrixToFile(total, fileName, 1, 3);
+        IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
+    }
+
+    public void logInputData() throws FileNotFoundException {
+        IO.logExperimentInitData(data, settings);
     }
 
     public abstract void run();
@@ -51,7 +67,5 @@ public abstract class Experiment implements Comparable<Experiment> {
         return this.id.compareTo(e2.id);
     }
 
-    public void printTotalResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 }

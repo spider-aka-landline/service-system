@@ -31,6 +31,6 @@ public class ResultsCounter {
     }
 
     void addData(Integer iterationCycle, Integer taskNumber, Double value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       results.set(iterationCycle, taskNumber, value);
     }
 }

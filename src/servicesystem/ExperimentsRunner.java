@@ -1,16 +1,14 @@
 package servicesystem;
 
 import experiments.Experiment;
+import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
 public final class ExperimentsRunner {
 
     private final Queue<Experiment> experiments = new PriorityQueue<>();
-    private final Iterator experimentsIterator = experiments.iterator();
-    
     private static Experiment currentExperiment;
     
     public ExperimentsRunner(Collection<Experiment> all) {
@@ -21,9 +19,10 @@ public final class ExperimentsRunner {
         currentExperiment.logExperimentData(value);
     }
 
-    public void run() {
-        while (experimentsIterator.hasNext()) {
-            currentExperiment = (Experiment) experimentsIterator.next();
+    public void run() throws FileNotFoundException {
+        for (Experiment exp : experiments){
+            currentExperiment = exp;
+            currentExperiment.logInputData();
             currentExperiment.run();
             currentExperiment.printTotalResult();
         }

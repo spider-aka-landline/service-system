@@ -33,7 +33,7 @@ public class Generator {
     }
 
     private Params getRandomParams() {
-        return new Params(StdRandom.uniform(0, 1));
+        return new Params(Double.valueOf(StdRandom.uniform(0, 1)));
     }
 
     public Collection<User> generateUsers(Integer num) {

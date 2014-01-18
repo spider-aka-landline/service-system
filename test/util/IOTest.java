@@ -46,68 +46,6 @@ public class IOTest {
     }
 
     /**
-     * Test of writeToFile method, of class IO.
-     *
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testWriteToFile_File_String() throws Exception {
-        System.out.println("writeToFile");
-        File file = null;
-        String data = "";
-        IO.writeToFile(file, data);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of writeToFile method, of class IO.
-     *
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testWriteToFile_String_String() throws Exception {
-        System.out.println("writeToFile");
-        String filePath = "";
-        String data = "";
-        IO.writeToFile(filePath, data);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of readFromFile method, of class IO.
-     *
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testReadFromFile_File() throws Exception {
-        System.out.println("readFromFile");
-        File file = null;
-        String expResult = "";
-        String result = IO.readFromFile(file);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of readFromFile method, of class IO.
-     *
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testReadFromFile_String() throws Exception {
-        System.out.println("readFromFile");
-        String fileName = "";
-        String expResult = "";
-        String result = IO.readFromFile(fileName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of readMatrixFromFile method, of class IO.
      *
      * @throws java.lang.Exception
@@ -130,54 +68,6 @@ public class IOTest {
         Matrix expResult = new Matrix(vals);
         Matrix result = IO.readMatrixFromFile(fileName);
         assertArrayEquals(expResult.getArray(), result.getArray());
-    }
-
-    /**
-     * Test of readDoubleVectorFromFile method, of class IO.
-     *
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testReadDoubleVectorFromFile() throws Exception {
-        System.out.println("readDoubleVectorFromFile");
-        String fileName = "";
-        Collection<Double> expResult = null;
-        Collection<Double> result = IO.readDoubleVectorFromFile(fileName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of readIntegerVectorFromFile method, of class IO.
-     *
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testReadIntegerVectorFromFile() throws Exception {
-        System.out.println("readIntegerVectorFromFile");
-        String fileName = "";
-        Collection<Integer> expResult = null;
-        Collection<Integer> result = IO.readIntegerVectorFromFile(fileName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of readDoubleMatrixFromFile method, of class IO.
-     *
-     * @throws java.lang.Exception
-     */
-    @Test
-    public void testReadDoubleMatrixFromFile() throws Exception {
-        System.out.println("readDoubleMatrixFromFile");
-        String fileName = "";
-        Collection<Integer> expResult = null;
-        Collection<Integer> result = IO.readDoubleMatrixFromFile(fileName);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**

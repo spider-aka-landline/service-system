@@ -3,9 +3,9 @@ package servicesystem;
 import entities.providers.ServiceProvider;
 import entities.Task;
 import entities.users.User;
+import experiments.ExperimentData;
 import exploration.ExplorationStrategy;
 import java.util.ArrayList;
-import java.util.Collection;
 import reputationsystem.ReputationModule;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -21,15 +21,12 @@ public class ServiceSystem {
     private final Queue<Task> tasks = new PriorityQueue<>();
 
     private final ReputationModule reputationModule;
-    //boolean initTrigger = true;
 
-    public ServiceSystem(Collection<ServiceProvider> pr,
-            Collection<User> us, Collection<Task> ts,
-            ExplorationStrategy strategy) {
-        us.forEach(b -> users.add(b));
-        ts.forEach(b -> tasks.add(b));
+    public ServiceSystem(ExperimentData data, ExplorationStrategy explorationStrategy) {
+        data.getUsers().forEach(b -> users.add(b));
+        data.getTasks().forEach(b -> tasks.add(b));
         // epsilon-decreasing exploration strategy - with default parameters
-        reputationModule = new ReputationModule(pr, strategy);
+        reputationModule = new ReputationModule(data.getProviders(), explorationStrategy);
     }
 
     public void submitTask(Task t) {
