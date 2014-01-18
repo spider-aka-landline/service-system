@@ -4,8 +4,8 @@ import entities.users.User;
 
 public class Task implements Comparable<Task> {
 
-    User sender;
-    Integer creationTime;
+    private User sender;
+    private Integer creationTime;
     //some inner data
     //type
     //Integer complitionTime;
@@ -19,6 +19,10 @@ public class Task implements Comparable<Task> {
         return sender;
     }
 
+    public Integer getCreationTime() {
+        return creationTime;
+    }
+    
     @Override
     public int compareTo(Task t2) {
         return this.creationTime.compareTo(t2.creationTime);
