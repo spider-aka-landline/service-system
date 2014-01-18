@@ -3,14 +3,14 @@ package servicesystem;
 import entities.providers.ServiceProvider;
 import entities.Task;
 import entities.users.User;
-import exploration.EpsilonDecreasingStrategy;
+import experiments.ExperimentData;
 import exploration.ExplorationStrategy;
 import java.util.ArrayList;
-import java.util.Collection;
 import reputationsystem.ReputationModule;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import messages.ProviderResponse;
 import messages.UserResponse;
 
 //08.08: one user, set of service providers. Stubs everywhere.
@@ -21,15 +21,12 @@ public class ServiceSystem {
     private final Queue<Task> tasks = new PriorityQueue<>();
 
     private final ReputationModule reputationModule;
-    //boolean initTrigger = true;
 
-    public ServiceSystem(Collection<ServiceProvider> pr,
-            Collection<User> us, Collection<Task> ts,
-            ExplorationStrategy strategy) {
-        us.forEach(b -> users.add(b));
-        ts.forEach(b -> tasks.add(b));
+    public ServiceSystem(ExperimentData data, ExplorationStrategy explorationStrategy) {
+        data.getUsers().forEach(b -> users.add(b));
+        data.getTasks().forEach(b -> tasks.add(b));
         // epsilon-decreasing exploration strategy - with default parameters
-        reputationModule = new ReputationModule(pr, strategy);
+        reputationModule = new ReputationModule(data.getProviders(), explorationStrategy);
     }
 
     public void submitTask(Task t) {
@@ -55,8 +52,10 @@ public class ServiceSystem {
         ServiceProvider worker = chooseProvider(task);
         //узнать, кто пользователь
         User sender = task.getSender();
-        //предоставитиь сервис + узнать оценки
-        UserResponse ans = sender.generateResponse(worker.processUserTask(task));
+        //предоставитиь сервис
+        ProviderResponse service = worker.processUserTask(task);
+        //узнать оценки
+        UserResponse ans = sender.generateResponse(service);
 
         //пересчитать ф-ю ожидаемой ценности
         //внести изменения в репутацию
