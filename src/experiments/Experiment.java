@@ -3,7 +3,10 @@ package experiments;
 import java.io.FileNotFoundException;
 import Jama.Matrix;
 import exploration.ExplorationStrategy;
+import java.util.LinkedList;
+import java.util.List;
 import messages.ProviderResponse;
+import messages.StatisticEntry;
 import util.IO;
 
 public abstract class Experiment implements Comparable<Experiment> {
@@ -19,6 +22,8 @@ public abstract class Experiment implements Comparable<Experiment> {
     protected final ExperimentSettings settings;
     protected final ExplorationStrategy explorationStrategy;
 
+    protected final List<StatisticEntry> statistics = new LinkedList<>();
+
     /**
      *
      * @param i ID of the experiment
@@ -26,7 +31,7 @@ public abstract class Experiment implements Comparable<Experiment> {
      * @param strategy exploration strategy
      * @param input experiment input data
      */
-        public Experiment(Long i, String name, ExplorationStrategy strategy,
+    public Experiment(Long i, String name, ExplorationStrategy strategy,
             ExperimentData input) {
         id = i;
         description = name;
@@ -40,7 +45,7 @@ public abstract class Experiment implements Comparable<Experiment> {
     public void logExperimentData(ProviderResponse pr, Double value) {
         calculator.addData(iterationCycle, taskNumber, value);
         taskNumber++;
-        
+        statistics.add(new StatisticEntry(pr, value));
     }
 
     public void nextIteration() {
@@ -56,6 +61,7 @@ public abstract class Experiment implements Comparable<Experiment> {
 
         Matrix total = calculator.getAverages().transpose();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
+        IO.printCollection(statistics, settings.getStatisticsFilename());
     }
 
     public void logInputData() throws FileNotFoundException {
@@ -69,5 +75,4 @@ public abstract class Experiment implements Comparable<Experiment> {
         return this.id.compareTo(e2.id);
     }
 
-    
 }
