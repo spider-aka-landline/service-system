@@ -22,7 +22,7 @@ public class TriggeredServiceProvider extends ServiceProvider {
     public ProviderResponse processUserTask(Task t) {
         Params temp = (isGood) ? properties : new Params(QUALITY_MIN_VALUE);
         changeTrigger();
-        return new ProviderResponse(temp);
+        return new ProviderResponse(id, t, temp);
     }
     
 }
