@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import messages.ProviderResponse;
 
 public final class ExperimentsRunner {
 
@@ -15,8 +16,8 @@ public final class ExperimentsRunner {
         all.forEach(b -> experiments.add(b));
     }
 
-    public static void logExperimentData(Double value) {
-        currentExperiment.logExperimentData(value);
+    public static void logExperimentData(ProviderResponse pr, Double value) {
+        currentExperiment.logExperimentData(pr, value);
     }
 
     public void run() throws FileNotFoundException {

@@ -4,7 +4,6 @@ import entities.Params;
 import messages.UserResponse;
 import messages.ProviderResponse;
 import servicesystem.ExperimentsRunner;
-import util.IO;
 
 public class User {
 
@@ -26,7 +25,7 @@ public class User {
         Double rvalue = estimator.evaluateEstimate(requirements);
         Double value = estimator.evaluateEstimate(pr.getServiceParameters());
         Boolean diff = estimator.isPositiveDifference(value, rvalue);
-        ExperimentsRunner.logExperimentData(value);
+        ExperimentsRunner.logExperimentData(pr, value);
         return new UserResponse(value, diff);
     }
 

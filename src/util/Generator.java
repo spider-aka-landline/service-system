@@ -33,7 +33,7 @@ public class Generator {
     }
 
     private Params getRandomParams() {
-        return new Params(Double.valueOf(StdRandom.uniform(0, 1)));
+        return new Params(StdRandom.uniform(0, 1));
     }
 
     public Collection<User> generateUsers(Integer num) {
@@ -54,9 +54,10 @@ public class Generator {
 
     public Collection<Task> generateTasks(Collection<User> users, Integer num) {
         Collection<Task> tempT = new ArrayList();
-        Poisson generator = new Poisson(42.0);
+        Poisson numbers = new Poisson(42.0);
         for (int i = 0; i < num; i++) {
-            tempT.add(new Task(UtilFunctions.chooseRandomElement(users), generator.next()));
+            tempT.add(new Task(UtilFunctions.chooseRandomElement(users),
+                    numbers.next()));
         }
         return tempT;
     }

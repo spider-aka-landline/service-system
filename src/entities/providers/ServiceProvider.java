@@ -20,7 +20,7 @@ public class ServiceProvider {
     }
 
     public ProviderResponse processUserTask(Task t) {
-        return new ProviderResponse(properties);
+        return new ProviderResponse(id, t, properties);
     }
 
     public long getID() {

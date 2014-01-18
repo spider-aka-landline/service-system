@@ -3,6 +3,7 @@ package experiments;
 import java.io.FileNotFoundException;
 import Jama.Matrix;
 import exploration.ExplorationStrategy;
+import messages.ProviderResponse;
 import util.IO;
 
 public abstract class Experiment implements Comparable<Experiment> {
@@ -36,9 +37,10 @@ public abstract class Experiment implements Comparable<Experiment> {
                 input.getTasksNumber());
     }
 
-    public void logExperimentData(Double value) {
+    public void logExperimentData(ProviderResponse pr, Double value) {
         calculator.addData(iterationCycle, taskNumber, value);
         taskNumber++;
+        
     }
 
     public void nextIteration() {
