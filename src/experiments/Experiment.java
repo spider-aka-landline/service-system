@@ -61,7 +61,7 @@ public abstract class Experiment implements Comparable<Experiment> {
 
         Matrix total = calculator.getAverages().transpose();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
-        IO.printCollection(statistics, settings.getStatisticsFilename());
+        IO.printCollection(statistics, IO.getFilePath(settings.getStatisticsFilename()));
     }
 
     public void logInputData() throws FileNotFoundException {
