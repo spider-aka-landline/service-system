@@ -5,8 +5,11 @@ import Jama.Matrix;
 import exploration.ExplorationStrategy;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import messages.ProviderResponse;
 import messages.StatisticEntry;
+import servicesystem.ServiceSystem;
 import util.IO;
 
 public abstract class Experiment implements Comparable<Experiment> {
@@ -59,20 +62,50 @@ public abstract class Experiment implements Comparable<Experiment> {
     public void printTotalResult()
             throws FileNotFoundException {
 
+        //Average profit
         Matrix total = calculator.getAverages().transpose();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
-        IO.printCollection(statistics, IO.getFilePath(settings.getStatisticsFilename()));
+        
+        //All statistics
+        IO.printCollection(statistics,
+                IO.getFilePath(settings.getStatisticsFilename()));
+
+        //Hystogram evaluations = new UniformHystogram();
+        
     }
 
     public void logInputData() throws FileNotFoundException {
         IO.logExperimentInitData(data, settings);
     }
 
-    public abstract void run();
+    public void run() {
+        //print input data
+        try {
+            logInputData();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //create servicesystem instance
+        ServiceSystem system;
+        for (int i = 0; i < data.getIterationsNumber(); i++) {
+            system = getServiceSystemInstance();
+            system.run();
+            nextIteration();
+        }
+
+        //print output data
+        try {
+            printTotalResult();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     @Override
     public int compareTo(Experiment e2) {
         return this.id.compareTo(e2.id);
     }
 
+    protected abstract ServiceSystem getServiceSystemInstance();
 }
