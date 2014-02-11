@@ -26,9 +26,11 @@ public class Main {
         //container for all experiments
         List<Experiment> exps = new ArrayList<>();
 
-        //
+        //Generated data for all experiments
         ExperimentData generated = new ExperimentData(USERS_NUMBER,
                 PROVIDERS_NUMBER, TASKS_NUMBER, ITERATIONS_NUMBER);
+        
+        //First experiment: RL, e-decreasing,
         Experiment exp1 = new SimpleExperiment(Long.valueOf(1),
                 "simple-constants", strategy, generated);
 
