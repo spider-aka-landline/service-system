@@ -44,36 +44,56 @@ public class ReputationModule {
      * epsilon-decreasing стратегия выбора провайдера
      *
      * @param t User task
+     * @param str strategy for choosing provider
      * @return ServiceProvider, chosen for the task
      */
-    public ServiceProvider chooseProvider(Task t) {
+    public ServiceProvider chooseProvider(Task t, ChooseProviderStrategy str) {
         if (providersReputationMap.isEmpty()) {
             throw new RuntimeException("No service providers were found. Can't serve request.");
         }
-        if (StdRandom.bernoulli(exploration.getEpsilon())) {
-            exploration.updateEpsilon();
-            return chooseProviderRandom(t);
-        } else {
-            return chooseProviderLogic(t);
+
+        switch (str) {
+            case RL:
+            case RLWITHREPUTATION:
+                if (StdRandom.bernoulli(exploration.getEpsilon())) {
+                    exploration.updateEpsilon();
+                    return chooseProviderRandom(t);
+                } else {
+                    return chooseProviderLogic(t, str);
+                }
+            case RANDOM:
+                return chooseProviderRandom(t);
+            default:
+                throw new RuntimeException("Experiment strategy type doesn't exist");
         }
     }
-
     /* Выбор провайдера случайным образом */
+
     private ServiceProvider chooseProviderRandom(Task t) {
         //do smth
         return providersReputationMap.chooseRandomElement();
     }
 
     /* Выбор множества провайдеров, по которому ищем */
-    private Map<ServiceProvider, DataEntity> selectProvidersSearchSet() {
-        return providersReputationMap.getReputableProviders(REPUTATION_MIN_LEVEL);
+    private Map<ServiceProvider, DataEntity>
+            selectProvidersSearchSet(ChooseProviderStrategy str) {
+        switch (str) {
+            case RL:
+                return providersReputationMap.serviceProviders;
+            case RLWITHREPUTATION:
+                return providersReputationMap.getReputableProviders(REPUTATION_MIN_LEVEL);
+            case RANDOM:
+            default:
+                throw new RuntimeException("Wrong experiment strategy type");
+        }
     }
 
     //TODO: rename method
-    /* Вернуть провайдера c макс. ожиданием из авторитетных */
-    private ServiceProvider chooseProviderLogic(Task t) {
+        /* Вернуть провайдера c макс. ожиданием из авторитетных */
+    private ServiceProvider chooseProviderLogic(Task t,
+            ChooseProviderStrategy str) {
 
-        Map<ServiceProvider, DataEntity> search = selectProvidersSearchSet();
+        Map<ServiceProvider, DataEntity> search = selectProvidersSearchSet(str);
 
         //найти максимальное значение ожидаемой ценности в множестве поиска
         Double max

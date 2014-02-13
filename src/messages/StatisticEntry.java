@@ -5,11 +5,11 @@ import entities.Task;
 
 public class StatisticEntry {
 
-    Integer taskTime;
-    Long userId;
-    Long providerId;
-    Params serviceProperties;
-    Double userEstimate;
+    private final Integer taskTime;
+    private final Long userId;
+    private final Long providerId;
+    private final Params serviceProperties;
+    private final Double userEstimate;
 
     public StatisticEntry(ProviderResponse pr, double value) {
         Task tempt = pr.getServedTask();
@@ -20,6 +20,10 @@ public class StatisticEntry {
         userEstimate = value;
     }
 
+    public Double getUserEstimate(){
+        return userEstimate;
+    }
+            
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder(String.valueOf(taskTime));

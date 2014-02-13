@@ -9,12 +9,16 @@ public class ExperimentSettings {
     private final StringBuilder statisticsFilename = new StringBuilder();
     private final StringBuilder resultsFilename = new StringBuilder();
 
+    private final StringBuilder hystogramFilename
+            = new StringBuilder();
+
     public ExperimentSettings(String name) {
         usersFilename.append(name).append("/users.txt");
         providersFilename.append(name).append("/providers.txt");
         tasksFilename.append(name).append("/tasks.txt");
         statisticsFilename.append(name).append("/statistics.txt");
         resultsFilename.append(name).append("/results.txt");
+        hystogramFilename.append(name).append("/hystogram.txt");
     }
 
     public String getUsersFilename() {
@@ -32,9 +36,13 @@ public class ExperimentSettings {
     public String getResultsFilename() {
         return resultsFilename.toString();
     }
-    
+
     public String getStatisticsFilename() {
         return statisticsFilename.toString();
     }
     
+    public String getHystogramFilename() {
+        return hystogramFilename.toString();
+    }
+
 }

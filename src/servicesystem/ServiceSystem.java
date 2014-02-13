@@ -12,6 +12,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import messages.ProviderResponse;
 import messages.UserResponse;
+import reputationsystem.ChooseProviderStrategy;
 
 //08.08: one user, set of service providers. Stubs everywhere.
 //11.08: Task entity was added, reputation-hashmap handling, users
@@ -20,11 +21,14 @@ public class ServiceSystem {
     private final List<User> users = new ArrayList<>();
     private final Queue<Task> tasks = new PriorityQueue<>();
 
+    ChooseProviderStrategy experimentStrategy;
     private final ReputationModule reputationModule;
 
-    public ServiceSystem(ExperimentData data, ExplorationStrategy explorationStrategy) {
+    public ServiceSystem(ExperimentData data,
+            ExplorationStrategy explorationStrategy, ChooseProviderStrategy str) {
         data.getUsers().forEach(b -> users.add(b));
         data.getTasks().forEach(b -> tasks.add(b));
+        experimentStrategy = str;
         // epsilon-decreasing exploration strategy - with default parameters
         reputationModule = new ReputationModule(data.getProviders(), explorationStrategy);
     }
@@ -64,7 +68,7 @@ public class ServiceSystem {
     }
 
     private ServiceProvider chooseProvider(Task task) {
-        return reputationModule.chooseProvider(task);
+        return reputationModule.chooseProvider(task, experimentStrategy);
     }
 
 }

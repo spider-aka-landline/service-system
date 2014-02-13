@@ -1,12 +1,16 @@
 package experiments;
 
 import java.io.FileNotFoundException;
-import Jama.Matrix;
-import exploration.ExplorationStrategy;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import Jama.Matrix;
+
+import exploration.ExplorationStrategy;
+import experiments.graph.UniformHystogram;
 import messages.ProviderResponse;
 import messages.StatisticEntry;
 import servicesystem.ServiceSystem;
@@ -65,13 +69,21 @@ public abstract class Experiment implements Comparable<Experiment> {
         //Average profit
         Matrix total = calculator.getAverages().transpose();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
-        
+
         //All statistics
         IO.printCollection(statistics,
                 IO.getFilePath(settings.getStatisticsFilename()));
 
-        //Hystogram evaluations = new UniformHystogram();
-        
+        //Hystogram of profits
+        //  get all user estimates
+        List<Double> estimates = new ArrayList<>();
+        statistics.stream().forEach((e) -> {
+            estimates.add(e.getUserEstimate());
+        });
+        //  make cute hystogram object
+        UniformHystogram frequencies = new UniformHystogram(estimates);
+        IO.printHystogramToFile(frequencies,
+                IO.getFilePath(settings.getHystogramFilename()));
     }
 
     public void logInputData() throws FileNotFoundException {

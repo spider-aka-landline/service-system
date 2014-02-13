@@ -8,6 +8,7 @@ import exploration.ExplorationStrategy;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import reputationsystem.ChooseProviderStrategy;
 
 public class Main {
 
@@ -30,11 +31,26 @@ public class Main {
         ExperimentData generated = new ExperimentData(USERS_NUMBER,
                 PROVIDERS_NUMBER, TASKS_NUMBER, ITERATIONS_NUMBER);
         
-        //First experiment: RL, e-decreasing,
-        Experiment exp1 = new SimpleExperiment(Long.valueOf(1),
-                "simple-constants", strategy, generated);
-
-        exps.add(exp1);
+        //First experiment: random
+        Experiment exp01 = new SimpleExperiment(Long.valueOf(1),
+                "simple-constants/random", strategy, 
+                ChooseProviderStrategy.RANDOM, generated);
+        
+        exps.add(exp01);
+        
+        //First experiment: RL, e-decreasing
+        Experiment exp02 = new SimpleExperiment(Long.valueOf(1),
+                "simple-constants/rl", strategy, 
+                ChooseProviderStrategy.RL, generated);
+        
+        exps.add(exp02);
+        
+        //First experiment: RL, e-decreasing, reputation
+        Experiment exp03 = new SimpleExperiment(Long.valueOf(1),
+                "simple-constants/reputation", strategy, 
+                ChooseProviderStrategy.RLWITHREPUTATION, generated);
+        
+        exps.add(exp03);
 
         ExperimentsRunner runner = new ExperimentsRunner(exps);
         runner.run();

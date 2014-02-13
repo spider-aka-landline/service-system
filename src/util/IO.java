@@ -13,11 +13,18 @@ import entities.users.User;
 import entities.Task;
 import experiments.ExperimentData;
 import experiments.ExperimentSettings;
+import experiments.graph.UniformHystogram;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Map;
 
 public class IO {
+
+    public static final NumberFormat formatForDouble
+            = new DecimalFormat("#.00");
 
     public static <V> void printCollection(Collection<V> smth, String filepath)
             throws FileNotFoundException {
@@ -29,8 +36,21 @@ public class IO {
         }
     }
 
-    public static void printMatrixToFile(Matrix matrx, String filename, int width, int d)
+    public static <K, V> void printMapToFile(Map<K, V> smth, String filepath)
             throws FileNotFoundException {
+        if (smth == null) {
+            throw new NullPointerException("Empty map for print");
+        }
+        try (PrintWriter writer = new PrintWriter(new File(filepath))) {
+            smth.entrySet().forEach(b -> {
+                writer.append(b.getKey().toString()).append(" ");
+                writer.append(b.getValue().toString()).append("\n");
+            });
+        }
+    }
+
+    public static void printMatrixToFile(Matrix matrx,
+            String filename, int width, int d) throws FileNotFoundException {
 
         String filePath = getFilePath(filename);
         File f = new File(filePath);
@@ -50,7 +70,8 @@ public class IO {
         return filepath.toString();
     }
 
-    public static Matrix readMatrixFromFile(String fileName) throws IOException {
+    public static Matrix readMatrixFromFile(String fileName)
+            throws IOException {
         return Matrix.read(new BufferedReader(new FileReader(fileName)));
     }
 
@@ -92,6 +113,11 @@ public class IO {
                 getFilePath(settings.getProvidersFilename()));
         printCollection(data.getTasks(),
                 getFilePath(settings.getTasksFilename()));
+    }
+
+    public static void printHystogramToFile(UniformHystogram evaluations,
+            String filePath) throws FileNotFoundException {
+        printMapToFile(evaluations.getData(), filePath);
     }
 
 }

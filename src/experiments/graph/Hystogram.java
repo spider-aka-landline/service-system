@@ -4,16 +4,26 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
-class Hystogram<V extends Number> {
+public class Hystogram<K extends Number> {
 
-    Map<V, Integer> items = new TreeMap<>();
+    public Map<K, Integer> items = new TreeMap<>();
 
-    Hystogram(Collection<V> input) {
-        input.stream().forEach((o) -> {
+    public Hystogram(Collection<K> inputCollection) {
+        inputCollection.stream().forEach((o) -> {
             Integer freq = items.get(o);
             items.put(o, (freq == null) ? 1 : freq + 1);
         });
+
     }
 
-    
+    public Hystogram(Map<K, Integer> inputMap) {
+        inputMap.entrySet().stream().forEach(b -> {
+            items.put(b.getKey(), b.getValue());
+        });
+    }
+
+    public Map<K, Integer> getData() {
+        return items;
+    }
+
 }
