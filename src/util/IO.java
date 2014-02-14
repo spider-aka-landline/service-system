@@ -13,6 +13,7 @@ import entities.users.User;
 import entities.Task;
 import experiments.ExperimentData;
 import experiments.ExperimentSettings;
+import experiments.graph.Hystogram;
 import experiments.graph.UniformHystogram;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -120,4 +121,8 @@ public class IO {
         printMapToFile(evaluations.getData(), filePath);
     }
 
+    public static void printHystogramToFile(Hystogram evaluations,
+            String filePath) throws FileNotFoundException {
+        printMapToFile(evaluations.getData(), filePath);
+    }
 }

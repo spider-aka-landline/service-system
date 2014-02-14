@@ -9,7 +9,7 @@ public class UniformHystogram<K extends Number> {
     private static final int NUMBER_OF_SEGMENTS = 10;
 
     private final Map<Double, Integer> segmentedItems = new TreeMap<>();
-    Map<K , Integer> inputMap = new TreeMap<>();
+    Map<K, Integer> inputMap = new TreeMap<>();
 
     private Double maxKey;
     private Double minKey;
@@ -20,7 +20,7 @@ public class UniformHystogram<K extends Number> {
     private Double currentMax;
     private Integer currentFrequency;
 
-     public UniformHystogram(Collection<K> inputCollection) {
+    public UniformHystogram(Collection<K> inputCollection) {
 
         inputCollection.stream().forEach((o) -> {
             Integer freq = inputMap.get(o);
@@ -28,8 +28,8 @@ public class UniformHystogram<K extends Number> {
         });
 
         Object[] temp = inputMap.keySet().toArray();
-        minKey = ((K)temp[0]).doubleValue();
-        maxKey = ((K)temp[temp.length - 1]).doubleValue();
+        minKey = ((K) temp[0]).doubleValue();
+        maxKey = ((K) temp[temp.length - 1]).doubleValue();
 
         //find the length of intervals
         delimiter = (maxKey - minKey) / NUMBER_OF_SEGMENTS;
@@ -40,12 +40,13 @@ public class UniformHystogram<K extends Number> {
         currentFrequency = 0;
     }
 
-    public <K extends Number> UniformHystogram(Hystogram<K> inputHystogram,
+    public UniformHystogram(Collection<K> inputCollection,
             double min, double max) {
 
-        if (inputHystogram == null) {
-            throw new NullPointerException("empty input");
-        }
+        inputCollection.stream().forEach((o) -> {
+            Integer freq = inputMap.get(o);
+            inputMap.put(o, (freq == null) ? 1 : freq + 1);
+        });
 
         minKey = min;
         maxKey = max;
@@ -73,9 +74,8 @@ public class UniformHystogram<K extends Number> {
             currentFrequency += b.getValue();
         });
         segmentedItems.put(currentPointer, currentFrequency);
-        
-    }
 
+    }
 
     public Map<Double, Integer> getData() {
         if (inputMap == null || inputMap.isEmpty()) {

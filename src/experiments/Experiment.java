@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import Jama.Matrix;
+import experiments.graph.Hystogram;
 
 import exploration.ExplorationStrategy;
 import experiments.graph.UniformHystogram;
@@ -80,10 +81,20 @@ public abstract class Experiment implements Comparable<Experiment> {
         statistics.stream().forEach((e) -> {
             estimates.add(e.getUserEstimate());
         });
-        //  make cute hystogram object
-        UniformHystogram frequencies = new UniformHystogram(estimates);
+        
+        //  make cute hystogram object        
+        Hystogram frequencies = new Hystogram(estimates);
         IO.printHystogramToFile(frequencies,
                 IO.getFilePath(settings.getHystogramFilename()));
+        
+        UniformHystogram frequencies1 = new UniformHystogram(estimates);
+        IO.printHystogramToFile(frequencies1,
+                IO.getFilePath(settings.getUniformHystogramFilename()));
+        /*
+        UniformHystogram frequencies2 = new UniformHystogram(estimates,0.0,1.0);
+        IO.printHystogramToFile(frequencies2,
+                IO.getFilePath(settings.getHystogramFilename()));
+                */
     }
 
     public void logInputData() throws FileNotFoundException {

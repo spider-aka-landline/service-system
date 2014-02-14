@@ -11,7 +11,9 @@ public class ExperimentSettings {
 
     private final StringBuilder hystogramFilename
             = new StringBuilder();
-
+    private final StringBuilder uniformHystogramFilename
+            = new StringBuilder();
+    
     public ExperimentSettings(String name) {
         usersFilename.append(name).append("/users.txt");
         providersFilename.append(name).append("/providers.txt");
@@ -19,6 +21,7 @@ public class ExperimentSettings {
         statisticsFilename.append(name).append("/statistics.txt");
         resultsFilename.append(name).append("/results.txt");
         hystogramFilename.append(name).append("/hystogram.txt");
+        uniformHystogramFilename.append(name).append("/hystogram2.txt");
     }
 
     public String getUsersFilename() {
@@ -45,4 +48,7 @@ public class ExperimentSettings {
         return hystogramFilename.toString();
     }
 
+    public String getUniformHystogramFilename() {
+        return uniformHystogramFilename.toString();
+    }
 }
