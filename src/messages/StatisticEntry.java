@@ -7,17 +7,17 @@ public class StatisticEntry {
 
     private final Integer taskTime;
     private final Long userId;
-    private final Long providerId;
+    private final Integer providerId;
     private final Params serviceProperties;
     private final Double userEstimate;
 
-    public StatisticEntry(ProviderResponse pr, double value) {
+    public StatisticEntry(ProviderResponse pr, double userEstimate) {
         Task tempt = pr.getServedTask();
         taskTime = tempt.getCreationTime();
         userId = tempt.getSender().getID();
-        providerId = pr.serviceProviderId;
+        providerId = pr.getServiceProviderId();
         serviceProperties = pr.getServiceParameters();
-        userEstimate = value;
+        this.userEstimate = userEstimate;
     }
 
     public Double getUserEstimate(){

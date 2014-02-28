@@ -6,7 +6,7 @@ import messages.ProviderResponse;
 
 public class ServiceProvider {
 
-    protected final long id;
+    protected final int id;
     Params properties;
 
     /**
@@ -14,7 +14,7 @@ public class ServiceProvider {
      * @param i - provider ID
      * @param pr - service parameters
      */
-    public ServiceProvider(long i, Params pr) {
+    public ServiceProvider(int i, Params pr) {
         id = i;
         properties = pr;
     }

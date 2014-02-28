@@ -12,7 +12,7 @@ import reputationsystem.ChooseProviderStrategy;
 
 public class Main {
 
-    public static final Integer ITERATIONS_NUMBER = 1;
+    public static final Integer ITERATIONS_NUMBER = 100;
     public static final Integer USERS_NUMBER = 4;
     public static final Integer PROVIDERS_NUMBER = 8;
     public static final Integer TASKS_NUMBER = 5000;
@@ -38,15 +38,15 @@ public class Main {
         
         exps.add(exp01);
         
-        //First experiment: RL, e-decreasing
-        Experiment exp02 = new SimpleExperiment(Long.valueOf(1),
+        //Second experiment: RL, e-decreasing
+        Experiment exp02 = new SimpleExperiment(Long.valueOf(2),
                 "simple-constants/rl", strategy, 
                 ChooseProviderStrategy.RL, generated);
         
         exps.add(exp02);
         
-        //First experiment: RL, e-decreasing, reputation
-        Experiment exp03 = new SimpleExperiment(Long.valueOf(1),
+        //Third experiment: RL, e-decreasing, reputation
+        Experiment exp03 = new SimpleExperiment(Long.valueOf(3),
                 "simple-constants/reputation", strategy, 
                 ChooseProviderStrategy.RLWITHREPUTATION, generated);
         

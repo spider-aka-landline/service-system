@@ -14,7 +14,7 @@ import math.StdRandom;
 public class Generator {
 
     private long userCounter;
-    private long providerCounter;
+    private int providerCounter;
 
     public User createUser(Params p) {
         return new User(++userCounter, p);

@@ -9,7 +9,7 @@ public class TriggeredServiceProvider extends ServiceProvider {
     private Boolean isGood;
     static final Double QUALITY_MIN_VALUE = 0.01; //почему она здесь?
 
-    TriggeredServiceProvider(long i, Params pr, Boolean good) {
+    TriggeredServiceProvider(int i, Params pr, Boolean good) {
         super(i, pr); 
         isGood = good;
     }

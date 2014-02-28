@@ -118,7 +118,7 @@ public class IO {
 
     public static void printHystogramToFile(UniformHystogram evaluations,
             String filePath) throws FileNotFoundException {
-        printMapToFile(evaluations.getData(), filePath);
+        printMapToFile(evaluations.getSegmentedData(), filePath);
     }
 
     public static void printHystogramToFile(Hystogram evaluations,

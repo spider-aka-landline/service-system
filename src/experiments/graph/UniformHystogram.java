@@ -1,36 +1,24 @@
 package experiments.graph;
 
+import Jama.Matrix;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class UniformHystogram<K extends Number> {
+public class UniformHystogram<K extends Number> extends Hystogram<K> {
 
     private static final int NUMBER_OF_SEGMENTS = 10;
 
     private final Map<Double, Integer> segmentedItems = new TreeMap<>();
-    Map<K, Integer> inputMap = new TreeMap<>();
 
-    private Double maxKey;
-    private Double minKey;
-
-    private Double delimiter;
+    private final Double delimiter;
 
     private Double currentPointer;
     private Double currentMax;
     private Integer currentFrequency;
 
     public UniformHystogram(Collection<K> inputCollection) {
-
-        inputCollection.stream().forEach((o) -> {
-            Integer freq = inputMap.get(o);
-            inputMap.put(o, (freq == null) ? 1 : freq + 1);
-        });
-
-        Object[] temp = inputMap.keySet().toArray();
-        minKey = ((K) temp[0]).doubleValue();
-        maxKey = ((K) temp[temp.length - 1]).doubleValue();
-
+        super(inputCollection);
         //find the length of intervals
         delimiter = (maxKey - minKey) / NUMBER_OF_SEGMENTS;
 
@@ -40,16 +28,8 @@ public class UniformHystogram<K extends Number> {
         currentFrequency = 0;
     }
 
-    public UniformHystogram(Collection<K> inputCollection,
-            double min, double max) {
-
-        inputCollection.stream().forEach((o) -> {
-            Integer freq = inputMap.get(o);
-            inputMap.put(o, (freq == null) ? 1 : freq + 1);
-        });
-
-        minKey = min;
-        maxKey = max;
+    public UniformHystogram(Matrix inputMatrix) {
+        super(inputMatrix);
 
         //find the length of intervals
         delimiter = (maxKey - minKey) / NUMBER_OF_SEGMENTS;
@@ -57,9 +37,7 @@ public class UniformHystogram<K extends Number> {
         //init the current pointer and max
         currentPointer = minKey + delimiter / 2;
         currentMax = minKey + delimiter;
-    }
-
-    private void parse() {
+        currentFrequency = 0;
 
         //iteration over map
         inputMap.entrySet().stream().forEach((b) -> {
@@ -74,16 +52,10 @@ public class UniformHystogram<K extends Number> {
             currentFrequency += b.getValue();
         });
         segmentedItems.put(currentPointer, currentFrequency);
-
     }
 
-    public Map<Double, Integer> getData() {
-        if (inputMap == null || inputMap.isEmpty()) {
-            return null;
-        }
-        if (segmentedItems.isEmpty()) {
-            parse();
-        }
+    
+    public Map<Double, Integer> getSegmentedData() {
         return segmentedItems;
     }
 

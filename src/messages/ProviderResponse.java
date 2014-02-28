@@ -5,11 +5,11 @@ import entities.Task;
 
 public class ProviderResponse {
 
-    long serviceProviderId;
+    int serviceProviderId;
     private Task servedTask;
     private Params serviceParameters;
 
-    public ProviderResponse(long id, Task t, Params par) {
+    public ProviderResponse(int id, Task t, Params par) {
         serviceProviderId = id;
         servedTask = t;
         serviceParameters = par;
@@ -19,7 +19,7 @@ public class ProviderResponse {
         return serviceParameters;
     }
 
-    public long getServiceProviderId() {
+    public int getServiceProviderId() {
         return serviceProviderId;
     }
 
