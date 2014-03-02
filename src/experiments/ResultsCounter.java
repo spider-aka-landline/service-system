@@ -5,33 +5,42 @@ import messages.ProviderResponse;
 
 public class ResultsCounter {
 
-    private final Integer x, y;
     private final Matrix results;
     private final Matrix providerCount;
 
-    private final Matrix ones;
-    private final Matrix zeros;
-    
-
     public ResultsCounter(Integer iterations, Integer tasks, Integer providers) {
-        x = iterations;
-        y = tasks;
-        results = new Matrix(x, y);
-        ones = new Matrix(1, results.getRowDimension(), 1.0);
-        zeros = new Matrix(results.getColumnDimension(), 1);
-        providerCount = new Matrix(x, providers);
+        results = new Matrix(iterations, tasks);
+        providerCount = new Matrix(iterations, providers);
     }
 
-    public Matrix getAverages() {
-        Matrix temp = new Matrix(1, y);
+    public Matrix getEstimateAverages() {
+        return getAverages(results);
+    }
 
-        for (int i = 0; i < y; i++) {
-            zeros.set(i, 0, 1.0);
-            temp.set(0, i, (ones.times(results.times(zeros))).det() / x);
+    public Matrix getProvidersChooseFrequencyAverages() {
+        return getAverages(providerCount);
+    }
 
-            zeros.set(i, 0, 0.0);
+    private Matrix getAverages(Matrix input) {
+        try {
+            Integer x = input.getRowDimension();
+            Integer y = input.getColumnDimension();
+            Matrix ones = new Matrix(1, x, 1.0);
+            Matrix zeros = new Matrix(y, 1);
+
+            Matrix temp = new Matrix(1, y);
+
+            for (int i = 0; i < y; i++) {
+                zeros.set(i, 0, 1.0);
+                temp.set(0, i, (ones.times(input.times(zeros))).det() / x);
+
+                zeros.set(i, 0, 0.0);
+            }
+            return temp;
+        } catch (ArithmeticException e) {
+            System.err.println("while getAverage");
+            return new Matrix(1,1);
         }
-        return temp;
     }
 
     void addData(Integer iterationCycle, Integer taskNumber,
@@ -41,10 +50,10 @@ public class ResultsCounter {
     }
 
     private void updateProviderCount(Integer iterationCycle, int serviceProviderId) {
-        try{
-        double temp = providerCount.get(iterationCycle, serviceProviderId - 1);
-        providerCount.set(iterationCycle, serviceProviderId - 1, ++temp);
-        } catch (ArrayIndexOutOfBoundsException e){
+        try {
+            double temp = providerCount.get(iterationCycle, serviceProviderId - 1);
+            providerCount.set(iterationCycle, serviceProviderId - 1, ++temp);
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.err.println("at iterationCycle = ");
             System.err.print(iterationCycle);
             System.err.println("at serviceProvider = ");

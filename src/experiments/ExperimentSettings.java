@@ -8,7 +8,8 @@ public class ExperimentSettings {
 
     private final StringBuilder statisticsFilename = new StringBuilder();
     private final StringBuilder resultsFilename = new StringBuilder();
-
+    private final StringBuilder frequenciesFilename = new StringBuilder();
+    
     private final StringBuilder hystogramFilename
             = new StringBuilder();
     private final StringBuilder uniformHystogramFilename
@@ -20,6 +21,7 @@ public class ExperimentSettings {
         tasksFilename.append(name).append("/tasks.txt");
         statisticsFilename.append(name).append("/statistics.txt");
         resultsFilename.append(name).append("/results.txt");
+        frequenciesFilename.append(name).append("/frequencies.txt");
         hystogramFilename.append(name).append("/hystogram.txt");
         uniformHystogramFilename.append(name).append("/hystogram2.txt");
     }
@@ -50,5 +52,9 @@ public class ExperimentSettings {
 
     public String getUniformHystogramFilename() {
         return uniformHystogramFilename.toString();
+    }
+
+    String getFrequencyFilename() {
+        return frequenciesFilename.toString();
     }
 }

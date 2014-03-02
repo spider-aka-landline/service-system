@@ -64,15 +64,19 @@ public abstract class Experiment implements Comparable<Experiment> {
             throws FileNotFoundException {
 
         printAllStatistics();
-
+      
         //Average profit
-        Matrix total = calculator.getAverages().transpose();
+        Matrix total = calculator.getEstimateAverages().transpose();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
 
         //Hystogram of profits - should be builded on average results
         //  all user estimates - in average vector 'total'
         //  make cute hystogram object  
         makeHystograms(total);
+        
+        //Providers choosing frequency
+        Matrix frequencies = calculator.getProvidersChooseFrequencyAverages().transpose();
+        IO.printMatrixToFile(frequencies, settings.getFrequencyFilename(), 1, 3);
     }
 
     //All statistics

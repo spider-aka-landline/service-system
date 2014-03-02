@@ -13,8 +13,8 @@ import reputationsystem.ChooseProviderStrategy;
 public class Main {
 
     public static final Integer ITERATIONS_NUMBER = 100;
-    public static final Integer USERS_NUMBER = 4;
-    public static final Integer PROVIDERS_NUMBER = 8;
+    public static final Integer USERS_NUMBER = 5;
+    public static final Integer PROVIDERS_NUMBER = 10;
     public static final Integer TASKS_NUMBER = 5000;
 
     static Boolean generateAll = true; //didn't work for false now
