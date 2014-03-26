@@ -11,10 +11,11 @@ import experiments.graph.Hystogram;
 
 import exploration.ExplorationStrategy;
 import experiments.graph.UniformHystogram;
+import java.io.IOException;
 import messages.ProviderResponse;
 import messages.StatisticEntry;
 import servicesystem.ServiceSystem;
-import util.IO;
+import myutil.IO;
 
 public abstract class Experiment implements Comparable<Experiment> {
 
@@ -61,10 +62,10 @@ public abstract class Experiment implements Comparable<Experiment> {
     }
 
     public void printTotalResult()
-            throws FileNotFoundException {
+            throws FileNotFoundException, IOException {
 
         printAllStatistics();
-      
+
         //Average profit
         Matrix total = calculator.getEstimateAverages().transpose();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
@@ -73,10 +74,14 @@ public abstract class Experiment implements Comparable<Experiment> {
         //  all user estimates - in average vector 'total'
         //  make cute hystogram object  
         makeHystograms(total);
-        
+
         //Providers choosing frequency
         Matrix frequencies = calculator.getProvidersChooseFrequencyAverages().transpose();
         IO.printMatrixToFile(frequencies, settings.getFrequencyFilename(), 1, 3);
+
+        //plotting via gnuplot script
+        Process p = new ProcessBuilder("gnuplot",
+                IO.getGnuplotScriptFilepath()).start();
     }
 
     //All statistics
@@ -127,6 +132,8 @@ public abstract class Experiment implements Comparable<Experiment> {
         try {
             printTotalResult();
         } catch (FileNotFoundException ex) {
+            Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

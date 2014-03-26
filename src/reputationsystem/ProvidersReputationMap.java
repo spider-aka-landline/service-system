@@ -3,7 +3,7 @@ package reputationsystem;
 import entities.providers.ServiceProvider;
 import java.util.HashMap;
 import java.util.Map;
-import util.UtilFunctions;
+import myutil.UtilFunctions;
 
 public class ProvidersReputationMap {
 

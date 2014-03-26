@@ -10,8 +10,8 @@ import entities.providers.ServiceProvider;
 import entities.users.User;
 import java.io.FileNotFoundException;
 import java.util.Collection;
-import util.Generator;
-import util.IO;
+import myutil.Generator;
+import myutil.IO;
 
 public class ExperimentData {
 
@@ -41,6 +41,28 @@ public class ExperimentData {
         Generator gen = new Generator();
         users = gen.generateUsers(usersNumber);
         providers = gen.generateProviders(providersNumber);
+        tasks = gen.generateTasks(users, tasksNumber);
+
+    }
+
+    /**
+     *
+     * @param usersCollection collection of given users
+     * @param providersCollection collection of given providers
+     * @param tasksc Tasks number
+     * @param iterationsc total iterations number
+     */
+    public ExperimentData(Collection<User> usersCollection,
+            Collection<ServiceProvider> providersCollection,
+            Integer tasksc, Integer iterationsc) {
+        iterationNumber = iterationsc;
+        users = usersCollection;
+        providers = providersCollection;
+        
+        usersNumber = users.size();
+        providersNumber = providers.size();
+        tasksNumber = tasksc;
+        Generator gen = new Generator();
         tasks = gen.generateTasks(users, tasksNumber);
 
     }
