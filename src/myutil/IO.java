@@ -46,16 +46,13 @@ public class IO {
             throw new NullPointerException("Empty filename");
         }
         String baseDir = System.getProperty("user.dir");
-        
-       /* if (baseDir.matches("([\\S]+\\/)")) {
-            baseDir.replaceAll("\\/", "\\");
-        }*/
 
+        /* if (baseDir.matches("([\\S]+\\/)")) {
+         baseDir.replaceAll("\\/", "\\");
+         }*/
         StringBuilder filepath = new StringBuilder(baseDir);
         filepath.append(RESULTS_FILEPATH).append(appendix);
 
-        File myPath = new File(filepath.toString());
-        myPath.mkdirs();
         System.out.println(filepath.toString());
 
         filepath.append(filename);
@@ -68,11 +65,23 @@ public class IO {
         return sa[sa.length - 1];
     }
 
-    public static File createFile(String filepath) {
+    //гланды автогеном, но оно ж должно заработать :(
+    private static String getDirectoryFromPath(String filepath) {
+        String[] sa = filepath.split("/");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < sa.length - 1; i++) {
+            sb.append(sa);
+        }
+        return sb.toString();
+    }
 
-        File f = new File(filepath, getFilenameFromPath(filepath));
+    public static File createFile(String filepath) {
+        System.out.println(filepath);
+        File dir = new File(getDirectoryFromPath(filepath));
+        dir.mkdirs();
+        File f = new File(filepath);
         try {
-            if (f.createNewFile()) {
+            if (f.exists() || f.createNewFile()) {
                 return f;
             } else {
                 return null;
@@ -115,8 +124,8 @@ public class IO {
             String filename, int width, int d) throws FileNotFoundException {
 
         String filePath = getFilePath(filename);
-        File f = new File(filePath, filename);
-        try (PrintWriter pw = new PrintWriter(f);) {
+        //File f = new File(filePath, filename);
+        try (PrintWriter pw = new PrintWriter(createFile(filePath));) {
             matrx.print(pw, 1, 3);
         }
     }
