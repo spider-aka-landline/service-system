@@ -34,11 +34,9 @@ public class SystemsBruteForcer {
     private final Integer tasksNumber;
 
     private SortedSet<DipoleData> numbers = new TreeSet<>();
-    private SortedMap<Integer, Collection<User>> usersBase;
-    private SortedMap<Integer, Collection<ServiceProvider>> providersBase;
+    private final SortedMap<Integer, Collection<User>> usersBase;
+    private final SortedMap<Integer, Collection<ServiceProvider>> providersBase;
     ExperimentData generatedDataForExperiments;
-
-    Generator gen = new Generator();
 
     // with generation all data only
     /**
@@ -65,7 +63,7 @@ public class SystemsBruteForcer {
         numbers = new TreeSet<>();
         usersBase = new TreeMap<>();
         providersBase = new TreeMap<>();
-
+        
         //get init data from the Gap Between the Worlds
         if (generateInitData) {
             for (Integer u = minUsersNumber; u <= maxUsersNumber;
@@ -76,11 +74,11 @@ public class SystemsBruteForcer {
 
                     if (u == 1) {
                         // for all providers
-                        providersBase.put(p, gen.generateProviders(p));
+                        providersBase.put(p, (new Generator()).generateProviders(p));
                     }
                 }
                 // for all users
-                usersBase.put(u, gen.generateUsers(u));
+                usersBase.put(u, (new Generator()).generateUsers(u));
             }
         } else {
             throw new UnsupportedOperationException("Reading: not supported yet.");

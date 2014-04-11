@@ -13,11 +13,16 @@ import math.StdRandom;
 
 public class Generator {
 
-    private long userCounter;
-    private int providerCounter;
+    private long userCounter = 0;
+    private int providerCounter = 0;
+
+    public Generator() {
+        userCounter = 0;
+        providerCounter = 0;
+    }
 
     public User createUser(Params p) {
-        return new User(++userCounter, p);
+        return new User(userCounter++, p);
     }
 
     public User createUser() {
@@ -25,7 +30,9 @@ public class Generator {
     }
 
     public ServiceProvider createProvider(Params p) {
-        return new ServiceProvider(++providerCounter, p);
+        ServiceProvider sp = new ServiceProvider(providerCounter, p);
+        providerCounter++;
+        return sp;
     }
 
     public ServiceProvider createProvider() {
@@ -37,7 +44,7 @@ public class Generator {
     }
 
     public Collection<User> generateUsers(Integer num) {
-        Collection<User> tempU = new HashSet();
+        Collection<User> tempU = new HashSet<>();
         for (int i = 0; i < num; i++) {
             tempU.add(createUser());
         }
@@ -45,7 +52,7 @@ public class Generator {
     }
 
     public Collection<ServiceProvider> generateProviders(Integer num) {
-        Collection<ServiceProvider> tempP = new HashSet();
+        Collection<ServiceProvider> tempP = new HashSet<>();
         for (int i = 0; i < num; i++) {
             tempP.add(createProvider());
         }
@@ -53,7 +60,7 @@ public class Generator {
     }
 
     public Collection<Task> generateTasks(Collection<User> users, Integer num) {
-        Collection<Task> tempT = new ArrayList();
+        Collection<Task> tempT = new ArrayList<>();
         Poisson numbers = new Poisson(42.0);
         for (int i = 0; i < num; i++) {
             tempT.add(new Task(UtilFunctions.chooseRandomElement(users),

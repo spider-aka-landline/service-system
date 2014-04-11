@@ -63,6 +63,7 @@ public class ServiceSystem {
 
         //пересчитать ф-ю ожидаемой ценности
         //внести изменения в репутацию
+        //
         reputationModule.update(worker, ans.getEstimate(), ans.getDifferenceSign());
 
     }

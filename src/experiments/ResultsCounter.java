@@ -1,8 +1,6 @@
 package experiments;
 
 import Jama.Matrix;
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import messages.ProviderResponse;
@@ -56,14 +54,19 @@ public class ResultsCounter {
     private void updateProviderCount(Integer iterationCycle, int serviceProviderId) {
         
         try {
-            double temp = providerCount.get(iterationCycle, serviceProviderId - 1);
-            providerCount.set(iterationCycle, serviceProviderId - 1, ++temp);
+            double temp = providerCount.get(iterationCycle, serviceProviderId);
+            providerCount.set(iterationCycle, serviceProviderId, ++temp);
         } catch (ArrayIndexOutOfBoundsException ex) {
             StringBuilder sb = new StringBuilder();
             sb.append("at iterationCycle = ");
             sb.append(iterationCycle);
             sb.append(", serviceProvider = "); 
             sb.append(serviceProviderId);
+            sb.append(", providerCount ["); 
+            sb.append(providerCount.getRowDimension());
+            sb.append("x"); 
+            sb.append(providerCount.getColumnDimension());
+            sb.append("]"); 
             
             Logger.getLogger(ResultsCounter.class.getName()).log(Level.SEVERE, 
                     sb.toString(), ex);

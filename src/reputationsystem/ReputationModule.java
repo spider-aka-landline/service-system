@@ -1,16 +1,18 @@
 package reputationsystem;
 
+import comparators.ExpectationComparator;
+import comparators.ReputationComparator;
+import entities.Task;
+import entities.providers.ServiceProvider;
+import exploration.ExplorationStrategy;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
-
 import math.StdRandom;
 import myutil.UtilFunctions;
-
-import entities.providers.ServiceProvider;
-import entities.Task;
-import exploration.ExplorationStrategy;
+import validator.DifferenceValidator;
+import validator.SimpleValidator;
 
 public class ReputationModule {
 
@@ -22,22 +24,31 @@ public class ReputationModule {
     public static final double NON_COOPERATION_FACTOR = -0.2;
 
     public final static double GAMMA_TD_INIT = 0.5;
+    public final static double VALIDATOR_INIT = 0.05;
 
     private final ProvidersReputationMap providersReputationMap
             = new ProvidersReputationMap();
-    private ExplorationStrategy exploration;
-    private double gammaTd;
+    Collection<DifferenceValidator> validators = new ArrayList<>();
+    Collection<Integer> validationResults = new ArrayList<>();
 
-    public ReputationModule(Collection<ServiceProvider> pr,
-            ExplorationStrategy str, Double g) {
-        exploration = str;
-        gammaTd = g;
-        pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
-    }
+    private final ExplorationStrategy exploration;
+    private final double gammaTd;
 
     public ReputationModule(Collection<ServiceProvider> pr,
             ExplorationStrategy str) {
-        this(pr, str, GAMMA_TD_INIT);
+        pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
+        exploration = str;
+        gammaTd = GAMMA_TD_INIT;
+        validators.add(new SimpleValidator(VALIDATOR_INIT));
+    }
+
+    public ReputationModule(Collection<ServiceProvider> pr,
+            ExplorationStrategy str, Double g,
+            Collection<DifferenceValidator> c) {
+        pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
+        exploration = str;
+        gammaTd = g;
+        c.forEach(v -> validators.add(v));
     }
 
     /**
@@ -67,14 +78,18 @@ public class ReputationModule {
                 throw new RuntimeException("Experiment strategy type doesn't exist");
         }
     }
-    /* Выбор провайдера случайным образом */
 
+    /**
+     * Выбор провайдера случайным образом
+     */
     private ServiceProvider chooseProviderRandom(Task t) {
         //do smth
         return providersReputationMap.chooseRandomElement();
     }
 
-    /* Выбор множества провайдеров, по которому ищем */
+    /**
+     * Выбор множества провайдеров, по которому ищем
+     */
     private Map<ServiceProvider, DataEntity>
             selectProvidersSearchSet(ChooseProviderStrategy str) {
         switch (str) {
@@ -141,8 +156,15 @@ public class ReputationModule {
      */
     private Double updateExpectation(Double old, Double estimate) {
         Double delta = estimate - old;
+        checkDelta(delta);
         Double temp = old + this.gammaTd * delta;
         return temp;
+    }
+
+    private void checkDelta(Double delta) {
+        for (DifferenceValidator d: validators){
+          //  if (d.isDifferenceInGap(delta)) 
+        }
     }
 
     /* Правило пересчета репутации провайдера */
