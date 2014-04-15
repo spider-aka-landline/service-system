@@ -1,6 +1,7 @@
 package reputationsystem;
 
 import entities.providers.ServiceProvider;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import myutil.UtilFunctions;
@@ -13,26 +14,28 @@ public class ProvidersReputationMap {
     final Map<ServiceProvider, DataEntity> serviceProviders = new HashMap<>();
 
     /* вернуть множество авторитетных провайдеров (репутация выше минимального порога для авторитетных) */
-    Map getReputableProviders(double minlevel) {
-        Map temp = UtilFunctions.filterMapByPredicate(serviceProviders,
-                (Map.Entry<ServiceProvider, DataEntity> e)
-                -> e.getValue().getReputation() > minlevel);
-        if (temp.isEmpty()) return serviceProviders;
+    public Map<ServiceProvider, DataEntity> getReputableProviders(double minlevel) {
+        Map<ServiceProvider, DataEntity> temp
+                = UtilFunctions.filterMapByPredicate(serviceProviders,
+                        e -> e.getValue().getReputation() > minlevel);
+        if (temp.isEmpty()) {
+            return serviceProviders;
+        }
         return temp;
     }
 
     /* внешний вызов добавления нового провайдера */
     public void addServiceProvider(ServiceProvider sp) {
-        if (!serviceProviders.containsKey(sp)) {
-            serviceProviders.put(sp,
-                    new DataEntity(REPUTATION_INIT, EXPECTATION_INIT));
-        }
+        serviceProviders.putIfAbsent(sp,
+                new DataEntity(REPUTATION_INIT, EXPECTATION_INIT));
     }
 
-    public void removeServiceProvider(ServiceProvider sp) {
-        while (serviceProviders.containsKey(sp)) {
-            serviceProviders.remove(sp);
-        }
+    public void addServiceProvider(Collection<ServiceProvider> providers) {           
+        providers.stream().forEach(this::addServiceProvider);       
+    }
+
+    public DataEntity removeServiceProvider(ServiceProvider sp) {
+        return serviceProviders.remove(sp);
     }
 
     /* Обновление хранимых значений репутации и ожидаемых величин */

@@ -36,7 +36,8 @@ public class ReputationModule {
 
     public ReputationModule(Collection<ServiceProvider> pr,
             ExplorationStrategy str) {
-        pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
+    //    pr.stream().forEach(providersReputationMap::addServiceProvider);
+        providersReputationMap.addServiceProvider(pr);
         exploration = str;
         gammaTd = GAMMA_TD_INIT;
         validators.add(new SimpleValidator(VALIDATOR_INIT));
@@ -45,10 +46,12 @@ public class ReputationModule {
     public ReputationModule(Collection<ServiceProvider> pr,
             ExplorationStrategy str, Double g,
             Collection<DifferenceValidator> c) {
-        pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
+        //pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
+        providersReputationMap.addServiceProvider(pr);
         exploration = str;
         gammaTd = g;
-        c.forEach(v -> validators.add(v));
+        //c.forEach(v -> validators.add(v));
+        validators.addAll(c);
     }
 
     /**
@@ -119,8 +122,7 @@ public class ReputationModule {
                         search, e
                         -> e.getValue().getExpectation() == max);
 
-        return (ServiceProvider) chooseProviderFromReputable(ReputableProvidersSet);
-
+        return chooseProviderFromReputable(ReputableProvidersSet);
     }
 
     private ServiceProvider
