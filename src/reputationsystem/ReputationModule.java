@@ -1,23 +1,19 @@
 package reputationsystem;
 
-import comparators.ExpectationComparator;
-import comparators.ReputationComparator;
 import entities.Task;
 import entities.providers.ServiceProvider;
 import exploration.ExplorationStrategy;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import math.StdRandom;
-import myutil.UtilFunctions;
+import strategies.RLStrategy;
+import strategies.RLWithReputationStrategy;
+import strategies.RandomStrategy;
+import strategies.Strategy;
 import validator.DifferenceValidator;
 import validator.SimpleValidator;
 
 public class ReputationModule {
 
-    //FIXME: indicates strategy. should be tramsformed into smth else.
-    public static final Boolean CHOOSE_RANDOMLY_FROM_REPUTABLE = true;
     public static final double REPUTATION_MIN_LEVEL = 0;
 
     public static final double COOPERATION_FACTOR = 0.4;
@@ -28,30 +24,24 @@ public class ReputationModule {
 
     private final ProvidersReputationMap providersReputationMap
             = new ProvidersReputationMap();
-    Collection<DifferenceValidator> validators = new ArrayList<>();
-    Collection<Integer> validationResults = new ArrayList<>();
 
     private final ExplorationStrategy exploration;
     private final double gammaTd;
 
     public ReputationModule(Collection<ServiceProvider> pr,
             ExplorationStrategy str) {
-    //    pr.stream().forEach(providersReputationMap::addServiceProvider);
+        //    pr.stream().forEach(providersReputationMap::addServiceProvider);
         providersReputationMap.addServiceProvider(pr);
         exploration = str;
         gammaTd = GAMMA_TD_INIT;
-        validators.add(new SimpleValidator(VALIDATOR_INIT));
     }
 
     public ReputationModule(Collection<ServiceProvider> pr,
-            ExplorationStrategy str, Double g,
-            Collection<DifferenceValidator> c) {
+            ExplorationStrategy str, Double g) {
         //pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
         providersReputationMap.addServiceProvider(pr);
         exploration = str;
         gammaTd = g;
-        //c.forEach(v -> validators.add(v));
-        validators.addAll(c);
     }
 
     /**
@@ -61,94 +51,17 @@ public class ReputationModule {
      * @param str strategy for choosing provider
      * @return ServiceProvider, chosen for the task
      */
-    public ServiceProvider chooseProvider(Task t, ChooseProviderStrategy str) {
+    public ServiceProvider chooseProvider(Task t, Strategy str) {
         if (providersReputationMap.isEmpty()) {
             throw new RuntimeException("No service providers were found. Can't serve request.");
         }
+        
+        return str.chooseProviderForTask(t, exploration, providersReputationMap);
 
-        switch (str) {
-            case RL:
-            case RLWITHREPUTATION:
-                if (StdRandom.bernoulli(exploration.getEpsilon())) {
-                    exploration.updateEpsilon();
-                    return chooseProviderRandom(t);
-                } else {
-                    return chooseProviderLogic(t, str);
-                }
-            case RANDOM:
-                return chooseProviderRandom(t);
-            default:
-                throw new RuntimeException("Experiment strategy type doesn't exist");
-        }
     }
 
-    /**
-     * Выбор провайдера случайным образом
-     */
-    private ServiceProvider chooseProviderRandom(Task t) {
-        //do smth
-        return providersReputationMap.chooseRandomElement();
-    }
-
-    /**
-     * Выбор множества провайдеров, по которому ищем
-     */
-    private Map<ServiceProvider, DataEntity>
-            selectProvidersSearchSet(ChooseProviderStrategy str) {
-        switch (str) {
-            case RL:
-                return providersReputationMap.serviceProviders;
-            case RLWITHREPUTATION:
-                return providersReputationMap.getReputableProviders(REPUTATION_MIN_LEVEL);
-            case RANDOM:
-            default:
-                throw new RuntimeException("Wrong experiment strategy type");
-        }
-    }
-
-    //TODO: rename method
-        /* Вернуть провайдера c макс. ожиданием из авторитетных */
-    private ServiceProvider chooseProviderLogic(Task t,
-            ChooseProviderStrategy str) {
-
-        Map<ServiceProvider, DataEntity> search = selectProvidersSearchSet(str);
-
-        //найти максимальное значение ожидаемой ценности в множестве поиска
-        Double max
-                = UtilFunctions.getMaxValue(search, new ExpectationComparator()).getExpectation();
-        //выбрать среди множества поиска провайдеров с максимальной ожидаемой ценностью
-        Map<ServiceProvider, DataEntity> ReputableProvidersSet
-                = UtilFunctions.filterMapByPredicate(
-                        search, e
-                        -> e.getValue().getExpectation() == max);
-
-        return chooseProviderFromReputable(ReputableProvidersSet);
-    }
-
-    private ServiceProvider
-            chooseProviderFromReputable(Map<ServiceProvider, DataEntity> reputable) {
-        if (CHOOSE_RANDOMLY_FROM_REPUTABLE) {
-            //TODO: почему похожие методы разнесены по классам?
-            return UtilFunctions.chooseRandomElement(reputable);
-        } else {
-            return chooseProviderFromReputableWithMaxReputation(reputable);
-        }
-    }
-
-    private ServiceProvider
-            chooseProviderFromReputableWithMaxReputation(Map<ServiceProvider, DataEntity> reputable) {
-
-        Double max = UtilFunctions.getMaxValue(reputable,
-                new ReputationComparator()).getReputation();
-
-        //и среди найденных еще и выбрать того, у кого максимальная репутация
-        Set<ServiceProvider> choice
-                = UtilFunctions.filterMapByPredicate(
-                        reputable, e
-                        -> e.getValue().getReputation().equals(max)).keySet();
-
-        //Если не один - вернуть первого
-        return UtilFunctions.chooseRandomElement(choice);
+    public ProvidersReputationMap getprovidersReputationMap() {
+        return providersReputationMap;
     }
 
     /**
@@ -158,15 +71,8 @@ public class ReputationModule {
      */
     private Double updateExpectation(Double old, Double estimate) {
         Double delta = estimate - old;
-        checkDelta(delta);
         Double temp = old + this.gammaTd * delta;
         return temp;
-    }
-
-    private void checkDelta(Double delta) {
-        for (DifferenceValidator d: validators){
-          //  if (d.isDifferenceInGap(delta)) 
-        }
     }
 
     /* Правило пересчета репутации провайдера */
@@ -183,12 +89,15 @@ public class ReputationModule {
     }
 
     /* Обновление хранимых значений репутации и ожидаемых величин */
-    public void update(ServiceProvider sp, Double estimate, Boolean isDifferencePositive) {
+    public Double update(ServiceProvider sp, Double estimate, Boolean isDifferencePositive) {
         DataEntity entity = providersReputationMap.getServiceDataEntity(sp);
         Double reputation = updateReputation(entity.getReputation(), isDifferencePositive);
-        Double expectation = updateExpectation(entity.getExpectation(), estimate);
+        Double oldExpectation = entity.getExpectation();
+        Double newExpectation = updateExpectation(oldExpectation, estimate);
 
-        providersReputationMap.update(sp, reputation, expectation);
+        providersReputationMap.update(sp, reputation, newExpectation);
+        //FIXME: wrong data, it isn't delta
+        return newExpectation - oldExpectation;
     }
 
     public void addServiceProvider(ServiceProvider sp) {
