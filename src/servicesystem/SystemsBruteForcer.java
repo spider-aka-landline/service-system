@@ -18,7 +18,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import myutil.Generator;
 import myutil.IO;
-import reputationsystem.ChooseProviderStrategy;
+import strategies.RLStrategy;
+import strategies.RLWithReputationStrategy;
+import strategies.RandomStrategy;
 
 public class SystemsBruteForcer {
 
@@ -133,21 +135,21 @@ public class SystemsBruteForcer {
         //First experiment: random
         Experiment exp01 = new SimpleExperiment(Long.valueOf(1),
                 "simple-constants/random", strategy,
-                ChooseProviderStrategy.RANDOM, expData);
+                new RandomStrategy(), expData);
 
         exps.add(exp01);
 
         //Second experiment: RL, e-decreasing
         Experiment exp02 = new SimpleExperiment(Long.valueOf(2),
                 "simple-constants/rl", strategy,
-                ChooseProviderStrategy.RL, expData);
+                new RLStrategy(), expData);
 
         exps.add(exp02);
 
         //Third experiment: RL, e-decreasing, reputation
         Experiment exp03 = new SimpleExperiment(Long.valueOf(3),
                 "simple-constants/reputation", strategy,
-                ChooseProviderStrategy.RLWITHREPUTATION, expData);
+                new RLWithReputationStrategy(), expData);
 
         exps.add(exp03);
 
