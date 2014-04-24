@@ -19,4 +19,8 @@ public class SimpleExperiment extends Experiment {
         return new ServiceSystem(data, explorationStrategy, experimentStrategy);
     }
 
+    @Override
+     protected Strategy getExperimentStrategy(){
+         return experimentStrategy;
+     }
 }

@@ -93,11 +93,10 @@ public class ReputationModule {
         DataEntity entity = providersReputationMap.getServiceDataEntity(sp);
         Double reputation = updateReputation(entity.getReputation(), isDifferencePositive);
         Double oldExpectation = entity.getExpectation();
-        Double newExpectation = updateExpectation(oldExpectation, estimate);
+        Double expectation = updateExpectation(oldExpectation, estimate);
 
-        providersReputationMap.update(sp, reputation, newExpectation);
-        //FIXME: wrong data, it isn't delta
-        return newExpectation - oldExpectation;
+        providersReputationMap.update(sp, reputation, expectation);
+        return estimate - oldExpectation;
     }
 
     public void addServiceProvider(ServiceProvider sp) {

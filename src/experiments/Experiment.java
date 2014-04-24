@@ -1,21 +1,21 @@
 package experiments;
 
+import Jama.Matrix;
+import experiments.graph.Hystogram;
+import experiments.graph.UniformHystogram;
+import exploration.ExplorationStrategy;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import Jama.Matrix;
-import experiments.graph.Hystogram;
-
-import exploration.ExplorationStrategy;
-import experiments.graph.UniformHystogram;
-import java.io.IOException;
 import messages.ProviderResponse;
 import messages.StatisticEntry;
-import servicesystem.ServiceSystem;
 import myutil.IO;
+import servicesystem.ServiceSystem;
+import strategies.Strategy;
 
 public abstract class Experiment implements Comparable<Experiment> {
 
@@ -31,6 +31,7 @@ public abstract class Experiment implements Comparable<Experiment> {
     protected final ExplorationStrategy explorationStrategy;
 
     protected final List<StatisticEntry> statistics = new LinkedList<>();
+    private Long relaxTime;
 
     /**
      *
@@ -61,8 +62,28 @@ public abstract class Experiment implements Comparable<Experiment> {
         taskNumber = 0;
     }
 
+    private void printRelaxTime() {
+        StringBuilder filepath = new StringBuilder();
+        filepath.append(IO.getFilePath(settings.getTimeFilename(), false));
+
+        //Строка для записи в файл
+        StringBuilder temp = new StringBuilder();
+        temp.append(data.getUsersNumber()).append(" ");
+        temp.append(data.getProvidersNumber()).append(" ");
+        temp.append(relaxTime);
+
+        //Изменить имя файла в зависимости от стратегии
+        filepath.append(getExperimentStrategy().getClass().getName());
+        filepath.append(".txt");
+
+        //Добавление строки в файл (один из, по количесту стратегий)        
+        IO.printAdd(temp, filepath.toString());
+    }
+
     public void printTotalResult()
             throws FileNotFoundException, IOException {
+
+        printRelaxTime();
 
         printAllStatistics();
 
@@ -76,7 +97,8 @@ public abstract class Experiment implements Comparable<Experiment> {
         makeHystograms(total);
 
         //Providers choosing frequency
-        Matrix frequencies = calculator.getProvidersChooseFrequencyAverages().transpose();
+        Matrix frequencies
+                = calculator.getProvidersChooseFrequencyAverages().transpose();
         IO.printMatrixToFile(frequencies, settings.getFrequencyFilename(), 1, 3);
 
         //plotting via gnuplot script
@@ -113,29 +135,16 @@ public abstract class Experiment implements Comparable<Experiment> {
     }
 
     public void run() {
-        //print input data
-        try {
-            logInputData();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        relaxTime = 0L;
         //create servicesystem instance
         ServiceSystem system;
         for (int i = 0; i < data.getIterationsNumber(); i++) {
             system = getServiceSystemInstance();
             system.run();
+            relaxTime += system.getvalidationResults();
             nextIteration();
         }
-
-        //print output data
-        try {
-            printTotalResult();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        relaxTime /= data.getIterationsNumber();
     }
 
     @Override
@@ -144,4 +153,7 @@ public abstract class Experiment implements Comparable<Experiment> {
     }
 
     protected abstract ServiceSystem getServiceSystemInstance();
+
+    protected abstract Strategy getExperimentStrategy();
+
 }

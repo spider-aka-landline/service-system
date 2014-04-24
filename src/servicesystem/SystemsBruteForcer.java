@@ -8,7 +8,6 @@ import experiments.ExperimentData;
 import experiments.SimpleExperiment;
 import exploration.EpsilonDecreasingStrategy;
 import exploration.ExplorationStrategy;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

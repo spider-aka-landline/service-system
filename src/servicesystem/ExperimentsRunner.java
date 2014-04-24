@@ -1,7 +1,6 @@
 package servicesystem;
 
 import experiments.Experiment;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.PriorityQueue;
@@ -12,11 +11,13 @@ import messages.ProviderResponse;
 
 public final class ExperimentsRunner {
 
-    private final Queue<Experiment> experiments = new PriorityQueue<>();
+    private final Queue<Experiment> experiments;
+    
     private static Experiment currentExperiment;
 
     public ExperimentsRunner(Collection<Experiment> all) {
-        all.forEach(b -> experiments.add(b));
+        experiments = new PriorityQueue<>();
+        experiments.addAll(all);
     }
 
     public static void logExperimentData(ProviderResponse pr, Double value) {
@@ -31,10 +32,12 @@ public final class ExperimentsRunner {
                 currentExperiment.logInputData();
                 currentExperiment.run();
                 currentExperiment.printTotalResult();
+      
             } catch (IOException ex) {
                 Logger.getLogger(ExperimentsRunner.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
 
     }
 

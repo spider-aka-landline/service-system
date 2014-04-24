@@ -1,25 +1,25 @@
 package myutil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import Jama.Matrix;
-
+import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
-import entities.Task;
 import experiments.ExperimentData;
 import experiments.ExperimentSettings;
 import experiments.graph.Hystogram;
 import experiments.graph.UniformHystogram;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +42,10 @@ public class IO {
     }
 
     public static String getFilePath(String filename) {
+        return getFilePath(filename, true);
+    }
+
+    public static String getFilePath(String filename, boolean addNumbers) {
         if (filename == null) {
             throw new NullPointerException("Empty filename");
         }
@@ -51,8 +55,10 @@ public class IO {
          baseDir.replaceAll("\\/", "\\");
          }*/
         StringBuilder filepath = new StringBuilder(baseDir);
-        filepath.append(RESULTS_FILEPATH).append(appendix);
-
+        filepath.append(RESULTS_FILEPATH);
+        if (addNumbers) {
+            filepath.append(appendix);
+        }
         filepath.append(filename);
         return filepath.toString();
     }
@@ -109,6 +115,21 @@ public class IO {
         }
         try (PrintWriter writer = new PrintWriter(createFile(filepath))) {
             smth.forEach(b -> writer.append(b.toString()).append("\n"));
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IO.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static <V> void printAdd(V smth, String filepath) {
+        createFile(filepath);
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(filepath, true)))) {
+            if (smth == null) {
+                writer.println("null");
+            } else {
+                writer.println(smth);
+            }
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(IO.class

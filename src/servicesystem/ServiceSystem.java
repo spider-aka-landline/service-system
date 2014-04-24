@@ -25,6 +25,7 @@ public class ServiceSystem {
 
     List<DifferenceValidator> validators = new ArrayList<>();
     List<Long> validationResults = new LinkedList<>();
+    Boolean checked = false;
 
     private final List<User> users = new ArrayList<>();
     private final Queue<Task> tasks = new PriorityQueue<>();
@@ -36,8 +37,8 @@ public class ServiceSystem {
     public ServiceSystem(ExperimentData data,
             ExplorationStrategy explorationStrategy, Strategy str,
             Collection<DifferenceValidator> c) {
-        data.getUsers().forEach(b -> users.add(b));
-        data.getTasks().forEach(b -> tasks.add(b));
+        users.addAll(data.getUsers());
+        tasks.addAll(data.getTasks());
         experimentStrategy = str;
         // epsilon-decreasing exploration strategy - with default parameters
         reputationModule = new ReputationModule(data.getProviders(),
@@ -47,13 +48,17 @@ public class ServiceSystem {
 
     public ServiceSystem(ExperimentData data,
             ExplorationStrategy explorationStrategy, Strategy str) {
-        data.getUsers().forEach(b -> users.add(b));
-        data.getTasks().forEach(b -> tasks.add(b));
+        users.addAll(data.getUsers());
+        tasks.addAll(data.getTasks());
         experimentStrategy = str;
         // epsilon-decreasing exploration strategy - with default parameters
         reputationModule = new ReputationModule(data.getProviders(),
                 explorationStrategy);
         validators.add(new SimpleValidator(VALIDATOR_INIT));
+    }
+
+    public Long getvalidationResults() {
+        return validationResults.get(0);
     }
 
     public void submitTask(Task t) {
@@ -96,9 +101,16 @@ public class ServiceSystem {
 
     private void checkDelta(Double delta) {
         for (DifferenceValidator d : validators) {
-            if (d.isDifferenceInGap(delta)) 
+            if (!checked && d.isDifferenceInGap(delta)) {
                 validationResults.add(servedTasksNumber);
+                checked = true;
+            }
+            if (checked && !d.isDifferenceInGap(delta)) {
+                validationResults.remove(validationResults.size() - 1);
+                checked = false;
+            }
         }
+
     }
 
     private ServiceProvider chooseProvider(Task task) {
