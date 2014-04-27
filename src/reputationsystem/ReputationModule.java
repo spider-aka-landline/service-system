@@ -20,7 +20,7 @@ public class ReputationModule {
     public static final double NON_COOPERATION_FACTOR = -0.2;
 
     public final static double GAMMA_TD_INIT = 0.5;
-    public final static double VALIDATOR_INIT = 0.05;
+    public final static double VALIDATOR_INIT = 0.2;
 
     private final ProvidersReputationMap providersReputationMap
             = new ProvidersReputationMap();
