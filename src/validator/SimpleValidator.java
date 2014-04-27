@@ -4,21 +4,18 @@ import comparators.MyNumberComparator;
 
 public class SimpleValidator implements DifferenceValidator {
 
-    Number epsilon;
+    double epsilon;
     boolean inGap;
 
     public SimpleValidator(Number n) {
-        epsilon = n;
+        epsilon = n.doubleValue();
         inGap = false;
     }
 
     @Override
     public Boolean isDifferenceInGap(Number delta) {
-        return (new MyNumberComparator()).compare(delta, epsilon) < 0;
-    }
-
-    public void checkDifferenceInGap(Number delta) {
-        inGap = (new MyNumberComparator()).compare(delta, epsilon) < 0;
+        //(new MyNumberComparator()).compare(delta, epsilon);
+        return Math.abs(delta.doubleValue()) < epsilon;
     }
 
 }
