@@ -74,6 +74,7 @@ public class ServiceSystem {
     }
 
     public void run() {
+        checked = false;
         while (!tasks.isEmpty()) {
             processCurrentRequest(tasks.poll());
             servedTasksNumber++;
@@ -104,9 +105,9 @@ public class ServiceSystem {
             if (!checked && d.isDifferenceInGap(delta)) {
                 validationResults.add(servedTasksNumber);
                 checked = true;
-            }
-            if (checked && !d.isDifferenceInGap(delta)) {
-                validationResults.remove(validationResults.size() - 1);
+            } 
+            else if (checked && !d.isDifferenceInGap(delta)) {
+                //validationResults.remove(validationResults.size() - 1);
                 checked = false;
             }
         }

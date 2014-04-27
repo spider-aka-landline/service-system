@@ -73,7 +73,7 @@ public class SystemsBruteForcer {
                         p += logIncrement(p)) {
                     numbers.add(new DipoleData(u, p));
 
-                    if (u == 1) {
+                    if (u.equals(minUsersNumber)) {
                         // for all providers
                         providersBase.put(p, (new Generator()).generateProviders(p));
                     }
@@ -163,7 +163,8 @@ public class SystemsBruteForcer {
     }
 
     private Collection<ServiceProvider> getProviders(Integer providersNumber) {
-        if (!usersBase.containsKey(providersNumber)) {
+        if (!providersBase.containsKey(providersNumber)) {
+            System.err.println(providersBase);
             throw new IllegalArgumentException();
         }
         return providersBase.get(providersNumber);
