@@ -29,7 +29,6 @@ public class IO {
     public static final String RESULTS_FILEPATH = "/results/";
     public static String appendix;
 
-    public static final String GNUPLOT_SCRIPT_FILENAME = "h.plot";
     public static final NumberFormat FORMAT_FOR_DOUBLE
             = new DecimalFormat("#.00");
 
@@ -37,8 +36,8 @@ public class IO {
         appendix = s;
     }
 
-    public static String getGnuplotScriptFilepath() {
-        return getFilePath(GNUPLOT_SCRIPT_FILENAME);
+    public static String getResultsFilePath(String filename) {
+        return getFilePath(RESULTS_FILEPATH+filename, true);
     }
 
     public static String getFilePath(String filename) {

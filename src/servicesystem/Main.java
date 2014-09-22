@@ -6,10 +6,21 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String... args) throws IOException {
+        int p = 30;
+        int u1 = 30000;
+        int u2 = 300000;
+
+    //Dipole (users,providers). min,max.
+        SystemsBruteForcer maks1 = new SystemsBruteForcer(true,
+                new DipoleData(u1, p), new DipoleData(u1, p), 1000, 1000);
+        maks1.run();
+        
         //Dipole (users,providers). min,max.
-        SystemsBruteForcer maks = new SystemsBruteForcer(true,
-                new DipoleData(5, 1), new DipoleData(10000, 10000), 100, 200);
-        maks.run();
+        SystemsBruteForcer maks2 = new SystemsBruteForcer(true,
+                new DipoleData(u2, p), new DipoleData(u2, p), 1000, 1000);
+        maks2.run();
+        
+        
     }
 
 }

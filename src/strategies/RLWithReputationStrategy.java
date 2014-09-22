@@ -8,10 +8,18 @@ import static reputationsystem.ReputationModule.REPUTATION_MIN_LEVEL;
 
 public class RLWithReputationStrategy extends RLStrategy {
 
-    @Override
-    public Map<ServiceProvider, DataEntity>
-            selectProvidersSearchSet(ProvidersReputationMap map) {
+    private Map<ServiceProvider, DataEntity>
+            selectReputableProvidersSearchSet(ProvidersReputationMap map) {
         return map.getReputableProviders(REPUTATION_MIN_LEVEL);
+    }
+
+    @Override
+    protected ServiceProvider
+            exploit(ProvidersReputationMap map) {
+        Map<ServiceProvider, DataEntity> reputableSearchSet
+                = selectReputableProvidersSearchSet(map);
+
+        return chooseProviderFromMapLogic(reputableSearchSet);
     }
 
 }

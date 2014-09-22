@@ -7,6 +7,7 @@ import exploration.ExplorationStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -102,8 +103,23 @@ public abstract class Experiment implements Comparable<Experiment> {
         IO.printMatrixToFile(frequencies, settings.getFrequencyFilename(), 1, 3);
 
         //plotting via gnuplot script
+        runAllGnuplotScripts();
+    }
+
+    private void runAllGnuplotScripts() throws IOException {
+        List<String> names = new ArrayList<>();
+        names.add("h.plot");
+        names.add("a.plot");
+        names.add("a1.plot");
+        for (String s : names) {
+            runGnuplotScript(s);
+        }
+    }
+
+    private void runGnuplotScript(String filename) throws IOException {
         Process p = new ProcessBuilder("gnuplot",
-                IO.getGnuplotScriptFilepath()).start();
+                IO.getFilePath(description+"/"+filename)).start();
+        System.out.println(IO.getFilePath(description+"/"+filename));
     }
 
     //All statistics

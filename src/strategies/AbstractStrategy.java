@@ -26,23 +26,28 @@ public abstract class AbstractStrategy implements Strategy {
             ExplorationStrategy exploration,
             ProvidersReputationMap map) {
         Map<ServiceProvider, DataEntity> searchSet
-                = selectProvidersSearchSet(map);
+                = selectAcceptableProvidersSearchSet(t, map);
 
-        return chooseProvider(t, exploration, searchSet);
+        return chooseProvider(exploration, searchSet, map);
     }
 
-    public abstract Map<ServiceProvider, DataEntity>
-            selectProvidersSearchSet(ProvidersReputationMap map);
+    public Map<ServiceProvider, DataEntity>
+            selectAcceptableProvidersSearchSet(Task t, ProvidersReputationMap map) {
+        return map.getAllProviders();
+    }
 
     public abstract ServiceProvider
-            chooseProvider(Task t, ExplorationStrategy exploration,
-                    Map<ServiceProvider, DataEntity> searchSet);
+            chooseProvider(ExplorationStrategy exploration,
+                    Map<ServiceProvider, DataEntity> searchSet,
+                    ProvidersReputationMap map);
 
-    public ServiceProvider chooseProviderFromMap(
-            Map<ServiceProvider, DataEntity> map) {
+    /* by default - get random element */
+    public ServiceProvider
+            chooseProviderFromMapDefault(Map<ServiceProvider, DataEntity> map) {
         if (map.isEmpty()) {
             return null;
         }
-        return (ServiceProvider) map.keySet().toArray()[StdRandom.uniform(map.size())];
+        int randomIndex = StdRandom.uniform(map.size());
+        return (ServiceProvider) map.keySet().toArray()[randomIndex];
     }
 }
