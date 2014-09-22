@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import myutil.Generator;
 import myutil.IO;
 import strategies.RLStrategy;
+import strategies.RLWithReputationMaxReputationStrategy;
 import strategies.RLWithReputationStrategy;
 import strategies.RandomStrategy;
 
@@ -147,10 +148,17 @@ public class SystemsBruteForcer {
 
         //Third experiment: RL, e-decreasing, reputation
         Experiment exp03 = new SimpleExperiment(Long.valueOf(3),
-                "simple-constants/reputation", strategy,
+                "simple-constants/reputationV", strategy,
                 new RLWithReputationStrategy(), expData);
 
         exps.add(exp03);
+        
+        //Third experiment: RL, e-decreasing, reputation (max reputation)
+        Experiment exp04 = new SimpleExperiment(Long.valueOf(4),
+                "simple-constants/reputationR", strategy,
+                new RLWithReputationMaxReputationStrategy(), expData);
+
+        exps.add(exp04);
 
         return exps;
     }

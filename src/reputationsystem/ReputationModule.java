@@ -3,45 +3,40 @@ package reputationsystem;
 import entities.Task;
 import entities.providers.ServiceProvider;
 import exploration.ExplorationStrategy;
-import java.util.ArrayList;
 import java.util.Collection;
-import strategies.RLStrategy;
-import strategies.RLWithReputationStrategy;
-import strategies.RandomStrategy;
 import strategies.Strategy;
-import validator.DifferenceValidator;
-import validator.SimpleValidator;
 
 public class ReputationModule {
 
-    public static final double REPUTATION_MIN_LEVEL = 0;
+    public static final double REPUTATION_MIN_LEVEL = 0.6;
 
     public static final double COOPERATION_FACTOR = 0.4;
     public static final double NON_COOPERATION_FACTOR = -0.2;
 
-    public final static double GAMMA_TD_INIT = 0.5;
-    public final static double VALIDATOR_INIT = 0.2;
+    public final static float LEARNING_TD_PARAM_INIT = 1;
+    public final static float LEARNING_TD_PARAM_MIN = 0.2f;
+    public final static float LEARNING_TD_PARAM_STEP = 0.05f;
 
     private final ProvidersReputationMap providersReputationMap
             = new ProvidersReputationMap();
 
     private final ExplorationStrategy exploration;
-    private final double gammaTd;
+    private float learningTdParam;
 
     public ReputationModule(Collection<ServiceProvider> pr,
             ExplorationStrategy str) {
         //    pr.stream().forEach(providersReputationMap::addServiceProvider);
         providersReputationMap.addServiceProvider(pr);
         exploration = str;
-        gammaTd = GAMMA_TD_INIT;
+        learningTdParam = LEARNING_TD_PARAM_INIT;
     }
 
     public ReputationModule(Collection<ServiceProvider> pr,
-            ExplorationStrategy str, Double g) {
+            ExplorationStrategy str, Float g) {
         //pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
         providersReputationMap.addServiceProvider(pr);
         exploration = str;
-        gammaTd = g;
+        learningTdParam = g;
     }
 
     /**
@@ -55,7 +50,7 @@ public class ReputationModule {
         if (providersReputationMap.isEmpty()) {
             throw new RuntimeException("No service providers were found. Can't serve request.");
         }
-        
+
         return str.chooseProviderForTask(t, exploration, providersReputationMap);
 
     }
@@ -71,8 +66,18 @@ public class ReputationModule {
      */
     private Double updateExpectation(Double old, Double estimate) {
         Double delta = estimate - old;
-        Double temp = old + this.gammaTd * delta;
+        Double temp = old + this.learningTdParam * delta;
+        updateLearningTDParam();
         return temp;
+    }
+
+    private void updateLearningTDParam() {
+        //float tmp = learningTdParam - LEARNING_TD_PARAM_MIN;
+        
+        if (learningTdParam > LEARNING_TD_PARAM_MIN) {
+            learningTdParam += -LEARNING_TD_PARAM_STEP;
+        }
+        //System.out.println(learningTdParam);
     }
 
     /* Правило пересчета репутации провайдера */
@@ -102,4 +107,5 @@ public class ReputationModule {
     public void addServiceProvider(ServiceProvider sp) {
         providersReputationMap.addServiceProvider(sp);
     }
+
 }

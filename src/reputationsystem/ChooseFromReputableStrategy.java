@@ -24,7 +24,7 @@ public enum ChooseFromReputableStrategy {
                 @Override
                 public ServiceProvider chooseProviderFromReputable(
                         Map<ServiceProvider, DataEntity> reputable) {
-                            return (new RandomStrategy()).chooseProviderFromMap(reputable);
+                            return (new RandomStrategy()).chooseProviderFromMapDefault(reputable);
                         }
 
             },

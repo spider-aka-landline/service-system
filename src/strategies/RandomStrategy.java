@@ -10,17 +10,13 @@ import reputationsystem.ProvidersReputationMap;
 
 public class RandomStrategy extends AbstractStrategy {
 
-    @Override
-    public Map<ServiceProvider, DataEntity>
-            selectProvidersSearchSet(ProvidersReputationMap map) {
-        return map.getAllProviders();
-    }
 
     @Override
     public ServiceProvider
-            chooseProvider(Task t, ExplorationStrategy exploration,
-                    Map<ServiceProvider, DataEntity> searchSet) {
-        return chooseProviderFromMap(searchSet);
+            chooseProvider(ExplorationStrategy exploration,
+                    Map<ServiceProvider, DataEntity> searchSet,
+                    ProvidersReputationMap map) {
+        return chooseProviderFromMapDefault(searchSet);
     }
 
 }

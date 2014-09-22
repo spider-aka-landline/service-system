@@ -14,7 +14,6 @@ import java.util.Queue;
 import messages.ProviderResponse;
 import messages.UserResponse;
 import reputationsystem.ReputationModule;
-import static reputationsystem.ReputationModule.VALIDATOR_INIT;
 import strategies.Strategy;
 import validator.DifferenceValidator;
 import validator.SimpleValidator;
@@ -54,7 +53,7 @@ public class ServiceSystem {
         // epsilon-decreasing exploration strategy - with default parameters
         reputationModule = new ReputationModule(data.getProviders(),
                 explorationStrategy);
-        validators.add(new SimpleValidator(VALIDATOR_INIT));
+        validators.add(new SimpleValidator());
     }
 
     public Long getvalidationResults() {
