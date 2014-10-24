@@ -1,20 +1,19 @@
 package myutil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
 import entities.Params;
 import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import math.Poisson;
 import math.StdRandom;
 
 public class Generator {
 
-    private long userCounter = 0;
-    private int providerCounter = 0;
+    protected long userCounter = 0;
+    protected int providerCounter = 0;
 
     public Generator() {
         userCounter = 0;
@@ -30,7 +29,9 @@ public class Generator {
     }
 
     public ServiceProvider createProvider(Params p) {
-        ServiceProvider sp = new ServiceProvider(providerCounter, p);
+        ServiceProvider sp;
+        sp = new ServiceProvider(providerCounter, p);
+
         providerCounter++;
         return sp;
     }

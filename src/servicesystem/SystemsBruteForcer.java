@@ -1,10 +1,12 @@
 package servicesystem;
 
 import entities.DipoleData;
+import entities.Params;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import experiments.Experiment;
 import experiments.ExperimentData;
+import experiments.ExperimentDataWithVariance;
 import experiments.SimpleExperiment;
 import exploration.EpsilonDecreasingStrategy;
 import exploration.ExplorationStrategy;
@@ -16,6 +18,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import myutil.Generator;
+import myutil.GeneratorWithVariance;
 import myutil.IO;
 import strategies.RLStrategy;
 import strategies.RLWithReputationMaxReputationStrategy;
@@ -23,6 +26,9 @@ import strategies.RLWithReputationStrategy;
 import strategies.RandomStrategy;
 
 public class SystemsBruteForcer {
+
+    private static final Double FIXED_VARIANCE = 0.5;
+    private final Boolean generateWithVar;
 
     private final Boolean generateInitData;
 
@@ -50,9 +56,10 @@ public class SystemsBruteForcer {
      * @param iterationsCount how many iterations
      * @param tasksCount how many tasks
      */
-    SystemsBruteForcer(Boolean generate, DipoleData minimum, DipoleData maximum,
+    SystemsBruteForcer(Boolean generate, Boolean generateWithVariance, DipoleData minimum, DipoleData maximum,
             Integer iterationsCount, Integer tasksCount) {
         generateInitData = generate;
+        generateWithVar = generateWithVariance;
         minUsersNumber = minimum.getUserNumber();
         maxUsersNumber = maximum.getUserNumber();
 
@@ -65,7 +72,7 @@ public class SystemsBruteForcer {
         numbers = new TreeSet<>();
         usersBase = new TreeMap<>();
         providersBase = new TreeMap<>();
-        
+
         //get init data from the Gap Between the Worlds
         if (generateInitData) {
             for (Integer u = minUsersNumber; u <= maxUsersNumber;
@@ -76,7 +83,14 @@ public class SystemsBruteForcer {
 
                     if (u.equals(minUsersNumber)) {
                         // for all providers
-                        providersBase.put(p, (new Generator()).generateProviders(p));
+                        Generator gen;
+                        if (generateWithVariance) {
+                            Params variance = new Params(FIXED_VARIANCE);
+                            gen = new GeneratorWithVariance(variance);
+                        } else {
+                            gen = new Generator();
+                        }
+                        providersBase.put(p, gen.generateProviders(p));
                     }
                 }
                 // for all users
@@ -116,8 +130,14 @@ public class SystemsBruteForcer {
                 = getUsers(d.getUserNumber());
         Collection<ServiceProvider> currentProviders
                 = getProviders(d.getProviderNumber());
-        generatedDataForExperiments = new ExperimentData(currentUsers,
-                currentProviders, tasksNumber, iterationsNumber);
+
+        if (generateWithVar) {
+            generatedDataForExperiments = new ExperimentDataWithVariance(currentUsers,
+                    currentProviders, tasksNumber, iterationsNumber);
+        } else {
+            generatedDataForExperiments = new ExperimentData(currentUsers,
+                    currentProviders, tasksNumber, iterationsNumber);
+        }
 
         List<Experiment> currentExperimentPlan
                 = createExperimentPlan(generatedDataForExperiments);
@@ -132,30 +152,53 @@ public class SystemsBruteForcer {
         //container for all experiments
         List<Experiment> exps = new ArrayList<>();
 
+        String currentExperimentBlockName;
+        if (generateWithVar) {
+            currentExperimentBlockName = "const-with-variances";
+        } else {
+            currentExperimentBlockName = "simple-constants";
+        }
+
         //First experiment: random
+        String name01 = "random";
+        StringBuilder path01 = new StringBuilder();
+        path01.append(currentExperimentBlockName).append("/").append(name01);
+        
         Experiment exp01 = new SimpleExperiment(Long.valueOf(1),
-                "simple-constants/random", strategy,
+                path01.toString(), strategy,
                 new RandomStrategy(), expData);
 
         exps.add(exp01);
 
         //Second experiment: RL, e-decreasing
+        String name02 = "rl";
+        StringBuilder path02 = new StringBuilder();
+        path02.append(currentExperimentBlockName).append("/").append(name02);
+        
         Experiment exp02 = new SimpleExperiment(Long.valueOf(2),
-                "simple-constants/rl", strategy,
+                path02.toString(), strategy,
                 new RLStrategy(), expData);
 
         exps.add(exp02);
 
         //Third experiment: RL, e-decreasing, reputation
+        String name03 = "reputationV";
+        StringBuilder path03 = new StringBuilder();
+        path03.append(currentExperimentBlockName).append("/").append(name03);
+        
         Experiment exp03 = new SimpleExperiment(Long.valueOf(3),
-                "simple-constants/reputationV", strategy,
+                path03.toString(), strategy,
                 new RLWithReputationStrategy(), expData);
 
         exps.add(exp03);
-        
+
         //Third experiment: RL, e-decreasing, reputation (max reputation)
+        String name04 = "reputationR";
+        StringBuilder path04 = new StringBuilder();
+        path04.append(currentExperimentBlockName).append("/").append(name04);
+        
         Experiment exp04 = new SimpleExperiment(Long.valueOf(4),
-                "simple-constants/reputationR", strategy,
+                path04.toString(), strategy,
                 new RLWithReputationMaxReputationStrategy(), expData);
 
         exps.add(exp04);

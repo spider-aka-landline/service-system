@@ -9,21 +9,23 @@ import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.PriorityQueue;
 import myutil.Generator;
 import myutil.IO;
 
 public class ExperimentData {
 
-    private Integer iterationNumber;
+    protected Integer iterationNumber;
 
-    private final Integer usersNumber;
-    private final Integer providersNumber;
-    private final Integer tasksNumber;
+    protected final Integer usersNumber;
+    protected final Integer providersNumber;
+    protected final Integer tasksNumber;
 
-    private final Collection<User> users;
-    private final Collection<ServiceProvider> providers;
-    private final Collection<Task> tasks;
+    protected final Collection<User> users;
+    protected final Collection<ServiceProvider> providers;
+    protected final Collection<Task> tasks;
 
     /**
      *
@@ -34,17 +36,37 @@ public class ExperimentData {
      */
     public ExperimentData(Integer usersc, Integer providersc, Integer tasksc,
             Integer iterationsc) {
+        this(usersc, providersc, tasksc, iterationsc, true);
+    }
+
+    /**
+     *
+     * @param usersc Users number
+     * @param providersc Providers number
+     * @param tasksc Tasks number
+     * @param iterationsc total iterations number
+     * @param generate - standard generation or no generation at all
+     */
+    protected ExperimentData(Integer usersc, Integer providersc, Integer tasksc,
+            Integer iterationsc, Boolean generate) {
         iterationNumber = iterationsc;
         usersNumber = usersc;
         providersNumber = providersc;
         tasksNumber = tasksc;
-        Generator gen = new Generator();
-        users = gen.generateUsers(usersNumber);
-        providers = gen.generateProviders(providersNumber);
-        tasks = gen.generateTasks(users, tasksNumber);
 
+        users = new ArrayList<>();
+        providers = new ArrayList<>();
+        tasks = new PriorityQueue<>();
+
+        if (generate) {
+            Generator gen = new Generator();
+
+            users.addAll(gen.generateUsers(usersNumber));
+            providers.addAll(gen.generateProviders(providersNumber));
+            tasks.addAll(gen.generateTasks(users, tasksNumber));
+        }
     }
-
+    
     /**
      *
      * @param usersCollection collection of given users
@@ -58,10 +80,11 @@ public class ExperimentData {
         iterationNumber = iterationsc;
         users = usersCollection;
         providers = providersCollection;
-        
+
         usersNumber = users.size();
         providersNumber = providers.size();
         tasksNumber = tasksc;
+
         Generator gen = new Generator();
         tasks = gen.generateTasks(users, tasksNumber);
 
