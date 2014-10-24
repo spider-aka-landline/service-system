@@ -187,10 +187,21 @@ public class SystemsBruteForcer {
         path03.append(currentExperimentBlockName).append("/").append(name03);
         
         Experiment exp03 = new SimpleExperiment(Long.valueOf(3),
+<<<<<<< HEAD
                 path03.toString(), strategy,
+=======
+                "simple-constants/reputationV", strategy,
+>>>>>>> bd7ead029752b4fcb4cdf8a5d51791baa7e0947d
                 new RLWithReputationStrategy(), expData);
 
         exps.add(exp03);
+        
+        //Third experiment: RL, e-decreasing, reputation (max reputation)
+        Experiment exp04 = new SimpleExperiment(Long.valueOf(4),
+                "simple-constants/reputationR", strategy,
+                new RLWithReputationMaxReputationStrategy(), expData);
+
+        exps.add(exp04);
 
         //Third experiment: RL, e-decreasing, reputation (max reputation)
         String name04 = "reputationR";
