@@ -10,7 +10,7 @@ import validator.DifferenceValidator;
 public class ServiceSystemWithStressEvent extends ServiceSystem {
 
     StressEvent event;
-    
+
     public ServiceSystemWithStressEvent(ExperimentData data,
             ExplorationStrategy explorationStrategy, Strategy str,
             Collection<DifferenceValidator> c, StressEvent stress) {
@@ -28,17 +28,21 @@ public class ServiceSystemWithStressEvent extends ServiceSystem {
     @Override
     public void run() {
         checked = false;
-        while (!tasks.isEmpty()) {
-            processCurrentRequest(tasks.poll());
-            servedTasksNumber++;
-            
+        while (state.hasTasks()) {
+            processCurrentRequest(state.pollTask());
+            state.incrementServedTasksNumber();
+
             checkStressTrigger();
         }
     }
 
     private void checkStressTrigger() {
-        if (event.isTriggerTime(servedTasksNumber))
-            event.executeEvent(this);
+        long currentTime = state.getServedTasksNumber();
+        if (event.isTriggerTime(currentTime)) {
+            event.executeEvent(state);
+        } else if (event.isReadyToCheck(currentTime)) {
+            event.checkCriteria(state);
+        }
     }
 
 }

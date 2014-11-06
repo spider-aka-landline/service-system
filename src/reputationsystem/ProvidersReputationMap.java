@@ -13,7 +13,8 @@ public class ProvidersReputationMap {
     public static final double EXPECTATION_INIT = 0;
     public static final double REPUTATION_INIT = 0;
     //exploration/exploitation strategy.
-    private final Map<ServiceProvider, DataEntity> serviceProviders = new HashMap<>();
+    private final Map<ServiceProvider, DataEntity> serviceProviders
+            = new HashMap<>();
 
     /**
      * @param minlevel - минимальный порог репутации
@@ -71,6 +72,10 @@ public class ProvidersReputationMap {
 
     public boolean isEmpty() {
         return serviceProviders.isEmpty();
+    }
+
+    Boolean contains(ServiceProvider provider) {
+        return serviceProviders.containsKey(provider);
     }
 
 }

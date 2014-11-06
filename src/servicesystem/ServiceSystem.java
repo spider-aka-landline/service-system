@@ -9,11 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import messages.ProviderResponse;
 import messages.UserResponse;
-import reputationsystem.ReputationModule;
+import reputationsystem.ProvidersReputationMap;
 import strategies.Strategy;
 import validator.DifferenceValidator;
 import validator.SimpleValidator;
@@ -26,33 +24,26 @@ public class ServiceSystem {
     List<Long> validationResults = new LinkedList<>();
     Boolean checked = false;
 
-    protected final List<User> users = new ArrayList<>();
-    protected final Queue<Task> tasks = new PriorityQueue<>();
-
+    protected final ServiceSystemState state;
     Strategy experimentStrategy;
-    protected final ReputationModule reputationModule;
-    protected long servedTasksNumber = 0;
+
+    private final ExplorationStrategy explorationStrategy;
 
     public ServiceSystem(ExperimentData data,
-            ExplorationStrategy explorationStrategy, Strategy str,
+            ExplorationStrategy exploreStrategy, Strategy str,
             Collection<DifferenceValidator> c) {
-        users.addAll(data.getUsers());
-        tasks.addAll(data.getTasks());
+
+        state = new ServiceSystemState(data);
+        explorationStrategy = exploreStrategy;
         experimentStrategy = str;
-        // epsilon-decreasing exploration strategy - with default parameters
-        reputationModule = new ReputationModule(data.getProviders(),
-                explorationStrategy);
         validators.addAll(c);
     }
 
     public ServiceSystem(ExperimentData data,
-            ExplorationStrategy explorationStrategy, Strategy str) {
-        users.addAll(data.getUsers());
-        tasks.addAll(data.getTasks());
+            ExplorationStrategy exploreStrategy, Strategy str) {
+        state = new ServiceSystemState(data);
+        explorationStrategy = exploreStrategy;
         experimentStrategy = str;
-        // epsilon-decreasing exploration strategy - with default parameters
-        reputationModule = new ReputationModule(data.getProviders(),
-                explorationStrategy);
         validators.add(new SimpleValidator());
     }
 
@@ -60,27 +51,15 @@ public class ServiceSystem {
         return validationResults.get(0);
     }
 
-    public ReputationModule getReputationModule() {
-        return reputationModule;
-    }
-
-    public void submitTask(Task t) {
-        tasks.add(t);
-    }
-
-    public void addUser(User u) {
-        users.add(u);
-    }
-
-    public void addProvider(ServiceProvider sp) {
-        reputationModule.addServiceProvider(sp);
+    public ServiceSystemState getSystemState() {
+        return state;
     }
 
     public void run() {
         checked = false;
-        while (!tasks.isEmpty()) {
-            processCurrentRequest(tasks.poll());
-            servedTasksNumber++;
+        while (state.hasTasks()) {
+            processCurrentRequest(state.pollTask());
+            state.incrementServedTasksNumber();
         }
     }
 
@@ -96,7 +75,7 @@ public class ServiceSystem {
         //пересчитать ф-ю ожидаемой ценности
         //внести изменения в репутацию
         //
-        Double delta = reputationModule.update(worker,
+        Double delta = state.update(worker,
                 ans.getEstimate(), ans.getDifferenceSign());
 
         checkDelta(delta);
@@ -105,7 +84,7 @@ public class ServiceSystem {
     private void checkDelta(Double delta) {
         for (DifferenceValidator d : validators) {
             if (!checked && d.isDifferenceInGap(delta)) {
-                validationResults.add(servedTasksNumber);
+                validationResults.add(state.getServedTasksNumber());
                 checked = true;
             } else if (checked && !d.isDifferenceInGap(delta)) {
                 //validationResults.remove(validationResults.size() - 1);
@@ -115,9 +94,20 @@ public class ServiceSystem {
 
     }
 
+    /**
+     * epsilon-decreasing стратегия выбора провайдера
+     *
+     * @param task User task
+     * @return ServiceProvider, chosen for the task
+     */
     protected ServiceProvider chooseProvider(Task task) {
+        ProvidersReputationMap reputations = state.getprovidersReputations();
+        if (reputations.isEmpty()) {
+            throw new RuntimeException("No service providers were found. Can't serve request.");
+        }
 
-        return reputationModule.chooseProvider(task, experimentStrategy);
+        return experimentStrategy.chooseProviderForTask(task,
+                explorationStrategy, reputations);
     }
 
 }

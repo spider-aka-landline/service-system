@@ -1,10 +1,7 @@
 package reputationsystem;
 
-import entities.Task;
 import entities.providers.ServiceProvider;
-import exploration.ExplorationStrategy;
 import java.util.Collection;
-import strategies.Strategy;
 
 public class ReputationModule {
 
@@ -20,39 +17,19 @@ public class ReputationModule {
     private final ProvidersReputationMap providersReputationMap
             = new ProvidersReputationMap();
 
-    private final ExplorationStrategy exploration;
+    
     private float learningTdParam;
 
-    public ReputationModule(Collection<ServiceProvider> pr,
-            ExplorationStrategy str) {
+    public ReputationModule(Collection<ServiceProvider> pr) {
         //    pr.stream().forEach(providersReputationMap::addServiceProvider);
         providersReputationMap.addServiceProvider(pr);
-        exploration = str;
         learningTdParam = LEARNING_TD_PARAM_INIT;
     }
 
-    public ReputationModule(Collection<ServiceProvider> pr,
-            ExplorationStrategy str, Float g) {
+    public ReputationModule(Collection<ServiceProvider> pr, Float g) {
         //pr.forEach(sp -> providersReputationMap.addServiceProvider(sp));
         providersReputationMap.addServiceProvider(pr);
-        exploration = str;
         learningTdParam = g;
-    }
-
-    /**
-     * epsilon-decreasing стратегия выбора провайдера
-     *
-     * @param t User task
-     * @param str strategy for choosing provider
-     * @return ServiceProvider, chosen for the task
-     */
-    public ServiceProvider chooseProvider(Task t, Strategy str) {
-        if (providersReputationMap.isEmpty()) {
-            throw new RuntimeException("No service providers were found. Can't serve request.");
-        }
-
-        return str.chooseProviderForTask(t, exploration, providersReputationMap);
-
     }
 
     public ProvidersReputationMap getprovidersReputationMap() {
@@ -108,6 +85,10 @@ public class ReputationModule {
 
     public void addServiceProvider(ServiceProvider sp) {
         providersReputationMap.addServiceProvider(sp);
+    }
+
+    public Boolean isInReputable(ServiceProvider addedProvider) {
+        return providersReputationMap.contains(addedProvider);
     }
 
 }

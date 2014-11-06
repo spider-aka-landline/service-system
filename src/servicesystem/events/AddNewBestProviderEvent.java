@@ -4,37 +4,65 @@ import entities.Params;
 import entities.providers.ServiceProvider;
 import myutil.generators.EntitiesGenerator;
 import reputationsystem.ProvidersReputationMap;
-import servicesystem.ServiceSystem;
+import servicesystem.ServiceSystemState;
 
-public abstract class AddNewBestProviderEvent implements StressEvent {
+public class AddNewBestProviderEvent implements StressEvent {
 
-    long triggerTime;
-    
-    public AddNewBestProviderEvent(long timeStep){
+    private long triggerTime;
+    private ServiceProvider addedProvider;
+    private Boolean wereChecked;
+
+    public AddNewBestProviderEvent(long timeStep) {
         triggerTime = timeStep;
+        wereChecked = false;
     }
 
     @Override
-    public void executeEvent(ServiceSystem system) {
+    public void executeEvent(ServiceSystemState state) {
         //получить авторитетных
         ProvidersReputationMap providersReputationMap
-                = system.getReputationModule().getprovidersReputationMap();
+                = state.getprovidersReputations();
         //найти минимального из авторитетных
         ServiceProvider worstProvider = providersReputationMap.getWorstProvider();
         //забрать его характеристики
-        Params worstParams = worstProvider.getProperties();
-
         //создать провайдера с лучшими характеристиками 
-        //TODO: здесь надо создать характеристики, лучше чем минимальные
-        //сейчас такие же характеристики
-        //добавить провайдера
+        Params betterParams = makeBetterParams(worstProvider.getProperties());
         EntitiesGenerator gen = EntitiesGenerator.getInstance();
-        system.addProvider(gen.createProvider(worstParams));
+        addedProvider = gen.createProvider(betterParams);
+
+        //добавить провайдера
+        state.addProvider(addedProvider);
+    }
+
+    private Params makeBetterParams(Params worstParams) {
+        Params betterParams;
+        betterParams = new Params(worstParams.getServiceQuality() + 0.1);
+        return betterParams;
     }
 
     @Override
     public boolean isTriggerTime(long currentTime) {
         return (currentTime == triggerTime);
+    }
+
+    @Override
+    public boolean isReadyToCheck(long currentTime) {
+        return (currentTime > triggerTime)&& wereChecked;
+    }
+
+    @Override
+    public void checkCriteria(ServiceSystemState state) {
+        if (state.isInReputable(addedProvider)){
+            //поднять флаг
+            wereChecked = true;
+            //засечь время
+            long time = state.getServedTasksNumber();
+            
+            /*сделать что-то с матрицами для вывода/подсчета результатов
+             *точно так же, как с остальными числами
+             */
+            
+        }
     }
 
 }
