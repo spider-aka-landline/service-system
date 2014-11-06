@@ -73,7 +73,7 @@ public class ReputationModule {
 
     private void updateLearningTDParam() {
         //float tmp = learningTdParam - LEARNING_TD_PARAM_MIN;
-        
+
         if (learningTdParam > LEARNING_TD_PARAM_MIN) {
             learningTdParam += -LEARNING_TD_PARAM_STEP;
         }
@@ -82,7 +82,9 @@ public class ReputationModule {
 
     /* Правило пересчета репутации провайдера */
     private Double updateReputation(Double old, Boolean differencePositive) {
-        Double k = (differencePositive) ? ReputationModule.COOPERATION_FACTOR : ReputationModule.NON_COOPERATION_FACTOR;
+        Double k = (differencePositive)
+                ? ReputationModule.COOPERATION_FACTOR
+                : ReputationModule.NON_COOPERATION_FACTOR;
         Double sign;
         if (old.equals(0.0)) {
             sign = 1.0;

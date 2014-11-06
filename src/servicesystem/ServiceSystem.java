@@ -26,12 +26,12 @@ public class ServiceSystem {
     List<Long> validationResults = new LinkedList<>();
     Boolean checked = false;
 
-    private final List<User> users = new ArrayList<>();
-    private final Queue<Task> tasks = new PriorityQueue<>();
+    protected final List<User> users = new ArrayList<>();
+    protected final Queue<Task> tasks = new PriorityQueue<>();
 
     Strategy experimentStrategy;
-    private final ReputationModule reputationModule;
-    private long servedTasksNumber = 0;
+    protected final ReputationModule reputationModule;
+    protected long servedTasksNumber = 0;
 
     public ServiceSystem(ExperimentData data,
             ExplorationStrategy explorationStrategy, Strategy str,
@@ -60,6 +60,10 @@ public class ServiceSystem {
         return validationResults.get(0);
     }
 
+    public ReputationModule getReputationModule() {
+        return reputationModule;
+    }
+
     public void submitTask(Task t) {
         tasks.add(t);
     }
@@ -80,7 +84,7 @@ public class ServiceSystem {
         }
     }
 
-    private void processCurrentRequest(Task task) {
+    protected void processCurrentRequest(Task task) {
         //выбрать провайдера
         ServiceProvider worker = chooseProvider(task);
         //узнать, кто пользователь
@@ -89,7 +93,6 @@ public class ServiceSystem {
         ProviderResponse service = worker.processUserTask(task);
         //узнать оценки
         UserResponse ans = sender.generateResponse(service);
-
         //пересчитать ф-ю ожидаемой ценности
         //внести изменения в репутацию
         //
@@ -104,8 +107,7 @@ public class ServiceSystem {
             if (!checked && d.isDifferenceInGap(delta)) {
                 validationResults.add(servedTasksNumber);
                 checked = true;
-            } 
-            else if (checked && !d.isDifferenceInGap(delta)) {
+            } else if (checked && !d.isDifferenceInGap(delta)) {
                 //validationResults.remove(validationResults.size() - 1);
                 checked = false;
             }
@@ -113,7 +115,7 @@ public class ServiceSystem {
 
     }
 
-    private ServiceProvider chooseProvider(Task task) {
+    protected ServiceProvider chooseProvider(Task task) {
 
         return reputationModule.chooseProvider(task, experimentStrategy);
     }

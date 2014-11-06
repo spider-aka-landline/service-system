@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.PriorityQueue;
-import myutil.Generator;
+import myutil.generators.EntitiesGenerator;
 import myutil.IO;
 
 public class ExperimentData {
@@ -59,7 +59,7 @@ public class ExperimentData {
         tasks = new PriorityQueue<>();
 
         if (generate) {
-            Generator gen = new Generator();
+            EntitiesGenerator gen = EntitiesGenerator.getInstance();
 
             users.addAll(gen.generateUsers(usersNumber));
             providers.addAll(gen.generateProviders(providersNumber));
@@ -85,7 +85,7 @@ public class ExperimentData {
         providersNumber = providers.size();
         tasksNumber = tasksc;
 
-        Generator gen = new Generator();
+        EntitiesGenerator gen = EntitiesGenerator.getInstance();
         tasks = gen.generateTasks(users, tasksNumber);
 
     }

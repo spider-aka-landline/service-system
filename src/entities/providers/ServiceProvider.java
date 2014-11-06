@@ -27,6 +27,11 @@ public class ServiceProvider {
         return id;
     }
 
+    public Params getProperties() {
+        return properties;
+    }
+
+    
     @Override
     public int hashCode() {
         int hash = 3;

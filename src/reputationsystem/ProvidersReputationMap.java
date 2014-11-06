@@ -1,7 +1,9 @@
 package reputationsystem;
 
+import comparators.QualityParamsComparator;
 import entities.providers.ServiceProvider;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import myutil.UtilFunctions;
@@ -27,6 +29,11 @@ public class ProvidersReputationMap {
             return serviceProviders;
         }
         return temp;
+    }
+
+    public ServiceProvider getWorstProvider() {
+        return Collections.min(serviceProviders.keySet(),
+                new QualityParamsComparator());
     }
 
     public Map<ServiceProvider, DataEntity>

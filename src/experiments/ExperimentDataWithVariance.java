@@ -9,8 +9,8 @@ import entities.Params;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import java.util.Collection;
-import myutil.Generator;
-import myutil.GeneratorWithVariance;
+import myutil.generators.EntitiesGenerator;
+import myutil.generators.EntitiesGeneratorWithVariance;
 
 public class ExperimentDataWithVariance extends ExperimentData {
 
@@ -26,7 +26,7 @@ public class ExperimentDataWithVariance extends ExperimentData {
             Integer iterationsc, Params parameters) {
         super(usersc, providersc, tasksc, iterationsc, false);
 
-        Generator gen = new GeneratorWithVariance(parameters);
+        EntitiesGenerator gen = EntitiesGeneratorWithVariance.getInstance(parameters);
 
         users.addAll(gen.generateUsers(usersNumber));
         providers.addAll(gen.generateProviders(providersNumber));
