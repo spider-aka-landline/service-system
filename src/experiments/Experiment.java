@@ -55,6 +55,11 @@ public abstract class Experiment implements Comparable<Experiment> {
         statistics.add(new StatisticEntry(pr, userEstimate));
     }
 
+    public void logExperimentData(long criteriaCompletionTime) {
+        calculator.addData(iterationCycle, criteriaCompletionTime);
+        
+    }
+
     public void nextIteration() {
         iterationCycle++;
         taskNumber = 0;
@@ -89,6 +94,12 @@ public abstract class Experiment implements Comparable<Experiment> {
         Matrix total = calculator.getEstimateAverages().transpose();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
 
+        //Average criteria completion time
+        Matrix criteriaTime = 
+                calculator.getCriteriaCompletionTimeAverages().transpose();
+        String testPath = settings.getCriteriaFilename();
+        IO.printMatrixToFile(criteriaTime, testPath, 1, 6);
+
         //Hystogram of profits - should be builded on average results
         //  all user estimates - in average vector 'total'
         //  make cute hystogram object  
@@ -115,8 +126,8 @@ public abstract class Experiment implements Comparable<Experiment> {
 
     private void runGnuplotScript(String filename) throws IOException {
         Process p = new ProcessBuilder("gnuplot",
-                IO.getFilePath(description+"/"+filename)).start();
-        System.out.println(IO.getFilePath(description+"/"+filename));
+                IO.getFilePath(description + "/" + filename)).start();
+        System.out.println(IO.getFilePath(description + "/" + filename));
     }
 
     //All statistics

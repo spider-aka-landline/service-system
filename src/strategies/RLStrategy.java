@@ -16,11 +16,11 @@ public class RLStrategy extends AbstractStrategy {
             chooseProvider(ExplorationStrategy exploration,
                     Map<ServiceProvider, DataEntity> searchSet,
                     ProvidersReputationMap map) {
-        if (StdRandom.bernoulli(exploration.getEpsilon())) {
-            exploration.updateEpsilon();
+        Double currentEpsilon = exploration.getEpsilon();
+        exploration.updateEpsilon();
+        if (StdRandom.bernoulli(currentEpsilon)) {
             return chooseProviderFromMapDefault(searchSet);
         } else {
-            exploration.updateEpsilon(); //TODO: should it be here?
             return exploit(map);
         }
 
@@ -28,7 +28,7 @@ public class RLStrategy extends AbstractStrategy {
 
     protected ServiceProvider
             exploit(ProvidersReputationMap map) {
-        return chooseProviderFromMapLogic(map.getAllProviders());
+        return chooseProviderFromMapLogic(map.getAllProvidersData());
     }
 
     /*
@@ -49,13 +49,13 @@ public class RLStrategy extends AbstractStrategy {
             chooseProviderFromMapMaxValue(Map<ServiceProvider, DataEntity> search) {
 
         //найти максимальное значение ожидаемой ценности в множестве поиска
-        Double max
-                = UtilFunctions.getMaxValue(search, new ExpectationComparator()).getExpectation();
-        //выбрать среди множества поиска провайдеров с максимальной ожидаемой ценностью
-        Map<ServiceProvider, DataEntity> ReputableProvidersSet
+        Double max = UtilFunctions.getMaxValue(search,
+                new ExpectationComparator()).getExpectation();
+        //выбрать из множества поиска провайдеров с максимальной ожидаемой ценностью
+        Map<ServiceProvider, DataEntity> providersWithMaxValue
                 = UtilFunctions.filterMapByPredicate(
-                        search, e -> e.getValue().getExpectation() == max);
+                        search, e -> e.getValue().getExpectation().equals(max));
 
-        return chooseProviderFromMapDefault(ReputableProvidersSet);
+        return chooseProviderFromMapDefault(providersWithMaxValue);
     }
 }

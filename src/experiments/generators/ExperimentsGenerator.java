@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import servicesystem.events.AddNewBestProviderEvent;
 import servicesystem.events.StressEvent;
 import strategies.RLStrategy;
 import strategies.RLWithReputationMaxReputationStrategy;
@@ -109,11 +110,12 @@ public class ExperimentsGenerator {
         String currentExperimentBlockName
                 = generateExperimentBlockName(generateWithVar);
 
+        StressEvent addedProviderEvent = new AddNewBestProviderEvent(6);
         Map<String, Strategy> allStrategies = getStrategies();
         for (Entry<String, Strategy> entry : allStrategies.entrySet()) {
             Experiment exp = createSimpleExperiment(entry.getKey(),
                 currentExperimentBlockName, strategy,
-                entry.getValue(), expData);
+                entry.getValue(), expData, addedProviderEvent);
             exps.add(exp);
         }
 
@@ -123,9 +125,9 @@ public class ExperimentsGenerator {
     private Map<String, Strategy> getStrategies() {
         Map<String, Strategy> strategies = new TreeMap<>();
         //First experiment: random
-        strategies.put("random", new RandomStrategy());
+        //strategies.put("random", new RandomStrategy());
         //Second experiment: RL, e-decreasing
-        strategies.put("rl", new RLStrategy());
+        //strategies.put("rl", new RLStrategy());
         //Third experiment: RL, e-decreasing, reputation
         strategies.put("reputationV", new RLWithReputationStrategy());
         //4th experiment: reputation only (max reputation)

@@ -13,16 +13,16 @@ public class ServiceSystemWithStressEvent extends ServiceSystem {
 
     public ServiceSystemWithStressEvent(ExperimentData data,
             ExplorationStrategy explorationStrategy, Strategy str,
-            Collection<DifferenceValidator> c, StressEvent stress) {
+            Collection<DifferenceValidator> c, StressEvent stressEvent) {
         super(data, explorationStrategy, str, c);
-
+        event = stressEvent;
     }
 
     public ServiceSystemWithStressEvent(ExperimentData data,
             ExplorationStrategy explorationStrategy, Strategy str,
-            StressEvent stress) {
+            StressEvent stressEvent) {
         super(data, explorationStrategy, str);
-
+        event = stressEvent;
     }
 
     @Override

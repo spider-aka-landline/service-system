@@ -33,7 +33,7 @@ public abstract class AbstractStrategy implements Strategy {
 
     public Map<ServiceProvider, DataEntity>
             selectAcceptableProvidersSearchSet(Task t, ProvidersReputationMap map) {
-        return map.getAllProviders();
+        return map.getAllProvidersData();
     }
 
     public abstract ServiceProvider

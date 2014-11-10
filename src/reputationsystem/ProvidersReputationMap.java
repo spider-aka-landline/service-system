@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import myutil.UtilFunctions;
 
 public class ProvidersReputationMap {
@@ -13,6 +14,7 @@ public class ProvidersReputationMap {
     public static final double EXPECTATION_INIT = 0;
     public static final double REPUTATION_INIT = 0;
     //exploration/exploitation strategy.
+    
     private final Map<ServiceProvider, DataEntity> serviceProviders
             = new HashMap<>();
 
@@ -22,24 +24,36 @@ public class ProvidersReputationMap {
      * порога для авторитетных)
      */
     public Map<ServiceProvider, DataEntity>
-            getReputableProviders(double minlevel) {
+            getReputableProvidersData(double minlevel) {
         Map<ServiceProvider, DataEntity> temp
                 = UtilFunctions.filterMapByPredicate(serviceProviders,
                         e -> e.getValue().getReputation() > minlevel);
-        if (temp.isEmpty()) {
-            return serviceProviders;
-        }
         return temp;
     }
 
+    public Set<ServiceProvider> getReputableProviders(double minlevel) {
+        return  getReputableProvidersData(minlevel).keySet();
+
+    }
+
     public ServiceProvider getWorstProvider() {
-        return Collections.min(serviceProviders.keySet(),
+        return Collections.min(getAllProviders(),
+                new QualityParamsComparator());
+    }
+
+    public ServiceProvider getBestProvider() {
+        return Collections.max(getAllProviders(),
                 new QualityParamsComparator());
     }
 
     public Map<ServiceProvider, DataEntity>
-            getAllProviders() {
+            getAllProvidersData() {
         return serviceProviders;
+    }
+
+    public Set<ServiceProvider>
+            getAllProviders() {
+        return serviceProviders.keySet();
     }
 
     /* внешний вызов добавления нового провайдера */
@@ -78,4 +92,7 @@ public class ProvidersReputationMap {
         return serviceProviders.containsKey(provider);
     }
 
+    public DataEntity getProviderData(ServiceProvider provider) {
+        return serviceProviders.get(provider);
+    }
 }

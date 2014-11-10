@@ -46,7 +46,7 @@ public class ServiceSystemState {
         reputationModule.addServiceProvider(sp);
     }
 
-    public ProvidersReputationMap getprovidersReputations() {
+    public ProvidersReputationMap getProvidersReputations() {
         return reputationModule.getprovidersReputationMap();
     }
 
@@ -71,4 +71,7 @@ public class ServiceSystemState {
         return reputationModule.isInReputable(addedProvider);
     }
 
+    public boolean hasProvider(ServiceProvider provider) {
+        return reputationModule.contains(provider);
+    }
 }

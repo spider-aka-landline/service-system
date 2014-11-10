@@ -154,7 +154,7 @@ public class IO {
 
         String filePath = getFilePath(filename);
         try (PrintWriter pw = new PrintWriter(createFile(filePath));) {
-            matrx.print(pw, 1, 3);
+            matrx.print(pw, width, d);
         }
     }
 

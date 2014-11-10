@@ -2,6 +2,8 @@ package reputationsystem;
 
 import entities.providers.ServiceProvider;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 public class ReputationModule {
 
@@ -17,7 +19,6 @@ public class ReputationModule {
     private final ProvidersReputationMap providersReputationMap
             = new ProvidersReputationMap();
 
-    
     private float learningTdParam;
 
     public ReputationModule(Collection<ServiceProvider> pr) {
@@ -88,7 +89,15 @@ public class ReputationModule {
     }
 
     public Boolean isInReputable(ServiceProvider addedProvider) {
-        return providersReputationMap.contains(addedProvider);
+        return getAllReputableProviders().contains(addedProvider);
     }
 
+    public boolean contains(ServiceProvider provider) {
+        return providersReputationMap.getAllProviders().contains(provider);
+    }
+
+    private Set<ServiceProvider> getAllReputableProviders() {
+        return providersReputationMap
+                .getReputableProviders(REPUTATION_MIN_LEVEL);
+    }
 }

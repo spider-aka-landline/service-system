@@ -101,7 +101,7 @@ public class ServiceSystem {
      * @return ServiceProvider, chosen for the task
      */
     protected ServiceProvider chooseProvider(Task task) {
-        ProvidersReputationMap reputations = state.getprovidersReputations();
+        ProvidersReputationMap reputations = state.getProvidersReputations();
         if (reputations.isEmpty()) {
             throw new RuntimeException("No service providers were found. Can't serve request.");
         }

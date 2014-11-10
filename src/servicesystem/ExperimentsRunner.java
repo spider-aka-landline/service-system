@@ -12,7 +12,7 @@ import messages.ProviderResponse;
 public final class ExperimentsRunner {
 
     private final Queue<Experiment> experiments;
-    
+
     private static Experiment currentExperiment;
 
     public ExperimentsRunner(Collection<Experiment> all) {
@@ -24,6 +24,10 @@ public final class ExperimentsRunner {
         currentExperiment.logExperimentData(pr, value);
     }
 
+    public static void logExperimentData(long criteriaCompletionTime) {
+        currentExperiment.logExperimentData(criteriaCompletionTime);
+    }
+
     public void run() {
 
         for (Experiment exp : experiments) {
@@ -32,12 +36,11 @@ public final class ExperimentsRunner {
                 currentExperiment.logInputData();
                 currentExperiment.run();
                 currentExperiment.printTotalResult();
-      
+
             } catch (IOException ex) {
                 Logger.getLogger(ExperimentsRunner.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
 
     }
 

@@ -13,7 +13,13 @@ public class RLWithReputationMaxReputationStrategy extends RLStrategy {
 
     private Map<ServiceProvider, DataEntity>
             selectReputableProvidersSearchSet(ProvidersReputationMap map) {
-        return map.getReputableProviders(REPUTATION_MIN_LEVEL);
+        Map<ServiceProvider, DataEntity> reputableProvidersSearchSet;
+        reputableProvidersSearchSet
+                = map.getReputableProvidersData(REPUTATION_MIN_LEVEL);
+        if (reputableProvidersSearchSet.isEmpty()) {
+         return map.getAllProvidersData();
+         }
+        else return reputableProvidersSearchSet;
     }
 
     @Override

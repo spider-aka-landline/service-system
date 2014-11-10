@@ -3,7 +3,7 @@ package exploration;
 public class EpsilonDecreasingStrategy extends ExplorationStrategy {
 
     private final static Double DEFAULT_EPSILON_STEP = 0.03;
-    public final static Double DEFAULT_EPSILON_MIN = 0.1;
+    public final static Double DEFAULT_EPSILON_MIN = 0.3;
     public final Double epsilonStep;
     public final Double epsilonMin;
 
