@@ -46,11 +46,10 @@ public class IO {
             throw new NullPointerException("Empty filename");
         }
         String baseDir = System.getProperty("user.dir");
-        
-       /* if (baseDir.matches("([\\S]+\\/)")) {
-            baseDir.replaceAll("\\/", "\\");
-        }*/
 
+        /* if (baseDir.matches("([\\S]+\\/)")) {
+         baseDir.replaceAll("\\/", "\\");
+         }*/
         StringBuilder filepath = new StringBuilder(baseDir);
         filepath.append(RESULTS_FILEPATH).append(appendix);
 
@@ -64,7 +63,7 @@ public class IO {
 
     private static String getFilenameFromPath(String filepath) {
         String[] sa;
-        sa = filepath.split("/");
+        sa = filepath.split("//");
         return sa[sa.length - 1];
     }
 
@@ -72,11 +71,15 @@ public class IO {
 
         File f = new File(filepath, getFilenameFromPath(filepath));
         try {
-            if (f.createNewFile()) {
-                return f;
-            } else {
-                return null;
+            if (f.exists()) {
+                if (f.isDirectory()) {
+                    f.delete();
+                    f.createNewFile();
+                } else {
+                    f.createNewFile();
+                }
             }
+            return f;
         } catch (IOException ex) {
             System.err.println(filepath);
             Logger.getLogger(IO.class.getName()).log(Level.SEVERE, null, ex);
