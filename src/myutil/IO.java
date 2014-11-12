@@ -80,14 +80,6 @@ public class IO {
 
     private static File createFile(String filepath) {
         try {
-<<<<<<< HEAD
-            if (f.exists()) {
-                if (f.isDirectory()) {
-                    f.delete();
-                    f.createNewFile();
-                } else {
-                    f.createNewFile();
-=======
             if (filepath.contains("\\")) {
                 filepath = filepath.replace("\\", "/");
             }
@@ -97,7 +89,6 @@ public class IO {
             if (!f.exists()) {
                 if (!f.createNewFile()) {
                     throw new IOException("Cannot create file.");
->>>>>>> 8e86e1cadf78d7b3dfe2eb087475933798af3d3b
                 }
             }
             return f;
