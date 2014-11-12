@@ -1,15 +1,15 @@
 package experiments;
 
 import exploration.ExplorationStrategy;
-import reputationsystem.ChooseProviderStrategy;
 import servicesystem.ServiceSystem;
+import strategies.Strategy;
 
 public class SimpleExperiment extends Experiment {
 
-    ChooseProviderStrategy experimentStrategy;
+    Strategy experimentStrategy;
             
     public SimpleExperiment(Long i, String name, ExplorationStrategy strategy,
-            ChooseProviderStrategy str, ExperimentData input) {
+            Strategy str, ExperimentData input) {
         super(i, name, strategy, input);
         experimentStrategy = str;
     }
@@ -19,4 +19,8 @@ public class SimpleExperiment extends Experiment {
         return new ServiceSystem(data, explorationStrategy, experimentStrategy);
     }
 
+    @Override
+     protected Strategy getExperimentStrategy(){
+         return experimentStrategy;
+     }
 }

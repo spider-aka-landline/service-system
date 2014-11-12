@@ -4,41 +4,23 @@ import entities.DipoleData;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import experiments.Experiment;
-import experiments.ExperimentData;
-import experiments.SimpleExperiment;
-import exploration.EpsilonDecreasingStrategy;
-import exploration.ExplorationStrategy;
-import java.io.IOException;
-import java.util.ArrayList;
+import experiments.generators.ExperimentsGenerator;
 import java.util.Collection;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import myutil.Generator;
+import java.util.Set;
 import myutil.IO;
-import reputationsystem.ChooseProviderStrategy;
+import myutil.generators.BruteForcerDataGenerator;
 
 public class SystemsBruteForcer {
 
+    private final Boolean generateWithVariance;
+
     private final Boolean generateInitData;
-
-    private final Integer minUsersNumber;
-    private final Integer maxUsersNumber;
-
-    private final Integer minProvidersNumber;
-    private final Integer maxProvidersNumber;
 
     private final Integer iterationsNumber;
     private final Integer tasksNumber;
 
-    private SortedSet<DipoleData> numbers = new TreeSet<>();
-    private SortedMap<Integer, Collection<User>> usersBase;
-    private SortedMap<Integer, Collection<ServiceProvider>> providersBase;
-    ExperimentData generatedDataForExperiments;
-
-    Generator gen = new Generator();
+    BruteForcerData data;
 
     // with generation all data only
     /**
@@ -50,55 +32,25 @@ public class SystemsBruteForcer {
      * @param iterationsCount how many iterations
      * @param tasksCount how many tasks
      */
-    SystemsBruteForcer(Boolean generate, DipoleData minimum, DipoleData maximum,
+    SystemsBruteForcer(Boolean generate, Boolean hasVariance, DipoleData minimum, DipoleData maximum,
             Integer iterationsCount, Integer tasksCount) {
         generateInitData = generate;
-        minUsersNumber = minimum.getUserNumber();
-        maxUsersNumber = maximum.getUserNumber();
-
-        minProvidersNumber = minimum.getProviderNumber();
-        maxProvidersNumber = maximum.getProviderNumber();
+        generateWithVariance = hasVariance;
 
         iterationsNumber = iterationsCount;
         tasksNumber = tasksCount;
 
-        numbers = new TreeSet<>();
-        usersBase = new TreeMap<>();
-        providersBase = new TreeMap<>();
-
-        //get init data from the Gap Between the Worlds
         if (generateInitData) {
-            for (Integer u = minUsersNumber; u <= maxUsersNumber;
-                    u += logIncrement(u)) {
-                for (Integer p = minProvidersNumber; p <= maxProvidersNumber;
-                        p += logIncrement(p)) {
-                    numbers.add(new DipoleData(u, p));
-
-                    if (u == 1) {
-                        // for all providers
-                        providersBase.put(p, gen.generateProviders(p));
-                    }
-                }
-                // for all users
-                usersBase.put(u, gen.generateUsers(u));
-            }
+            BruteForcerDataGenerator bruteDataGen
+                    = BruteForcerDataGenerator.getInstance();
+            data = bruteDataGen.generateData(hasVariance, minimum, maximum);
         } else {
             throw new UnsupportedOperationException("Reading: not supported yet.");
         }
     }
 
-    private static Integer logIncrement(Integer arg) {
-        if (arg < 10) {
-            return 1;
-        } else {
-            if (arg % 10 != 0) {
-                throw new IllegalArgumentException("Wrong increment input");
-            }
-            return 10 * logIncrement(arg / 10);
-        }
-    }
-
     public void run() {
+        Set<DipoleData> numbers = data.getNumbers();
         for (DipoleData d : numbers) {
             runExperimentPlan(d);
         }
@@ -113,61 +65,17 @@ public class SystemsBruteForcer {
 
         //Generate data for all experiments
         Collection<User> currentUsers
-                = getUsers(d.getUserNumber());
+                = data.getUsers(d.getUserNumber());
         Collection<ServiceProvider> currentProviders
-                = getProviders(d.getProviderNumber());
-        generatedDataForExperiments = new ExperimentData(currentUsers,
-                currentProviders, tasksNumber, iterationsNumber);
+                = data.getProviders(d.getProviderNumber());
 
         List<Experiment> currentExperimentPlan
-                = createExperimentPlan(generatedDataForExperiments);
+                = ExperimentsGenerator.getInstance()
+                .createExperimentPlan(currentUsers, currentProviders,
+                        tasksNumber, iterationsNumber, generateWithVariance);
+        
         ExperimentsRunner runner = new ExperimentsRunner(currentExperimentPlan);
         runner.run();
-    }
-
-    private List<Experiment> createExperimentPlan(ExperimentData expData) {
-        //Only one exploration strategy;
-        ExplorationStrategy strategy = new EpsilonDecreasingStrategy();
-
-        //container for all experiments
-        List<Experiment> exps = new ArrayList<>();
-
-        //First experiment: random
-        Experiment exp01 = new SimpleExperiment(Long.valueOf(1),
-                "simple-constants/random", strategy,
-                ChooseProviderStrategy.RANDOM, expData);
-
-        exps.add(exp01);
-
-        //Second experiment: RL, e-decreasing
-        Experiment exp02 = new SimpleExperiment(Long.valueOf(2),
-                "simple-constants/rl", strategy,
-                ChooseProviderStrategy.RL, expData);
-
-        exps.add(exp02);
-
-        //Third experiment: RL, e-decreasing, reputation
-        Experiment exp03 = new SimpleExperiment(Long.valueOf(3),
-                "simple-constants/reputation", strategy,
-                ChooseProviderStrategy.RLWITHREPUTATION, expData);
-
-        exps.add(exp03);
-
-        return exps;
-    }
-
-    private Collection<User> getUsers(Integer usersNumber) {
-        if (!usersBase.containsKey(usersNumber)) {
-            throw new IllegalArgumentException();
-        }
-        return usersBase.get(usersNumber);
-    }
-
-    private Collection<ServiceProvider> getProviders(Integer providersNumber) {
-        if (!usersBase.containsKey(providersNumber)) {
-            throw new IllegalArgumentException();
-        }
-        return providersBase.get(providersNumber);
     }
 
 }

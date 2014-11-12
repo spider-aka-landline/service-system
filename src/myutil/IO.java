@@ -1,25 +1,25 @@
 package myutil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import Jama.Matrix;
-
+import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
-import entities.Task;
 import experiments.ExperimentData;
 import experiments.ExperimentSettings;
 import experiments.graph.Hystogram;
 import experiments.graph.UniformHystogram;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +29,6 @@ public class IO {
     public static final String RESULTS_FILEPATH = "/results/";
     public static String appendix;
 
-    public static final String GNUPLOT_SCRIPT_FILENAME = "h.plot";
     public static final NumberFormat FORMAT_FOR_DOUBLE
             = new DecimalFormat("#.00");
 
@@ -37,11 +36,15 @@ public class IO {
         appendix = s;
     }
 
-    public static String getGnuplotScriptFilepath() {
-        return getFilePath(GNUPLOT_SCRIPT_FILENAME);
+    public static String getResultsFilePath(String filename) {
+        return getFilePath(RESULTS_FILEPATH+filename, true);
     }
 
     public static String getFilePath(String filename) {
+        return getFilePath(filename, true);
+    }
+
+    public static String getFilePath(String filename, boolean addNumbers) {
         if (filename == null) {
             throw new NullPointerException("Empty filename");
         }
@@ -51,12 +54,10 @@ public class IO {
          baseDir.replaceAll("\\/", "\\");
          }*/
         StringBuilder filepath = new StringBuilder(baseDir);
-        filepath.append(RESULTS_FILEPATH).append(appendix);
-
-        File myPath = new File(filepath.toString());
-        myPath.mkdirs();
-        System.out.println(filepath.toString());
-
+        filepath.append(RESULTS_FILEPATH);
+        if (addNumbers) {
+            filepath.append(appendix);
+        }
         filepath.append(filename);
         return filepath.toString();
     }
@@ -67,25 +68,53 @@ public class IO {
         return sa[sa.length - 1];
     }
 
-    public static File createFile(String filepath) {
+    //гланды автогеном, но оно ж должно заработать :(
+    private static String getDirectoryFromPath(String filepath) {
+        String[] sa = filepath.split("/");
+        StringBuilder dir = new StringBuilder();
+        for (int i = 0; i < sa.length - 1; i++) {
+            dir.append(sa[i]).append("/");
+        }
+        return dir.toString();
+    }
 
-        File f = new File(filepath, getFilenameFromPath(filepath));
+    private static File createFile(String filepath) {
         try {
+<<<<<<< HEAD
             if (f.exists()) {
                 if (f.isDirectory()) {
                     f.delete();
                     f.createNewFile();
                 } else {
                     f.createNewFile();
+=======
+            if (filepath.contains("\\")) {
+                filepath = filepath.replace("\\", "/");
+            }
+            createDirectory(getDirectoryFromPath(filepath));
+
+            File f = new File(filepath);
+            if (!f.exists()) {
+                if (!f.createNewFile()) {
+                    throw new IOException("Cannot create file.");
+>>>>>>> 8e86e1cadf78d7b3dfe2eb087475933798af3d3b
                 }
             }
             return f;
         } catch (IOException ex) {
-            System.err.println(filepath);
-            Logger.getLogger(IO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(IO.class.getName()).log(Level.SEVERE, filepath, ex);
             return null;
         }
 
+    }
+
+    private static void createDirectory(String dirPath) throws IOException {
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                throw new IOException("Cannot create directory.");
+            }
+        }
     }
 
     public static <V> void printCollection(Collection<V> smth, String filepath) {
@@ -94,6 +123,21 @@ public class IO {
         }
         try (PrintWriter writer = new PrintWriter(createFile(filepath))) {
             smth.forEach(b -> writer.append(b.toString()).append("\n"));
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IO.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static <V> void printAdd(V smth, String filepath) {
+        createFile(filepath);
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(filepath, true)))) {
+            if (smth == null) {
+                writer.println("null");
+            } else {
+                writer.println(smth);
+            }
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(IO.class
@@ -118,9 +162,8 @@ public class IO {
             String filename, int width, int d) throws FileNotFoundException {
 
         String filePath = getFilePath(filename);
-        File f = new File(filePath, filename);
-        try (PrintWriter pw = new PrintWriter(f);) {
-            matrx.print(pw, 1, 3);
+        try (PrintWriter pw = new PrintWriter(createFile(filePath));) {
+            matrx.print(pw, width, d);
         }
     }
 

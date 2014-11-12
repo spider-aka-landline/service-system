@@ -1,57 +1,69 @@
 package servicesystem;
 
-import entities.providers.ServiceProvider;
 import entities.Task;
+import entities.providers.ServiceProvider;
 import entities.users.User;
 import experiments.ExperimentData;
 import exploration.ExplorationStrategy;
 import java.util.ArrayList;
-import reputationsystem.ReputationModule;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
 import messages.ProviderResponse;
 import messages.UserResponse;
-import reputationsystem.ChooseProviderStrategy;
+import reputationsystem.ProvidersReputationMap;
+import strategies.Strategy;
+import validator.DifferenceValidator;
+import validator.SimpleValidator;
 
 //08.08: one user, set of service providers. Stubs everywhere.
 //11.08: Task entity was added, reputation-hashmap handling, users
 public class ServiceSystem {
 
-    private final List<User> users = new ArrayList<>();
-    private final Queue<Task> tasks = new PriorityQueue<>();
+    List<DifferenceValidator> validators = new ArrayList<>();
+    List<Long> validationResults = new LinkedList<>();
+    Boolean checked = false;
 
-    ChooseProviderStrategy experimentStrategy;
-    private final ReputationModule reputationModule;
+    protected final ServiceSystemState state;
+    Strategy experimentStrategy;
+
+    private final ExplorationStrategy explorationStrategy;
 
     public ServiceSystem(ExperimentData data,
-            ExplorationStrategy explorationStrategy, ChooseProviderStrategy str) {
-        data.getUsers().forEach(b -> users.add(b));
-        data.getTasks().forEach(b -> tasks.add(b));
+            ExplorationStrategy exploreStrategy, Strategy str,
+            Collection<DifferenceValidator> c) {
+
+        state = new ServiceSystemState(data);
+        explorationStrategy = exploreStrategy;
         experimentStrategy = str;
-        // epsilon-decreasing exploration strategy - with default parameters
-        reputationModule = new ReputationModule(data.getProviders(), explorationStrategy);
+        validators.addAll(c);
     }
 
-    public void submitTask(Task t) {
-        tasks.add(t);
+    public ServiceSystem(ExperimentData data,
+            ExplorationStrategy exploreStrategy, Strategy str) {
+        state = new ServiceSystemState(data);
+        explorationStrategy = exploreStrategy;
+        experimentStrategy = str;
+        validators.add(new SimpleValidator());
     }
 
-    public void addUser(User u) {
-        users.add(u);
+    public Long getvalidationResults() {
+        return validationResults.get(0);
     }
 
-    public void addProvider(ServiceProvider sp) {
-        reputationModule.addServiceProvider(sp);
+    public ServiceSystemState getSystemState() {
+        return state;
     }
 
     public void run() {
-        while (!tasks.isEmpty()) {
-            processCurrentRequest(tasks.poll());
+        checked = false;
+        while (state.hasTasks()) {
+            processCurrentRequest(state.pollTask());
+            state.incrementServedTasksNumber();
         }
     }
 
-    private void processCurrentRequest(Task task) {
+    protected void processCurrentRequest(Task task) {
         //выбрать провайдера
         ServiceProvider worker = chooseProvider(task);
         //узнать, кто пользователь
@@ -60,15 +72,42 @@ public class ServiceSystem {
         ProviderResponse service = worker.processUserTask(task);
         //узнать оценки
         UserResponse ans = sender.generateResponse(service);
-
         //пересчитать ф-ю ожидаемой ценности
         //внести изменения в репутацию
-        reputationModule.update(worker, ans.getEstimate(), ans.getDifferenceSign());
+        //
+        Double delta = state.update(worker,
+                ans.getEstimate(), ans.getDifferenceSign());
+
+        checkDelta(delta);
+    }
+
+    private void checkDelta(Double delta) {
+        for (DifferenceValidator d : validators) {
+            if (!checked && d.isDifferenceInGap(delta)) {
+                validationResults.add(state.getServedTasksNumber());
+                checked = true;
+            } else if (checked && !d.isDifferenceInGap(delta)) {
+                //validationResults.remove(validationResults.size() - 1);
+                checked = false;
+            }
+        }
 
     }
 
-    private ServiceProvider chooseProvider(Task task) {
-        return reputationModule.chooseProvider(task, experimentStrategy);
+    /**
+     * epsilon-decreasing стратегия выбора провайдера
+     *
+     * @param task User task
+     * @return ServiceProvider, chosen for the task
+     */
+    protected ServiceProvider chooseProvider(Task task) {
+        ProvidersReputationMap reputations = state.getProvidersReputations();
+        if (reputations.isEmpty()) {
+            throw new RuntimeException("No service providers were found. Can't serve request.");
+        }
+
+        return experimentStrategy.chooseProviderForTask(task,
+                explorationStrategy, reputations);
     }
 
 }
