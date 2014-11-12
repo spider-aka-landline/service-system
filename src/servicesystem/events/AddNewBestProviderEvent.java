@@ -3,7 +3,6 @@ package servicesystem.events;
 import entities.Params;
 import entities.providers.ServiceProvider;
 import myutil.generators.EntitiesGenerator;
-import reputationsystem.DataEntity;
 import reputationsystem.ProvidersReputationMap;
 import servicesystem.ExperimentsRunner;
 import servicesystem.ServiceSystemState;
