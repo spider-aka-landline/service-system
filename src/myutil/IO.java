@@ -64,7 +64,7 @@ public class IO {
 
     private static String getFilenameFromPath(String filepath) {
         String[] sa;
-        sa = filepath.split("/");
+        sa = filepath.split("//");
         return sa[sa.length - 1];
     }
 
