@@ -1,4 +1,4 @@
-package strategies;
+package strategies.oldpackage;
 
 import entities.providers.ServiceProvider;
 import java.util.Map;

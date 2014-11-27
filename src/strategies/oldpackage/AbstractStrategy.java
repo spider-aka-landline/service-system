@@ -1,13 +1,13 @@
-package strategies;
+package strategies.oldpackage;
 
 import entities.Task;
 import entities.providers.ServiceProvider;
 import exploration.ExplorationStrategy;
 import java.util.Map;
 import math.StdRandom;
-import reputationsystem.ChooseFromReputableStrategy;
 import reputationsystem.DataEntity;
 import reputationsystem.ProvidersReputationMap;
+import strategies.Strategy;
 
 public abstract class AbstractStrategy implements Strategy {
 
@@ -21,8 +21,9 @@ public abstract class AbstractStrategy implements Strategy {
         reputableChoice = s;
     }
 
+   
     @Override
-    public ServiceProvider chooseProviderForTask(Task t,
+    public ServiceProvider chooseProvider(Task t,
             ExplorationStrategy exploration,
             ProvidersReputationMap map) {
         Map<ServiceProvider, DataEntity> searchSet
@@ -50,4 +51,6 @@ public abstract class AbstractStrategy implements Strategy {
         int randomIndex = StdRandom.uniform(map.size());
         return (ServiceProvider) map.keySet().toArray()[randomIndex];
     }
+
+
 }

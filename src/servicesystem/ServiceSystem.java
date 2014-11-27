@@ -106,7 +106,7 @@ public class ServiceSystem {
             throw new RuntimeException("No service providers were found. Can't serve request.");
         }
 
-        return experimentStrategy.chooseProviderForTask(task,
+        return experimentStrategy.chooseProvider(task,
                 explorationStrategy, reputations);
     }
 

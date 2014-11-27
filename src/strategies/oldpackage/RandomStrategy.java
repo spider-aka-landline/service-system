@@ -1,4 +1,4 @@
-package strategies;
+package strategies.oldpackage;
 
 import entities.Task;
 import entities.providers.ServiceProvider;

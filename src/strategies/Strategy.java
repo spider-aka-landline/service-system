@@ -15,7 +15,10 @@ import reputationsystem.ProvidersReputationMap;
  */
 public interface Strategy {
 
-    public ServiceProvider chooseProviderForTask(Task t,
+    /* внешний метод
+     * инициирует принятие решение о провайдере 
+     */
+    public ServiceProvider chooseProvider(Task t,
             ExplorationStrategy exploration,
             ProvidersReputationMap map);
 }

@@ -17,10 +17,9 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import servicesystem.events.AddNewBestProviderEvent;
 import servicesystem.events.StressEvent;
-import strategies.RLStrategy;
-import strategies.RLWithReputationMaxReputationStrategy;
-import strategies.RLWithReputationStrategy;
-import strategies.RandomStrategy;
+import strategies.oldpackage.RLStrategy;
+import strategies.oldpackage.RLWithReputationMaxReputationStrategy;
+import strategies.oldpackage.RLWithReputationStrategy;
 import strategies.Strategy;
 
 public class ExperimentsGenerator {
@@ -114,8 +113,8 @@ public class ExperimentsGenerator {
         Map<String, Strategy> allStrategies = getStrategies();
         for (Entry<String, Strategy> entry : allStrategies.entrySet()) {
             Experiment exp = createSimpleExperiment(entry.getKey(),
-                currentExperimentBlockName, strategy,
-                entry.getValue(), expData, addedProviderEvent);
+                    currentExperimentBlockName, strategy,
+                    entry.getValue(), expData, addedProviderEvent);
             exps.add(exp);
         }
 
@@ -124,15 +123,23 @@ public class ExperimentsGenerator {
 
     private Map<String, Strategy> getStrategies() {
         Map<String, Strategy> strategies = new TreeMap<>();
+
         //First experiment: random
-        //strategies.put("random", new RandomStrategy());
+        strategies.put("random", new strategies.oldpackage.RandomStrategy());
+        strategies.put("randomNew", new strategies.newpackage.RandomStrategy());
+
         //Second experiment: RL, e-decreasing
-        //strategies.put("rl", new RLStrategy());
+        strategies.put("rl", new strategies.oldpackage.RLStrategy());
+        strategies.put("rlNew", new strategies.newpackage.SimpleRLStrategy());
+
         //Third experiment: RL, e-decreasing, reputation
-        strategies.put("reputationV", new RLWithReputationStrategy());
+        strategies.put("reputationV", new strategies.oldpackage.RLWithReputationStrategy());
+        strategies.put("reputationVNew", new strategies.newpackage.ReputationStrategy());
+
         //4th experiment: reputation only (max reputation)
-        strategies.put("reputationR",
-                new RLWithReputationMaxReputationStrategy());
+        strategies.put("reputationR", new strategies.oldpackage.RLWithReputationMaxReputationStrategy());
+        strategies.put("reputationR", new strategies.newpackage.ReputationRStrategy());
+
         return strategies;
     }
 }

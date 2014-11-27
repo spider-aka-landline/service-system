@@ -1,13 +1,16 @@
 package myutil;
 
+import entities.providers.ServiceProvider;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import math.StdRandom;
+import reputationsystem.DataEntity;
 
 public class UtilFunctions {
 
@@ -35,22 +38,39 @@ public class UtilFunctions {
         }
         return Collections.min(map.values(), cmp);
     }
-    
+
 
     /* Вернуть случайный ключ карты */
-    public static <K, V> K chooseRandomElement(Map<K, V> map) {
+    public static <K, V> K chooseRandomKey(Map<K, V> map) {
         if (map.isEmpty()) {
             return null;
         }
         return (K) chooseRandomElement(map.keySet());
     }
 
+    /* Вернуть случайный ключ карты */
+    public static <K, V> V chooseRandomValue(Map<K, V> map) {
+        if (map.isEmpty()) {
+            return null;
+        }
+        return (V) chooseRandomElement(map.values());
+    }
     /* Вернуть случайный элемент коллекции */
+
     public static <V> V chooseRandomElement(Collection<V> c) {
-        if (c.isEmpty()) {
+        if (c == null || c.isEmpty()) {
             return null;
         }
         return (V) c.toArray()[StdRandom.uniform(c.size())];
+    }
+
+    /* Get key element from map*/
+    public static <K, V> Entry<K, V>
+            chooseRandomElement(Map<K, V> map) {
+        if (map == null || map.isEmpty()) {
+            return null;
+        }
+        return (Entry<K, V>) chooseRandomElement(map.entrySet());
     }
 
 }

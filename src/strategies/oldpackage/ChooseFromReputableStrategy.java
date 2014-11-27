@@ -2,7 +2,7 @@
  * Here comes the text of your license
  * Each line should be prefixed with  * 
  */
-package reputationsystem;
+package strategies.oldpackage;
 
 import comparators.ExpectationComparator;
 import comparators.ReputationComparator;
@@ -11,7 +11,8 @@ import entities.providers.ServiceProvider;
 import java.util.Map;
 import java.util.Set;
 import myutil.UtilFunctions;
-import strategies.RandomStrategy;
+import reputationsystem.DataEntity;
+import strategies.oldpackage.RandomStrategy;
 
 /**
  *

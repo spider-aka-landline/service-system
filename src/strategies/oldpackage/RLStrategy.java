@@ -1,4 +1,4 @@
-package strategies;
+package strategies.oldpackage;
 
 import comparators.ExpectationComparator;
 import entities.providers.ServiceProvider;
