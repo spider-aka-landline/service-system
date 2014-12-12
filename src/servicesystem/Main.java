@@ -1,8 +1,12 @@
 package servicesystem;
 
 import entities.DipoleData;
+import experiments.generators.ExperimentsGenerator;
+import strategies.Strategy;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Main {
 
@@ -26,8 +30,32 @@ public class Main {
         int iterations = 1000;
         int modellingTime = 1000; //tasks quantity
 
+        Map<String, Strategy> allStrategies = getStrategies();
+        ExperimentsGenerator generator = ExperimentsGenerator.getInstance(allStrategies);
+
         return new SystemsBruteForcer(generateInitData, isVariance,
-                min, max, iterations, modellingTime);
+                min, max, iterations, modellingTime, generator);
     }
 
+    private static Map<String, Strategy> getStrategies() {
+        Map<String, Strategy> strategies = new TreeMap<>();
+
+        //First experiment: random
+        strategies.put("random", new strategies.oldpackage.RandomStrategy());
+        strategies.put("randomNew", new strategies.newpackage.RandomStrategy());
+
+        //Second experiment: RL, e-decreasing
+        strategies.put("rl", new strategies.oldpackage.RLStrategy());
+        strategies.put("rlNew", new strategies.newpackage.SimpleRLStrategy());
+
+        //Third experiment: RL, e-decreasing, reputation
+        strategies.put("reputationV", new strategies.oldpackage.RLWithReputationStrategy());
+        strategies.put("reputationVNew", new strategies.newpackage.ReputationStrategy());
+
+        //4th experiment: reputation only (max reputation)
+        strategies.put("reputationR", new strategies.oldpackage.RLWithReputationMaxReputationStrategy());
+        strategies.put("reputationR", new strategies.newpackage.ReputationRStrategy());
+
+        return strategies;
+    }
 }

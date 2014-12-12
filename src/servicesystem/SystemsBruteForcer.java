@@ -22,6 +22,8 @@ public class SystemsBruteForcer {
 
     BruteForcerData data;
 
+    ExperimentsGenerator experimentsGenerator;
+
     // with generation all data only
     /**
      *
@@ -33,12 +35,13 @@ public class SystemsBruteForcer {
      * @param tasksCount how many tasks
      */
     SystemsBruteForcer(Boolean generate, Boolean hasVariance, DipoleData minimum, DipoleData maximum,
-            Integer iterationsCount, Integer tasksCount) {
+            Integer iterationsCount, Integer tasksCount, ExperimentsGenerator generator) {
         generateInitData = generate;
         generateWithVariance = hasVariance;
 
         iterationsNumber = iterationsCount;
         tasksNumber = tasksCount;
+        experimentsGenerator = generator;
 
         if (generateInitData) {
             BruteForcerDataGenerator bruteDataGen
@@ -70,9 +73,8 @@ public class SystemsBruteForcer {
                 = data.getProviders(d.getProviderNumber());
 
         List<Experiment> currentExperimentPlan
-                = ExperimentsGenerator.getInstance()
-                .createExperimentPlan(currentUsers, currentProviders,
-                        tasksNumber, iterationsNumber, generateWithVariance);
+                = experimentsGenerator.createExperimentPlan(currentUsers, currentProviders,
+                tasksNumber, iterationsNumber, generateWithVariance);
         
         ExperimentsRunner runner = new ExperimentsRunner(currentExperimentPlan);
         runner.run();
