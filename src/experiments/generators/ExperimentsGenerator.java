@@ -2,7 +2,10 @@ package experiments.generators;
 
 import entities.providers.ServiceProvider;
 import entities.users.User;
-import experiments.*;
+import experiments.Experiment;
+import experiments.ExperimentData;
+import experiments.ExperimentDataWithVariance;
+import experiments.SimpleExperiment;
 import exploration.EpsilonDecreasingStrategy;
 import exploration.ExplorationStrategy;
 import servicesystem.events.AddNewBestProviderEvent;
@@ -19,7 +22,7 @@ public class ExperimentsGenerator {
 
     private static ExperimentsGenerator instance;
 
-    protected long experimentsCounter = 0;
+    private long experimentsCounter = 0;
     protected Map<String, Strategy> allStrategies;
 
     protected ExperimentsGenerator(Map<String, Strategy> strategies) {
@@ -33,28 +36,21 @@ public class ExperimentsGenerator {
         return instance;
     }
 
-    public Experiment createSimpleExperiment(String name,
+    protected Experiment createSimpleExperiment(String name,
                                              String currentExperimentBlockName, ExplorationStrategy strategy,
                                              Strategy str, ExperimentData input) {
 
         String path = makePath(name, currentExperimentBlockName);
         Experiment newbornExperiment
-                = new SimpleExperiment(experimentsCounter,
-                path, strategy, str, input);
+                = getExperiment(experimentsCounter, path, strategy, str, input);
 
         return newbornExperiment;
     }
 
-    public Experiment createSimpleExperiment(String name,
-                                             String currentExperimentBlockName, ExplorationStrategy strategy,
-                                             Strategy str, ExperimentData input, StressEvent event) {
-
-        String path = makePath(name, currentExperimentBlockName);
-        Experiment newbornExperiment
-                = new SimpleExperimentWithStressEvent(experimentsCounter,
-                path, strategy, str, input, event);
-
-        return newbornExperiment;
+    protected Experiment getExperiment(Long counter, String path, ExplorationStrategy strategy,
+                                       Strategy str, ExperimentData input) {
+        return
+                new SimpleExperiment(experimentsCounter, path, strategy, str, input);
     }
 
     private String makePath(String experimentName, String experimentBlockName) {
@@ -104,11 +100,11 @@ public class ExperimentsGenerator {
         String currentExperimentBlockName
                 = generateExperimentBlockName(generateWithVar);
 
-        StressEvent addedProviderEvent = new AddNewBestProviderEvent(6);
+
         for (Entry<String, Strategy> entry : allStrategies.entrySet()) {
             Experiment exp = createSimpleExperiment(entry.getKey(),
                     currentExperimentBlockName, strategy,
-                    entry.getValue(), expData, addedProviderEvent);
+                    entry.getValue(), expData);
             experiments.add(exp);
         }
 
