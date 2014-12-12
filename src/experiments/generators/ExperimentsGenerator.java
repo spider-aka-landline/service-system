@@ -101,7 +101,7 @@ public class ExperimentsGenerator {
         ExplorationStrategy strategy = new EpsilonDecreasingStrategy();
 
         //container for all experiments
-        List<Experiment> exps = new ArrayList<>();
+        List<Experiment> experiments = new ArrayList<>();
 
         ExperimentData expData = generateExperimentData(currentUsers,
                 currentProviders, tasksNumber, iterationsNumber, generateWithVar);
@@ -115,10 +115,10 @@ public class ExperimentsGenerator {
             Experiment exp = createSimpleExperiment(entry.getKey(),
                     currentExperimentBlockName, strategy,
                     entry.getValue(), expData, addedProviderEvent);
-            exps.add(exp);
+            experiments.add(exp);
         }
 
-        return exps;
+        return experiments;
     }
 
     private Map<String, Strategy> getStrategies() {
