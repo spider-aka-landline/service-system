@@ -4,7 +4,7 @@ import entities.Params;
 import entities.Task;
 import messages.ProviderResponse;
 
-public class ServiceProvider {
+public class ServiceProvider implements Comparable<ServiceProvider> {
 
     protected final int id;
     Params properties;
@@ -56,5 +56,12 @@ public class ServiceProvider {
         StringBuilder s = new StringBuilder(String.valueOf(id));
         s.append(" ").append(properties);
         return s.toString();
+    }
+
+
+    @Override
+    public int compareTo(ServiceProvider o) {
+        return (this.id < o.id) ? -1
+                : (this.id > o.id) ? 1 : 0;
     }
 }

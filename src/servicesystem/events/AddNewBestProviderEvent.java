@@ -2,10 +2,15 @@ package servicesystem.events;
 
 import entities.Params;
 import entities.providers.ServiceProvider;
+import myutil.IO;
 import myutil.generators.EntitiesGenerator;
+import reputationsystem.DataEntity;
 import reputationsystem.ProvidersReputationMap;
 import servicesystem.ExperimentsRunner;
 import servicesystem.ServiceSystemState;
+
+import java.io.IOException;
+import java.util.Map;
 
 public class AddNewBestProviderEvent implements StressEvent {
 
@@ -25,7 +30,7 @@ public class AddNewBestProviderEvent implements StressEvent {
         //добавить провайдера
         state.addProvider(addedProvider);
 
-        //logAddedProvider(state);
+        logAddedProvider(state);
     }
 
     private Params makeBetterParams(Params worstParams) {
@@ -46,7 +51,17 @@ public class AddNewBestProviderEvent implements StressEvent {
         return (currentTime > triggerTime) && !wereChecked;
     }
 
-    @Override
+    private void logStateToFile(ServiceSystemState state) {
+        Map<ServiceProvider, DataEntity> reputations = state.getProvidersReputations().getAllProvidersData();
+        String filepath = "C:\\Users\\Spider\\IdeaProjects\\service-system\\results\\reputationsLog.txt";
+        try {
+            IO.printMapToFile(reputations, filepath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+        @Override
     public void checkCriteria(ServiceSystemState state) {
         if (state.isInReputable(addedProvider)) {
             //поднять флаг
@@ -57,7 +72,7 @@ public class AddNewBestProviderEvent implements StressEvent {
             /*сделать что-то с матрицами для вывода/подсчета результатов
              *точно так же, как с остальными числами
              */
-            logCriteriaCompletionTime(time);
+            //logCriteriaCompletionTime(time);
         }
     }
 
@@ -94,7 +109,8 @@ public class AddNewBestProviderEvent implements StressEvent {
         stringBuilder.append(") but not in reputable (");
         stringBuilder.append(inReputableProviders);
         stringBuilder.append(")");
-        //System.out.println(stringBuilder.toString());
+
+        System.out.println(stringBuilder.toString());
     }
 
 }

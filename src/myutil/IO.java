@@ -136,7 +136,7 @@ public class IO {
         }
     }
 
-    public static <K, V> void printMapToFile(Map<K, V> smth, String filepath)
+   public static <K, V> void printMapToFile(Map<K, V> smth, String filepath)
             throws FileNotFoundException {
         if (smth == null) {
             throw new NullPointerException("Empty map for print");
@@ -145,6 +145,16 @@ public class IO {
             smth.entrySet().forEach(b -> {
                 writer.append(b.getKey().toString()).append(" ");
                 writer.append(b.getValue().toString()).append("\n");
+            });
+        }
+    }
+
+    public static void printReputationsToFile(Map<ServiceProvider, Matrix> smth, String filepath)
+            throws FileNotFoundException {
+        try (PrintWriter writer = new PrintWriter(createFile(filepath))) {
+            smth.entrySet().forEach(b -> {
+                //writer.append(String.valueOf(b.getKey().getID())).append(" ");
+                b.getValue().print(writer,0,5);
             });
         }
     }

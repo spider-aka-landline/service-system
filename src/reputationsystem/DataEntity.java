@@ -30,5 +30,10 @@ public class DataEntity {
         expectation = expect;
     }    
 
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(reputation).append(" ").append(expectation);
+        return stringBuilder.toString();
+    }
 }
 

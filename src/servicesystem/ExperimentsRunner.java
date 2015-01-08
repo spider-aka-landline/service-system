@@ -1,13 +1,16 @@
 package servicesystem;
 
+import entities.providers.ServiceProvider;
 import experiments.Experiment;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import messages.ProviderResponse;
+import reputationsystem.DataEntity;
 
 public final class ExperimentsRunner {
 
@@ -28,6 +31,10 @@ public final class ExperimentsRunner {
         currentExperiment.logExperimentData(criteriaCompletionTime);
     }
 
+    public static void logExperimentData(ServiceSystemState state) {
+        currentExperiment.logExperimentData(state);
+    }
+
     public void run() {
 
         for (Experiment exp : experiments) {
@@ -43,5 +50,4 @@ public final class ExperimentsRunner {
         }
 
     }
-
 }

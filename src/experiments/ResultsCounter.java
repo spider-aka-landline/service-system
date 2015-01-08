@@ -1,32 +1,73 @@
 package experiments;
 
 import Jama.Matrix;
+import entities.providers.ServiceProvider;
+import messages.ProviderResponse;
+import reputationsystem.DataEntity;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import messages.ProviderResponse;
 
 public class ResultsCounter {
 
     private final Matrix criteriaCompletionTimeMatrix;
     private final Matrix results;
-    private final Matrix providerCount;
+    private final Matrix providerCount; //for frequencies. not in use now.
+    private final Map<ServiceProvider, Matrix> providersReputationProgress;
 
-    public ResultsCounter(Integer iterations, Integer tasks, Integer providers) {
+    private final int iterationsQuantity;
+    private final int tasksQuantity;
+
+    public ResultsCounter(Integer iterations, Integer tasks, Collection<ServiceProvider> allProviders) {
         criteriaCompletionTimeMatrix = new Matrix(iterations, 1);
         results = new Matrix(iterations, tasks);
-        providerCount = new Matrix(iterations, providers);
+        providerCount = new Matrix(iterations, allProviders.size());
+
+        providersReputationProgress = new TreeMap<>();
+        for (ServiceProvider key : allProviders) {
+            providersReputationProgress.put(key, new Matrix(iterations, tasks, 0.));
+        }
+        iterationsQuantity = iterations;
+        tasksQuantity = tasks;
     }
 
     public Matrix getEstimateAverages() {
-        return getAverages(results);
+        return getAverages(results).transpose();
     }
 
     public Matrix getProvidersChooseFrequencyAverages() {
-        return getAverages(providerCount);
+        return getAverages(providerCount).transpose();
     }
 
     public Matrix getCriteriaCompletionTimeAverages() {
-        return getAverages(criteriaCompletionTimeMatrix);
+        return getAverages(criteriaCompletionTimeMatrix).transpose();
+    }
+
+    public Map<ServiceProvider, Matrix> getProvidersReputationProgressAverages() {
+        return getAverages(providersReputationProgress);
+    }
+
+    private <K> Map<K, Matrix> getAverages(Map<K, Matrix> providersReputationProgress) {
+        Map<K, Matrix> resultMap = new TreeMap<>();
+
+        Iterator<Map.Entry<K, Matrix>> iterator = providersReputationProgress.entrySet().iterator();
+        Map.Entry<K, Matrix> currentEntry;
+        K currentKey;
+        Matrix currentValue;
+
+        while (iterator.hasNext()) {
+            currentEntry = iterator.next();
+            currentKey = currentEntry.getKey();
+            currentValue = currentEntry.getValue();
+            //providersReputationProgress
+            resultMap.put(currentKey, getAverages(currentValue));
+        }
+
+        return resultMap;
     }
 
     private Matrix getAverages(Matrix input) {
@@ -54,7 +95,7 @@ public class ResultsCounter {
     }
 
     void addData(Integer iterationCycle, Integer taskNumber,
-            ProviderResponse pr, Double value) {
+                 ProviderResponse pr, Double value) {
         results.set(iterationCycle, taskNumber, value);
         //updateProviderCount(iterationCycle, pr.getServiceProviderId());
     }
@@ -63,12 +104,31 @@ public class ResultsCounter {
         criteriaCompletionTimeMatrix.set(iterationCycle, 0, time);
     }
 
+    void addData(Integer iterationCycle, Integer taskNumber,
+                 Map<ServiceProvider, DataEntity> serviceProviderDataEntityMap) {
+        Iterator<Map.Entry<ServiceProvider, DataEntity>> iterator = serviceProviderDataEntityMap.entrySet().iterator();
+        Map.Entry<ServiceProvider, DataEntity> currentEntry;
+        ServiceProvider currentKey;
+        while (iterator.hasNext()) {
+            currentEntry = iterator.next();
+            currentKey = currentEntry.getKey();
+            Double currentReputation = currentEntry.getValue().getReputation();
+
+            if (!providersReputationProgress.containsKey(currentKey))
+                providersReputationProgress.put(currentKey, new Matrix(iterationsQuantity, tasksQuantity, 0.));
+            Matrix currentReputationMatrix = providersReputationProgress.get(currentKey);
+            currentReputationMatrix.set(iterationCycle, taskNumber-1, currentReputation);
+        }
+
+    }
+
     private void updateProviderCount(Integer iterationCycle,
-            int serviceProviderId) {
+                                     int serviceProviderId) {
 
         try {
             double temp = providerCount.get(iterationCycle, serviceProviderId);
             providerCount.set(iterationCycle, serviceProviderId, ++temp);
+
         } catch (ArrayIndexOutOfBoundsException ex) {
             StringBuilder sb = new StringBuilder();
             sb.append("at iterationCycle = ");

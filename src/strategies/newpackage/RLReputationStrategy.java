@@ -15,7 +15,13 @@ public abstract class RLReputationStrategy extends RLStrategy {
     @Override
     Map<ServiceProvider, DataEntity> getSearchSet(
             ProvidersReputationMap acceptableProviders) {
-        return acceptableProviders.getReputableProvidersData(
-                ReputationModule.REPUTATION_MIN_LEVEL);
+        Map<ServiceProvider, DataEntity> searchSet;
+        searchSet = acceptableProviders.getReputableProvidersData(ReputationModule.REPUTATION_MIN_LEVEL);
+
+        //if empty (at the start), try all providers
+        if (searchSet.isEmpty())
+            searchSet = acceptableProviders.getAllProvidersData();
+
+        return searchSet;
     }
 }

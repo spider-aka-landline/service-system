@@ -1,4 +1,5 @@
 set terminal postscript eps
+set grid
 set palette gray
 set output "average.eps"
 set encoding utf8

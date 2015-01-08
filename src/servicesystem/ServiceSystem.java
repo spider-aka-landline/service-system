@@ -5,12 +5,12 @@ import entities.providers.ServiceProvider;
 import entities.users.User;
 import experiments.ExperimentData;
 import exploration.ExplorationStrategy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.util.*;
+
 import messages.ProviderResponse;
 import messages.UserResponse;
+import reputationsystem.DataEntity;
 import reputationsystem.ProvidersReputationMap;
 import strategies.Strategy;
 import validator.DifferenceValidator;
@@ -78,7 +78,13 @@ public class ServiceSystem {
         Double delta = state.update(worker,
                 ans.getEstimate(), ans.getDifferenceSign());
 
+        logState(state);
+
         checkDelta(delta);
+    }
+    private void logState(ServiceSystemState state) {
+        Map<ServiceProvider, DataEntity> reputations = state.getProvidersReputations().getAllProvidersData();
+        ExperimentsRunner.logExperimentData(state);
     }
 
     private void checkDelta(Double delta) {

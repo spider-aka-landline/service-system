@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String... args) throws IOException {
         int providersQuantity = 30;
-        int[] usersQuantity = {30000 /*, 300000 */};
+        int[] usersQuantity = {300/*30000 , 300000 */};
 
         for (int users : usersQuantity) {
             //Dipole (users,providers). min,max.
@@ -30,8 +30,8 @@ public class Main {
         boolean generateInitData = true; //currently works with generation only
         boolean isVariance = false; // with variable parameters of service
 
-        int iterations = 1000;
-        int modellingTime = 1000; //tasks quantity
+        int iterations = 300;
+        int modellingTime = 100; //tasks quantity
 
         boolean stressTest = true; //run with Stress Event
 
@@ -53,7 +53,7 @@ public class Main {
 
     private static StressEvent getStressEvent() {
         StressEvent event;
-        event = new AddNewBestProviderEvent(6);
+        event = new AddNewBestProviderEvent(5);
         return event;
     }
 
@@ -61,16 +61,16 @@ public class Main {
         Map<String, Strategy> strategies = new TreeMap<>();
 
         //First experiment: random
-        strategies.put("random", new strategies.newpackage.RandomStrategy());
+        //strategies.put("random", new strategies.newpackage.RandomStrategy());
 
         //Second experiment: RL, e-decreasing
-        strategies.put("rl", new strategies.newpackage.SimpleRLStrategy());
+        //strategies.put("rl", new strategies.newpackage.SimpleRLStrategy());
 
         //Third experiment: RL, e-decreasing, reputation
         strategies.put("reputationV", new strategies.newpackage.ReputationStrategy());
 
         //4th experiment: reputation only (max reputation)
-        strategies.put("reputationR", new strategies.newpackage.ReputationRStrategy());
+        //strategies.put("reputationR", new strategies.newpackage.ReputationRStrategy());
 
         return strategies;
     }

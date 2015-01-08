@@ -1,19 +1,24 @@
 package experiments;
 
 import Jama.Matrix;
+import entities.providers.ServiceProvider;
 import experiments.graph.Hystogram;
 import experiments.graph.UniformHystogram;
 import exploration.ExplorationStrategy;
+import messages.ProviderResponse;
+import messages.StatisticEntry;
+import myutil.IO;
+import reputationsystem.DataEntity;
+import servicesystem.ServiceSystem;
+import servicesystem.ServiceSystemState;
+import strategies.Strategy;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import messages.ProviderResponse;
-import messages.StatisticEntry;
-import myutil.IO;
-import servicesystem.ServiceSystem;
-import strategies.Strategy;
+import java.util.Map;
 
 public abstract class Experiment implements Comparable<Experiment> {
 
@@ -32,21 +37,20 @@ public abstract class Experiment implements Comparable<Experiment> {
     private Long relaxTime;
 
     /**
-     *
-     * @param i ID of the experiment
-     * @param name experiment name, used for directory name
+     * @param i        ID of the experiment
+     * @param name     experiment name, used for directory name
      * @param strategy exploration strategy
-     * @param input experiment input data
+     * @param input    experiment input data
      */
     public Experiment(Long i, String name, ExplorationStrategy strategy,
-            ExperimentData input) {
+                      ExperimentData input) {
         id = i;
         description = name;
         settings = new ExperimentSettings(description);
         data = input;
         explorationStrategy = strategy;
         calculator = new ResultsCounter(input.getIterationsNumber(),
-                input.getTasksNumber(), input.getProvidersNumber());
+                input.getTasksNumber(), input.getProviders());
     }
 
     public void logExperimentData(ProviderResponse pr, Double userEstimate) {
@@ -57,7 +61,13 @@ public abstract class Experiment implements Comparable<Experiment> {
 
     public void logExperimentData(long criteriaCompletionTime) {
         calculator.addData(iterationCycle, criteriaCompletionTime);
-        
+
+    }
+
+    public void logExperimentData(ServiceSystemState state) {
+        Map<ServiceProvider, DataEntity>
+                serviceProviderDataEntityMap = state.getProvidersReputations().getAllProvidersData();
+        calculator.addData(iterationCycle, taskNumber, serviceProviderDataEntityMap);
     }
 
     public void nextIteration() {
@@ -91,14 +101,19 @@ public abstract class Experiment implements Comparable<Experiment> {
         printAllStatistics();
 
         //Average profit
-        Matrix total = calculator.getEstimateAverages().transpose();
+        Matrix total = calculator.getEstimateAverages();
         IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
 
         //Average criteria completion time
-        Matrix criteriaTime = 
-                calculator.getCriteriaCompletionTimeAverages().transpose();
+        Matrix criteriaTime =
+                calculator.getCriteriaCompletionTimeAverages();
         String testPath = settings.getCriteriaFilename();
         IO.printMatrixToFile(criteriaTime, testPath, 1, 6);
+
+        //Average reputations for providers
+        Map<ServiceProvider, Matrix> reputations  = calculator.getProvidersReputationProgressAverages();
+        //FIXME
+        IO.printReputationsToFile(reputations,settings.getReputationsFilename());
 
         //Hystogram of profits - should be builded on average results
         //  all user estimates - in average vector 'total'
@@ -107,7 +122,7 @@ public abstract class Experiment implements Comparable<Experiment> {
 
         //Providers choosing frequency
         Matrix frequencies
-                = calculator.getProvidersChooseFrequencyAverages().transpose();
+                = calculator.getProvidersChooseFrequencyAverages();
         IO.printMatrixToFile(frequencies, settings.getFrequencyFilename(), 1, 3);
 
         //plotting via gnuplot script

@@ -10,14 +10,12 @@ public class ExperimentSettings {
     private final StringBuilder resultsFilename = new StringBuilder();
     private final StringBuilder criteriaFilename = new StringBuilder();
     private final StringBuilder frequenciesFilename = new StringBuilder();
+    private final StringBuilder reputationsFilename = new StringBuilder();
 
-    private final StringBuilder hystogramFilename
-            = new StringBuilder();
-    private final StringBuilder uniformHystogramFilename
-            = new StringBuilder();
+    private final StringBuilder hystogramFilename = new StringBuilder();
+    private final StringBuilder uniformHystogramFilename = new StringBuilder();
 
-    private final StringBuilder timeFilename
-            = new StringBuilder();
+    private final StringBuilder timeFilename = new StringBuilder();
 
     public ExperimentSettings(String name) {
         usersFilename.append(name).append("/users.txt");
@@ -29,6 +27,7 @@ public class ExperimentSettings {
         frequenciesFilename.append(name).append("/frequencies.txt");
         hystogramFilename.append(name).append("/hystogram.txt");
         uniformHystogramFilename.append(name).append("/hystogram2.txt");
+        reputationsFilename.append(name).append("/reputations.txt");
         timeFilename.append("/time-");
     }
 
@@ -70,5 +69,9 @@ public class ExperimentSettings {
 
     String getCriteriaFilename() {
         return criteriaFilename.toString();
+    }
+
+    public String getReputationsFilename() {
+        return reputationsFilename.toString();
     }
 }
