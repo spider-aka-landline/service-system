@@ -34,7 +34,13 @@ public class ServiceSystemWithStressEvent extends ServiceSystem {
 
             checkStressTrigger();
         }
+        resetEventState();
     }
+
+    private void resetEventState() {
+        event.resetState(state);
+    }
+
 
     private void checkStressTrigger() {
         long currentTime = state.getServedTasksNumber();
@@ -44,5 +50,4 @@ public class ServiceSystemWithStressEvent extends ServiceSystem {
             event.checkCriteria(state);
         }
     }
-
 }

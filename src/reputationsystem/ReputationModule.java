@@ -1,5 +1,6 @@
 package reputationsystem;
 
+import entities.Params;
 import entities.providers.ServiceProvider;
 import java.util.Collection;
 import java.util.Map;
@@ -99,5 +100,15 @@ public class ReputationModule {
     private Set<ServiceProvider> getAllReputableProviders() {
         return providersReputationMap
                 .getReputableProviders(REPUTATION_MIN_LEVEL);
+    }
+
+    public void update(ServiceProvider changingProvider, Params changedParams) {
+        providersReputationMap.update(changingProvider, changedParams);
+
+
+    }
+
+    public void removeProvider(ServiceProvider addedProvider) {
+        providersReputationMap.removeServiceProvider(addedProvider);
     }
 }

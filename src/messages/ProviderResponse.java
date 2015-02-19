@@ -1,15 +1,16 @@
 package messages;
 
+import entities.ID;
 import entities.Params;
 import entities.Task;
 
 public class ProviderResponse {
 
-    int serviceProviderId;
+    ID serviceProviderId;
     private Task servedTask;
     private Params serviceParameters;
 
-    public ProviderResponse(int id, Task t, Params par) {
+    public ProviderResponse(ID id, Task t, Params par) {
         serviceProviderId = id;
         servedTask = t;
         serviceParameters = par;
@@ -19,7 +20,7 @@ public class ProviderResponse {
         return serviceParameters;
     }
 
-    public int getServiceProviderId() {
+    public ID getServiceProviderId() {
         return serviceProviderId;
     }
 

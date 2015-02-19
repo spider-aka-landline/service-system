@@ -1,5 +1,6 @@
 package entities.providers;
 
+import entities.ID;
 import entities.Params;
 import entities.Task;
 import math.StdRandom;
@@ -11,12 +12,12 @@ public class RandomUniformServiceProvider extends ServiceProvider {
 
     /**
      *
-     * @param i - provider ID
+     * @param id - provider ID
      * @param pr - service parameters
      * @param limits
      */
-    public RandomUniformServiceProvider(int i, Params pr, Params limits) {
-        super(i, pr);
+    public RandomUniformServiceProvider(ID id, Params pr, Params limits) {
+        super(id, pr);
         propertiesLimits = limits;
     }
 

@@ -2,8 +2,8 @@ package servicesystem.events;
 
 import entities.Params;
 import entities.providers.ServiceProvider;
-import myutil.IO;
-import myutil.generators.EntitiesGenerator;
+import io.IO;
+import entities.generators.EntitiesGenerator;
 import reputationsystem.DataEntity;
 import reputationsystem.ProvidersReputationMap;
 import servicesystem.ExperimentsRunner;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class AddNewBestProviderEvent implements StressEvent {
 
-    private final long triggerTime;
+    private final Long triggerTime;
     private ServiceProvider addedProvider;
     private Boolean wereChecked;
 
@@ -33,6 +33,12 @@ public class AddNewBestProviderEvent implements StressEvent {
         logAddedProvider(state);
     }
 
+    @Override
+    public void resetState(ServiceSystemState state){
+        state.removeProvider(addedProvider);
+        wereChecked = false;
+    }
+
     private Params makeBetterParams(Params worstParams) {
         //Params betterParams;
         //Double betterQuality = worstParams.getServiceQuality() + 0.1;
@@ -42,12 +48,12 @@ public class AddNewBestProviderEvent implements StressEvent {
     }
 
     @Override
-    public boolean isTriggerTime(long currentTime) {
-        return (currentTime == triggerTime);
+    public boolean isTriggerTime(Long currentTime) {
+        return (currentTime.equals(triggerTime));
     }
 
     @Override
-    public boolean isReadyToCheck(long currentTime) {
+    public boolean isReadyToCheck(Long currentTime) {
         return (currentTime > triggerTime) && !wereChecked;
     }
 
@@ -89,7 +95,7 @@ public class AddNewBestProviderEvent implements StressEvent {
         //забрать его характеристики
         Params betterParams = makeBetterParams(bestProvider.getProperties());
         EntitiesGenerator gen = EntitiesGenerator.getInstance();
-        ServiceProvider provider = gen.createProvider(betterParams);
+        ServiceProvider provider = gen.createStressProvider(betterParams);
         if (state.hasProvider(provider)) {
             throw new IllegalArgumentException();
         }
@@ -110,7 +116,7 @@ public class AddNewBestProviderEvent implements StressEvent {
         stringBuilder.append(inReputableProviders);
         stringBuilder.append(")");
 
-        System.out.println(stringBuilder.toString());
+        //System.out.println(stringBuilder.toString());
     }
 
 }

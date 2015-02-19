@@ -4,7 +4,7 @@ import comparators.ReputationComparator;
 import entities.providers.ServiceProvider;
 import java.util.Map;
 import java.util.Set;
-import myutil.UtilFunctions;
+import io.UtilFunctions;
 import reputationsystem.DataEntity;
 import reputationsystem.ProvidersReputationMap;
 import static reputationsystem.ReputationModule.REPUTATION_MIN_LEVEL;

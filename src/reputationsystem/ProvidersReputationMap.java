@@ -1,20 +1,18 @@
 package reputationsystem;
 
 import comparators.QualityParamsComparator;
+import entities.Params;
 import entities.providers.ServiceProvider;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import myutil.UtilFunctions;
+import io.UtilFunctions;
+
+import java.util.*;
 
 public class ProvidersReputationMap {
 
     public static final double EXPECTATION_INIT = 0;
     public static final double REPUTATION_INIT = 0;
     //exploration/exploitation strategy.
-    
+
     private final Map<ServiceProvider, DataEntity> serviceProviders
             = new HashMap<>();
 
@@ -24,15 +22,15 @@ public class ProvidersReputationMap {
      * порога для авторитетных)
      */
     public Map<ServiceProvider, DataEntity>
-            getReputableProvidersData(double minlevel) {
+    getReputableProvidersData(double minlevel) {
         Map<ServiceProvider, DataEntity> temp
                 = UtilFunctions.filterMapByPredicate(serviceProviders,
-                        e -> e.getValue().getReputation() > minlevel);
+                e -> e.getValue().getReputation() > minlevel);
         return temp;
     }
 
     public Set<ServiceProvider> getReputableProviders(double minlevel) {
-        return  getReputableProvidersData(minlevel).keySet();
+        return getReputableProvidersData(minlevel).keySet();
 
     }
 
@@ -47,12 +45,12 @@ public class ProvidersReputationMap {
     }
 
     public Map<ServiceProvider, DataEntity>
-            getAllProvidersData() {
+    getAllProvidersData() {
         return serviceProviders;
     }
 
     public Set<ServiceProvider>
-            getAllProviders() {
+    getAllProviders() {
         return serviceProviders.keySet();
     }
 
@@ -94,5 +92,20 @@ public class ProvidersReputationMap {
 
     public DataEntity getProviderData(ServiceProvider provider) {
         return serviceProviders.get(provider);
+    }
+
+    public void update(ServiceProvider changingProvider, Params changedParams) {
+        if (changingProvider == null) {
+            throw new NullPointerException("No provider to update");
+        } else if (!serviceProviders.containsKey(changingProvider)) {
+            throw new IllegalArgumentException(changingProvider.toString());
+        }
+        DataEntity entity = serviceProviders.get(changingProvider);
+        serviceProviders.remove(changingProvider);
+
+        //new provider. now is old with changing params
+        changingProvider.setProperties(changedParams);
+
+        serviceProviders.put(changingProvider, entity);
     }
 }

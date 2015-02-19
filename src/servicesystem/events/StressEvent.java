@@ -5,8 +5,9 @@ import servicesystem.ServiceSystemState;
 public interface  StressEvent {
    
     void executeEvent(ServiceSystemState state);
-    boolean isTriggerTime(long currentTime);
-    boolean isReadyToCheck(long currentTime);
+    boolean isTriggerTime(Long currentTime);
+    boolean isReadyToCheck(Long currentTime);
     void checkCriteria(ServiceSystemState state);
 
+    void resetState(ServiceSystemState state);
 }

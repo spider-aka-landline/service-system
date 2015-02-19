@@ -5,7 +5,7 @@ import entities.providers.ServiceProvider;
 import exploration.ExplorationStrategy;
 import java.util.Map;
 import math.StdRandom;
-import myutil.UtilFunctions;
+import io.UtilFunctions;
 import reputationsystem.DataEntity;
 import reputationsystem.ProvidersReputationMap;
 

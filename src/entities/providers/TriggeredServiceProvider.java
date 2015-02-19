@@ -1,5 +1,6 @@
 package entities.providers;
 
+import entities.ID;
 import entities.Params;
 import entities.Task;
 import messages.ProviderResponse;
@@ -9,8 +10,8 @@ public class TriggeredServiceProvider extends ServiceProvider {
     private Boolean isGood;
     static final Double QUALITY_MIN_VALUE = 0.01; //почему она здесь?
 
-    TriggeredServiceProvider(int i, Params pr, Boolean good) {
-        super(i, pr); 
+    TriggeredServiceProvider(ID id, Params pr, Boolean good) {
+        super(id, pr);
         isGood = good;
     }
 

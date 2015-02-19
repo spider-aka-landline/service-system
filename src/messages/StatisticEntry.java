@@ -1,13 +1,14 @@
 package messages;
 
+import entities.ID;
 import entities.Params;
 import entities.Task;
 
 public class StatisticEntry {
 
     private final Integer taskTime;
-    private final Long userId;
-    private final Integer providerId;
+    private final ID userId;
+    private final ID providerId;
     private final Params serviceProperties;
     private final Double userEstimate;
 

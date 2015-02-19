@@ -3,42 +3,54 @@ package servicesystem;
 import entities.DipoleData;
 import experiments.generators.ExperimentsGenerator;
 import experiments.generators.ExperimentsGeneratorWithStressEvent;
-import servicesystem.events.AddNewBestProviderEvent;
+import servicesystem.bruteforcer.SystemsBruteForcer;
+import servicesystem.events.FailBestProviderEvent;
 import servicesystem.events.StressEvent;
 import strategies.Strategy;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class Main {
 
     public static void main(String... args) throws IOException {
-        int providersQuantity = 30;
-        int[] usersQuantity = {300/*30000 , 300000 */};
+        int[] providersQuantity = {10,30/*, 300*/};
+        int[] usersQuantity = {3000, 30000/*30000, 300000*/};
+        Collection<DipoleData> dipoles = getDipoles(usersQuantity, providersQuantity);
 
-        for (int users : usersQuantity) {
-            //Dipole (users,providers). min,max.
-            DipoleData minDipole = new DipoleData(users, providersQuantity);
-            SystemsBruteForcer system = getSystemBruteForcer(minDipole, minDipole);
-            system.run();
-        }
-
+        SystemsBruteForcer system = getSystemBruteForcer(dipoles);
+        system.run();
     }
 
-    private static SystemsBruteForcer getSystemBruteForcer(DipoleData min, DipoleData max) {
-        boolean generateInitData = true; //currently works with generation only
+
+
+    private static Collection<DipoleData> getDipoles(int[] usersQuantity, int[] providersQuantity) {
+        Collection<DipoleData> dipoles = new ArrayList<>();
+        for (int users : usersQuantity) {
+            for (int providers : providersQuantity) {
+                //Dipole (users,providers). min,max.
+                dipoles.add(new DipoleData(users, providers));
+            }
+        }
+        return dipoles;
+    }
+
+    private static SystemsBruteForcer getSystemBruteForcer(Collection<DipoleData> dipoles) {
+        boolean generateInitData = false; // generate input data or read them
         boolean isVariance = false; // with variable parameters of service
 
-        int iterations = 300;
-        int modellingTime = 100; //tasks quantity
+        int iterations = 1000;
+        int modellingTime = 300; //tasks quantity
 
         boolean stressTest = true; //run with Stress Event
 
         Map<String, Strategy> allStrategies = getStrategies();
         ExperimentsGenerator generator = getExperimentsGenerator(stressTest, allStrategies);
         return new SystemsBruteForcer(generateInitData, isVariance,
-                min, max, iterations, modellingTime, generator);
+                dipoles, iterations, modellingTime, generator);
     }
 
     private static ExperimentsGenerator getExperimentsGenerator(
@@ -53,7 +65,7 @@ public class Main {
 
     private static StressEvent getStressEvent() {
         StressEvent event;
-        event = new AddNewBestProviderEvent(5);
+        event = new FailBestProviderEvent(50, 65);
         return event;
     }
 

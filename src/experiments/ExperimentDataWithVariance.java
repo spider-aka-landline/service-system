@@ -9,8 +9,8 @@ import entities.Params;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import java.util.Collection;
-import myutil.generators.EntitiesGenerator;
-import myutil.generators.EntitiesGeneratorWithVariance;
+import entities.generators.EntitiesGenerator;
+import entities.generators.EntitiesGeneratorWithVariance;
 
 public class ExperimentDataWithVariance extends ExperimentData {
 

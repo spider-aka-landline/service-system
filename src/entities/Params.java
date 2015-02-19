@@ -3,8 +3,13 @@ package entities;
 import java.util.Objects;
 
 public class Params {
+    public static final int PARAMETERS_QUANTITY = 1;
 
     private final Double serviceQuality;
+
+    public Params(double[] array){
+        this(array[0]);
+    }
 
     public Params(Double sq) {
         serviceQuality = sq;

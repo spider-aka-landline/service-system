@@ -1,5 +1,6 @@
 package servicesystem;
 
+import entities.Params;
 import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
@@ -42,10 +43,6 @@ public class ServiceSystemState {
         return tasks.poll();
     }
 
-    void addServiceProvider(ServiceProvider sp) {
-        reputationModule.addServiceProvider(sp);
-    }
-
     public ProvidersReputationMap getProvidersReputations() {
         return reputationModule.getprovidersReputationMap();
     }
@@ -73,5 +70,13 @@ public class ServiceSystemState {
 
     public boolean hasProvider(ServiceProvider provider) {
         return reputationModule.contains(provider);
+    }
+
+    public void changeProviderParams(ServiceProvider changingProvider, Params changedParams) {
+        reputationModule.update(changingProvider, changedParams);
+    }
+
+    public void removeProvider(ServiceProvider addedProvider) {
+        reputationModule.removeProvider(addedProvider);
     }
 }

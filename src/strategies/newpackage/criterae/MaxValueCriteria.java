@@ -3,7 +3,7 @@ package strategies.newpackage.criterae;
 import comparators.ExpectationComparator;
 import entities.providers.ServiceProvider;
 import java.util.Map;
-import myutil.UtilFunctions;
+import io.UtilFunctions;
 import reputationsystem.DataEntity;
 
 public class MaxValueCriteria implements Criteria {

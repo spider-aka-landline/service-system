@@ -1,5 +1,6 @@
 package experiments.generators;
 
+import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import experiments.Experiment;
@@ -8,10 +9,9 @@ import experiments.ExperimentDataWithVariance;
 import experiments.SimpleExperiment;
 import exploration.EpsilonDecreasingStrategy;
 import exploration.ExplorationStrategy;
-import servicesystem.events.AddNewBestProviderEvent;
-import servicesystem.events.StressEvent;
 import strategies.Strategy;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,8 +37,8 @@ public class ExperimentsGenerator {
     }
 
     protected Experiment createSimpleExperiment(String name,
-                                             String currentExperimentBlockName, ExplorationStrategy strategy,
-                                             Strategy str, ExperimentData input) {
+                                                String currentExperimentBlockName, ExplorationStrategy strategy,
+                                                Strategy str, ExperimentData input) {
 
         String path = makePath(name, currentExperimentBlockName);
         Experiment newbornExperiment
@@ -88,18 +88,47 @@ public class ExperimentsGenerator {
                          Integer tasksNumber, Integer iterationsNumber,
                          Boolean generateWithVar) {
 
+        ExperimentData expData = generateExperimentData(currentUsers,
+                currentProviders, tasksNumber, iterationsNumber, generateWithVar);
+
+        return getExperiments(expData, generateWithVar);
+
+    }
+
+    public List<Experiment>
+    createExperimentPlan(Collection<User> currentUsers,
+                         Collection<ServiceProvider> currentProviders,
+                         Collection<Task> currentTasks, Integer iterationsNumber) {
+
+        ExperimentData expData = null;
+
+        //System.err.println("in");
+        try {
+            expData = new ExperimentData(currentUsers, currentProviders, currentTasks, iterationsNumber);
+            //System.err.println("read");
+        } catch (IOException e) {
+            //System.err.println("ex");
+            e.printStackTrace();
+        }
+
+        return getExperiments(expData);
+    }
+
+
+    private List<Experiment> getExperiments(ExperimentData expData) {
+        return getExperiments(expData, false);
+    }
+
+    private List<Experiment> getExperiments(ExperimentData expData, boolean generateWithVar) {
+
         //Only one exploration strategy;
         ExplorationStrategy strategy = new EpsilonDecreasingStrategy();
 
         //container for all experiments
         List<Experiment> experiments = new ArrayList<>();
 
-        ExperimentData expData = generateExperimentData(currentUsers,
-                currentProviders, tasksNumber, iterationsNumber, generateWithVar);
-
         String currentExperimentBlockName
                 = generateExperimentBlockName(generateWithVar);
-
 
         for (Entry<String, Strategy> entry : allStrategies.entrySet()) {
             Experiment exp = createSimpleExperiment(entry.getKey(),
@@ -110,6 +139,5 @@ public class ExperimentsGenerator {
 
         return experiments;
     }
-
 
 }

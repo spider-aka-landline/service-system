@@ -10,9 +10,8 @@ import entities.Task;
 import entities.providers.ServiceProvider;
 import java.util.Map;
 import java.util.Set;
-import myutil.UtilFunctions;
+import io.UtilFunctions;
 import reputationsystem.DataEntity;
-import strategies.oldpackage.RandomStrategy;
 
 /**
  *
