@@ -1,5 +1,6 @@
 package entities.users;
 
+import entities.ID;
 import entities.Params;
 import messages.UserResponse;
 import messages.ProviderResponse;
@@ -7,7 +8,7 @@ import servicesystem.ExperimentsRunner;
 
 public class User {
 
-    private final long id;
+    private final ID id;
 
     private final Estimator estimator = new Estimator();
     private final Params requirements;
@@ -16,7 +17,7 @@ public class User {
      * @param i - User ID
      * @param required - requirements for service
      */
-    public User(long i, Params required) {
+    public User(ID i, Params required) {
         id = i;
         requirements = required;
     }
@@ -29,14 +30,15 @@ public class User {
         return new UserResponse(value, diff);
     }
 
-    public long getID() {
+    public ID getID() {
         return id;
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 23 * hash + (int) (this.id ^ (this.id >>> 32));
+        long tempId = this.id.getValue();
+        hash = 23 * hash + (int) (tempId ^ (tempId >>> 32));
         return hash;
     }
 

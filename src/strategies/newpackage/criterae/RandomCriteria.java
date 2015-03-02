@@ -2,7 +2,7 @@ package strategies.newpackage.criterae;
 
 import entities.providers.ServiceProvider;
 import java.util.Map;
-import myutil.UtilFunctions;
+import io.UtilFunctions;
 import reputationsystem.DataEntity;
 
 public class RandomCriteria implements Criteria {

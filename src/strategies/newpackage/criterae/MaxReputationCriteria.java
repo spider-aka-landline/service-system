@@ -2,7 +2,7 @@ package strategies.newpackage.criterae;
 
 import comparators.ReputationComparator;
 import entities.providers.ServiceProvider;
-import myutil.UtilFunctions;
+import io.UtilFunctions;
 import reputationsystem.DataEntity;
 
 import java.util.Map;

@@ -1,12 +1,13 @@
 package entities.providers;
 
+import entities.ID;
 import entities.Params;
 import entities.Task;
 import messages.ProviderResponse;
 
 public class ServiceProvider implements Comparable<ServiceProvider> {
 
-    protected final int id;
+    protected final ID id;
     Params properties;
 
     /**
@@ -14,7 +15,7 @@ public class ServiceProvider implements Comparable<ServiceProvider> {
      * @param i - provider ID
      * @param pr - service parameters
      */
-    public ServiceProvider(int i, Params pr) {
+    public ServiceProvider(ID i, Params pr) {
         id = i;
         properties = pr;
     }
@@ -23,7 +24,7 @@ public class ServiceProvider implements Comparable<ServiceProvider> {
         return new ProviderResponse(id, t, properties);
     }
 
-    public long getID() {
+    public ID getID() {
         return id;
     }
 
@@ -31,11 +32,16 @@ public class ServiceProvider implements Comparable<ServiceProvider> {
         return properties;
     }
 
+    public void setProperties(Params p) {
+        properties = p;
+    }
+
     
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 23 * hash + (int) (this.id ^ (this.id >>> 32));
+        long tempId = this.id.getValue();
+        hash = 23 * hash + (int) (tempId ^ ( tempId >>> 32));
         return hash;
     }
 
@@ -61,7 +67,7 @@ public class ServiceProvider implements Comparable<ServiceProvider> {
 
     @Override
     public int compareTo(ServiceProvider o) {
-        return (this.id < o.id) ? -1
-                : (this.id > o.id) ? 1 : 0;
+        long tempId = this.id.getValue();
+        return this.id.compareTo(o.getID());
     }
 }

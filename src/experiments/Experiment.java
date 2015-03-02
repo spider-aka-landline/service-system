@@ -7,7 +7,7 @@ import experiments.graph.UniformHystogram;
 import exploration.ExplorationStrategy;
 import messages.ProviderResponse;
 import messages.StatisticEntry;
-import myutil.IO;
+import io.IO;
 import reputationsystem.DataEntity;
 import servicesystem.ServiceSystem;
 import servicesystem.ServiceSystemState;
@@ -102,18 +102,18 @@ public abstract class Experiment implements Comparable<Experiment> {
 
         //Average profit
         Matrix total = calculator.getEstimateAverages();
-        IO.printMatrixToFile(total, settings.getResultsFilename(), 1, 3);
+        IO.printMatrixToFile(total, settings.getResultsFilename()); //1,3
 
         //Average criteria completion time
         Matrix criteriaTime =
                 calculator.getCriteriaCompletionTimeAverages();
         String testPath = settings.getCriteriaFilename();
-        IO.printMatrixToFile(criteriaTime, testPath, 1, 6);
+        IO.printMatrixToFile(criteriaTime, testPath);
 
         //Average reputations for providers
         Map<ServiceProvider, Matrix> reputations  = calculator.getProvidersReputationProgressAverages();
         //FIXME
-        IO.printReputationsToFile(reputations,settings.getReputationsFilename());
+        IO.printReputationsToFile(reputations,settings.getReputationsFilename()); //1,6
 
         //Hystogram of profits - should be builded on average results
         //  all user estimates - in average vector 'total'
@@ -123,7 +123,7 @@ public abstract class Experiment implements Comparable<Experiment> {
         //Providers choosing frequency
         Matrix frequencies
                 = calculator.getProvidersChooseFrequencyAverages();
-        IO.printMatrixToFile(frequencies, settings.getFrequencyFilename(), 1, 3);
+        IO.printMatrixToFile(frequencies, settings.getFrequencyFilename()); //1,3
 
         //plotting via gnuplot script
         runAllGnuplotScripts();

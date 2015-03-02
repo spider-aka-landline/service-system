@@ -9,11 +9,12 @@ import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.PriorityQueue;
-import myutil.generators.EntitiesGenerator;
-import myutil.IO;
+import entities.generators.EntitiesGenerator;
+import io.IO;
 
 public class ExperimentData {
 
@@ -92,16 +93,38 @@ public class ExperimentData {
 
     /**
      *
+     * @param usersCollection collection of given users
+     * @param providersCollection collection of given providers
+     * @param tasksCollection collection of given tasks
+     * @param iterationsc total iterations number
+     * @throws FileNotFoundException
+     */
+    public ExperimentData(Collection<User> usersCollection,
+                          Collection<ServiceProvider> providersCollection,
+                          Collection<Task> tasksCollection, Integer iterationsc) throws IOException {
+        iterationNumber = iterationsc;
+        users = usersCollection;
+        providers = providersCollection;
+
+        usersNumber = users.size();
+        providersNumber = providers.size();
+
+        tasks = tasksCollection;
+        tasksNumber = tasks.size();
+    }
+
+    /**
+     *
      * @param usersfile users data filename
      * @param providersfile providers data filename
      * @param tasksfile tasks data filename
      * @throws FileNotFoundException
      */
     public ExperimentData(String usersfile, String providersfile,
-            String tasksfile) throws FileNotFoundException {
+            String tasksfile) throws IOException {
         users = IO.readUsers(usersfile);
         providers = IO.readProviders(providersfile);
-        tasks = IO.readTasks(tasksfile);
+        tasks = IO.readTasks(tasksfile, users);
         usersNumber = users.size();
         providersNumber = providers.size();
         tasksNumber = tasks.size();
