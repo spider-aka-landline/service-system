@@ -2,21 +2,20 @@ package experiments;
 
 import Jama.Matrix;
 import entities.providers.ServiceProvider;
-import experiments.graph.Hystogram;
-import experiments.graph.UniformHystogram;
+import experiments.graph.Histogram;
+import experiments.graph.UniformHistogram;
 import exploration.ExplorationStrategy;
-import messages.ProviderResponse;
-import messages.StatisticEntry;
 import io.IO;
+import messages.ProviderResponse;
 import reputationsystem.DataEntity;
 import servicesystem.ServiceSystem;
 import servicesystem.ServiceSystemState;
 import strategies.Strategy;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,6 @@ public abstract class Experiment implements Comparable<Experiment> {
 
     private final Long id;
     private final String description;
-    private final ResultsCounter calculator;
 
     private Integer iterationCycle = 0;
     private Integer taskNumber = 0;
@@ -33,7 +31,8 @@ public abstract class Experiment implements Comparable<Experiment> {
     protected final ExperimentSettings settings;
     protected final ExplorationStrategy explorationStrategy;
 
-    protected final List<StatisticEntry> statistics = new LinkedList<>();
+    protected final StatisticsModule statisticsModule;
+
     private Long relaxTime;
 
     /**
@@ -49,25 +48,23 @@ public abstract class Experiment implements Comparable<Experiment> {
         settings = new ExperimentSettings(description);
         data = input;
         explorationStrategy = strategy;
-        calculator = new ResultsCounter(input.getIterationsNumber(),
-                input.getTasksNumber(), input.getProviders());
+        statisticsModule = new StatisticsModule(input);
     }
 
     public void logExperimentData(ProviderResponse pr, Double userEstimate) {
-        calculator.addData(iterationCycle, taskNumber, pr, userEstimate);
+        statisticsModule.addData(iterationCycle, taskNumber, pr, userEstimate);
         taskNumber++;
-        statistics.add(new StatisticEntry(pr, userEstimate));
     }
 
     public void logExperimentData(long criteriaCompletionTime) {
-        calculator.addData(iterationCycle, criteriaCompletionTime);
+        statisticsModule.addData(iterationCycle, criteriaCompletionTime);
 
     }
 
     public void logExperimentData(ServiceSystemState state) {
         Map<ServiceProvider, DataEntity>
                 serviceProviderDataEntityMap = state.getProvidersReputations().getAllProvidersData();
-        calculator.addData(iterationCycle, taskNumber, serviceProviderDataEntityMap);
+        statisticsModule.addData(iterationCycle, taskNumber, serviceProviderDataEntityMap);
     }
 
     public void nextIteration() {
@@ -81,8 +78,8 @@ public abstract class Experiment implements Comparable<Experiment> {
 
         //Строка для записи в файл
         StringBuilder temp = new StringBuilder();
-        temp.append(data.getUsersNumber()).append(" ");
-        temp.append(data.getProvidersNumber()).append(" ");
+        temp.append(data.getUsersNumber()).append(",");
+        temp.append(data.getProvidersNumber()).append(",");
         temp.append(relaxTime);
 
         //Изменить имя файла в зависимости от стратегии
@@ -94,42 +91,42 @@ public abstract class Experiment implements Comparable<Experiment> {
     }
 
     public void printTotalResult()
-            throws FileNotFoundException, IOException {
+            throws IOException, InterruptedException {
 
         printRelaxTime();
 
         printAllStatistics();
 
         //Average profit
-        Matrix total = calculator.getEstimateAverages();
+        Matrix total = statisticsModule.getEstimateAverages();
         IO.printMatrixToFile(total, settings.getResultsFilename()); //1,3
 
         //Average criteria completion time
         Matrix criteriaTime =
-                calculator.getCriteriaCompletionTimeAverages();
+                statisticsModule.getCriteriaCompletionTimeAverages();
         String testPath = settings.getCriteriaFilename();
         IO.printMatrixToFile(criteriaTime, testPath);
 
         //Average reputations for providers
-        Map<ServiceProvider, Matrix> reputations  = calculator.getProvidersReputationProgressAverages();
+        Map<ServiceProvider, Matrix> reputations = statisticsModule.getProvidersReputationProgressAverages();
         //FIXME
-        IO.printReputationsToFile(reputations,settings.getReputationsFilename()); //1,6
+        IO.printReputationsToFile(reputations, settings.getReputationsFilename()); //1,6
 
-        //Hystogram of profits - should be builded on average results
+        //Histogram of profits - should be built on average results
         //  all user estimates - in average vector 'total'
-        //  make cute hystogram object  
-        makeHystograms(total);
+        //  make cute histogram object
+        makeHistograms(total);
 
         //Providers choosing frequency
         Matrix frequencies
-                = calculator.getProvidersChooseFrequencyAverages();
+                = statisticsModule.getProvidersChooseFrequencyAverages();
         IO.printMatrixToFile(frequencies, settings.getFrequencyFilename()); //1,3
 
         //plotting via gnuplot script
         runAllGnuplotScripts();
     }
 
-    private void runAllGnuplotScripts() throws IOException {
+    private void runAllGnuplotScripts() throws IOException, InterruptedException {
         List<String> names = new ArrayList<>();
         names.add("h.plot");
         names.add("a.plot");
@@ -139,34 +136,36 @@ public abstract class Experiment implements Comparable<Experiment> {
         }
     }
 
-    private void runGnuplotScript(String filename) throws IOException {
-        Process p = new ProcessBuilder("gnuplot",
-                IO.getFilePath(description + "/" + filename)).start();
-        System.out.println(IO.getFilePath(description + "/" + filename));
+    private void runGnuplotScript(String filename) throws IOException, InterruptedException {
+        String destinationDir = IO.getFilePath(description);
+
+        ProcessBuilder pb = new ProcessBuilder("gnuplot", filename);
+        pb.directory(new File(destinationDir));
+        Process p = pb.start();
+        p.waitFor();
     }
 
     //All statistics
     private void printAllStatistics()
             throws FileNotFoundException {
-        IO.printCollection(statistics,
-                IO.getFilePath(settings.getStatisticsFilename()));
+        statisticsModule.printAllStatistics(settings.getStatisticsFilename(), settings.getStateStatisticsFilename());
     }
 
-    private void makeHystograms(Matrix vector)
+    private void makeHistograms(Matrix vector)
             throws FileNotFoundException {
-        printHystogram(new Hystogram(vector));
-        printHystogram(new UniformHystogram(vector));
+        printHistogram(new Histogram(vector));
+        printHistogram(new UniformHistogram(vector));
     }
 
-    private void printHystogram(Hystogram h) throws FileNotFoundException {
+    private void printHistogram(Histogram h) throws FileNotFoundException {
         IO.printHystogramToFile(h,
-                IO.getFilePath(settings.getHystogramFilename()));
+                IO.getFilePath(settings.getHistogramFilename()));
     }
 
-    private void printHystogram(UniformHystogram uh)
+    private void printHistogram(UniformHistogram uh)
             throws FileNotFoundException {
         IO.printHystogramToFile(uh,
-                IO.getFilePath(settings.getUniformHystogramFilename()));
+                IO.getFilePath(settings.getUniformHistogramFilename()));
     }
 
     public void logInputData() throws FileNotFoundException {
@@ -175,7 +174,7 @@ public abstract class Experiment implements Comparable<Experiment> {
 
     public void run() {
         relaxTime = 0L;
-        //create servicesystem instance
+        //create service system instance
         ServiceSystem system;
         for (int i = 0; i < data.getIterationsNumber(); i++) {
             system = getServiceSystemInstance();
@@ -185,6 +184,7 @@ public abstract class Experiment implements Comparable<Experiment> {
         }
         relaxTime /= data.getIterationsNumber();
     }
+
 
     @Override
     public int compareTo(Experiment e2) {

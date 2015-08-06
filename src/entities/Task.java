@@ -31,7 +31,7 @@ public class Task implements Comparable<Task> {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder(String.valueOf(sender.getID()));
-        s.append(" ").append(creationTime);
+        s.append(",").append(creationTime);
         return s.toString();
     }
 }

@@ -57,7 +57,7 @@ public class User {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder(String.valueOf(id));
-        s.append(" ").append(requirements);
+        s.append(",").append(requirements);
         return s.toString();
     }
 }

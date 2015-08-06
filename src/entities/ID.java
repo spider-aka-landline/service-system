@@ -13,9 +13,9 @@ public class ID implements Comparable<ID>{
 
         ID id1 = (ID) o;
 
-        if (id != id1.id) return false;
+        if (id == id1.id) return true;
 
-        return true;
+        return false;
     }
 
     @Override

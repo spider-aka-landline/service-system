@@ -16,9 +16,9 @@ import java.util.TreeMap;
 
 public class Main {
 
-    public static void main(String... args) throws IOException {
-        int[] providersQuantity = {10,30/*, 300*/};
-        int[] usersQuantity = {3000, 30000/*30000, 300000*/};
+    public static void main(String... args) throws IOException, InterruptedException {
+        int[] providersQuantity = {10/*, 300*/};
+        int[] usersQuantity = {100/*30000, 300000*/};
         Collection<DipoleData> dipoles = getDipoles(usersQuantity, providersQuantity);
 
         SystemsBruteForcer system = getSystemBruteForcer(dipoles);
@@ -43,7 +43,7 @@ public class Main {
         boolean isVariance = false; // with variable parameters of service
 
         int iterations = 1000;
-        int modellingTime = 300; //tasks quantity
+        int modellingTime = 200; //tasks quantity
 
         boolean stressTest = true; //run with Stress Event
 
@@ -65,7 +65,7 @@ public class Main {
 
     private static StressEvent getStressEvent() {
         StressEvent event;
-        event = new FailBestProviderEvent(50, 65);
+        event = new FailBestProviderEvent(50);
         return event;
     }
 

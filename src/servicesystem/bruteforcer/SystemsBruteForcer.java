@@ -51,14 +51,14 @@ public class SystemsBruteForcer {
             data = bruteDataGen.generateData(hasVariance, dipoles);
         } else {
             try {
-                data = BruteForcerDataReader.readData();
+                data = BruteForcerDataReader.readData(dipoles);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void run() {
+    public void run() throws InterruptedException {
         Set<DipoleData> numbers = data.getNumbers();
         for (DipoleData d : numbers) {
             runExperimentPlan(d);
@@ -66,11 +66,11 @@ public class SystemsBruteForcer {
     }
 
 
-    private void runExperimentPlan(DipoleData d) {
+    private void runExperimentPlan(DipoleData d) throws InterruptedException {
         StringBuilder currentNumbers = new StringBuilder();
-        currentNumbers.append("u").append(d.getUserNumber());
-        currentNumbers.append("p").append(d.getProviderNumber());
-        currentNumbers.append("/");
+        currentNumbers.append("u").append(d.getUserNumber())
+                .append("p").append(d.getProviderNumber())
+                .append("/");
         IO.setAppendix(currentNumbers.toString());
 
         //get data for all experiments
@@ -84,7 +84,7 @@ public class SystemsBruteForcer {
         runner.run();
     }
 
-    private List<Experiment> getExperimentPlan(Collection<User> currentUsers,  Collection<ServiceProvider> currentProviders) {
+    private List<Experiment> getExperimentPlan(Collection<User> currentUsers, Collection<ServiceProvider> currentProviders) {
         if (generateInitData) {
             return experimentsGenerator.createExperimentPlan(currentUsers, currentProviders,
                     tasksNumber, iterationsNumber, generateWithVariance);

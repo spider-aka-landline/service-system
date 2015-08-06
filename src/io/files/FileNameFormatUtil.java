@@ -9,10 +9,6 @@ public class FileNameFormatUtil {
     private String appendix;
     String baseDir = System.getProperty("user.dir");
 
-    public FileNameFormatUtil() {
-        System.out.println(baseDir.contains(baseDir));
-    }
-
     public void setAppendix(String s) {
         appendix = s;
     }

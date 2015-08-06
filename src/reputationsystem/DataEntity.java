@@ -32,7 +32,7 @@ public class DataEntity {
 
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(reputation).append(" ").append(expectation);
+        stringBuilder.append(reputation).append(",").append(expectation);
         return stringBuilder.toString();
     }
 }

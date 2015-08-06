@@ -44,8 +44,8 @@ public class RandomUniformServiceProvider extends ServiceProvider {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder(String.valueOf(id));
-        s.append(" ").append(properties);
-        s.append(" ").append(propertiesLimits);
+        s.append(",").append(properties);
+        s.append(",").append(propertiesLimits);
         return s.toString();
     }
 

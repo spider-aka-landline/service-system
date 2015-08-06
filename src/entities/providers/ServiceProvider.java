@@ -60,7 +60,7 @@ public class ServiceProvider implements Comparable<ServiceProvider> {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder(String.valueOf(id));
-        s.append(" ").append(properties);
+        s.append(",").append(properties);
         return s.toString();
     }
 

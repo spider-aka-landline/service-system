@@ -3,7 +3,7 @@ package exploration;
 public abstract class EpsilonConstantStrategy extends ExplorationStrategy {
 
     @Override
-    public void updateEpsilon() {
+    public void updateEpsilon(Double difference) {
     }
 ;
 }

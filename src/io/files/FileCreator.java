@@ -36,7 +36,7 @@ public class FileCreator {
 
 
 
-    //гланды автогеном, но оно ж должно заработать :(
+    //гланды автогеном :(
     private String getDirectoryFromPath(String filepath) {
         String[] sa = filepath.split("/");
         StringBuilder dir = new StringBuilder();

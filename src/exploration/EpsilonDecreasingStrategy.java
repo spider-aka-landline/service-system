@@ -20,7 +20,7 @@ public class EpsilonDecreasingStrategy extends ExplorationStrategy {
     }
 
     @Override
-    public void updateEpsilon() {
+    public void updateEpsilon(Double difference) {
         if (epsilon >= epsilonMin) {
             epsilon -= epsilonStep;
         }

@@ -1,6 +1,7 @@
 package strategies.newpackage;
 
 import entities.providers.ServiceProvider;
+import exploration.EpsilonAdaptiveStrategy;
 import exploration.ExplorationStrategy;
 import java.util.Map;
 import math.StdRandom;
@@ -13,11 +14,14 @@ public abstract class RLStrategy extends AbstractStrategy {
 
     private Boolean randomCoin;
 
+
     final boolean throwCoin(ExplorationStrategy exploration) {
         Double currentEpsilon = exploration.getEpsilon();
-        exploration.updateEpsilon();
+        exploration.updateEpsilon(0.0); //FIXME
         return StdRandom.bernoulli(currentEpsilon);
     }
+
+
 
     @Override
     final Map<ServiceProvider, DataEntity>

@@ -4,6 +4,7 @@ import Jama.Matrix;
 import entities.ID;
 import entities.Params;
 import entities.Task;
+import entities.generators.EntitiesGenerator;
 import entities.providers.ServiceProvider;
 import entities.users.User;
 
@@ -14,19 +15,21 @@ import java.util.Collection;
  */
 public class EntitiesParser {
 
-    public static User createUser(Matrix input){
+    public static final EntitiesGenerator generator = EntitiesGenerator.getInstance();
+
+    public static User parseUser(Matrix input){
         User user;
         ID userId = getID(input);
         Params params = createParams(input);
-        user = new User(userId,params);
+        user = generator.createUser(userId, params);
         return user;
     }
 
-    public static ServiceProvider createServiceProvider(Matrix input){
+    public static ServiceProvider parseServiceProvider(Matrix input){
         ServiceProvider serviceProvider;
         ID providerId = getID(input);
         Params params = createParams(input);
-        serviceProvider = new ServiceProvider(providerId,params);
+        serviceProvider = generator.createProvider(providerId, params);
         return serviceProvider;
     }
 
@@ -58,11 +61,14 @@ public class EntitiesParser {
         ID userId = new ID(getData(input,0));
         double arrivalTime = getData(input,1);
         User user = getUserById(userId,usersCollection);
-        task = new Task(user, (int) arrivalTime);
+        task = generator.createTask(user, (int) arrivalTime);
         return task;
     }
 
     private static User getUserById(ID id, Collection<User> usersCollection){
+        if (usersCollection==null) throw new IllegalArgumentException("UsersCollection expected, but null found");
+        if (usersCollection.isEmpty()) throw new IllegalArgumentException("Empty usersCollection");
+
         for (User temp: usersCollection){
             if (temp.getID().equals(id)) return temp;
         }

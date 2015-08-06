@@ -1,33 +1,16 @@
 package experiments;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class ExperimentSettings {
 
-    private final StringBuilder usersFilename = new StringBuilder();
-    private final StringBuilder providersFilename = new StringBuilder();
-    private final StringBuilder tasksFilename = new StringBuilder();
-
-    private final StringBuilder statisticsFilename = new StringBuilder();
-    private final StringBuilder resultsFilename = new StringBuilder();
-    private final StringBuilder criteriaFilename = new StringBuilder();
-    private final StringBuilder frequenciesFilename = new StringBuilder();
-    private final StringBuilder reputationsFilename = new StringBuilder();
-
-    private final StringBuilder hystogramFilename = new StringBuilder();
-    private final StringBuilder uniformHystogramFilename = new StringBuilder();
-
+    static final String EXTENSION = "csv";
+    private final String experimentName;
     private final StringBuilder timeFilename = new StringBuilder();
-
-    public ExperimentSettings(String name) {
-        usersFilename.append(name).append("/users.txt");
-        providersFilename.append(name).append("/providers.txt");
-        tasksFilename.append(name).append("/tasks.txt");
-        statisticsFilename.append(name).append("/statistics.txt");
-        resultsFilename.append(name).append("/results.txt");
-        criteriaFilename.append(name).append("/criteria.txt");
-        frequenciesFilename.append(name).append("/frequencies.txt");
-        hystogramFilename.append(name).append("/hystogram.txt");
-        uniformHystogramFilename.append(name).append("/hystogram2.txt");
-        reputationsFilename.append(name).append("/reputations.txt");
+    public ExperimentSettings(String experiment) {
+        experimentName = experiment;
         timeFilename.append("/time-");
     }
 
@@ -36,42 +19,69 @@ public class ExperimentSettings {
     }
 
     public String getUsersFilename() {
-        return usersFilename.toString();
+        return OutputFiles.USERS.getFilename(experimentName);
     }
 
     public String getProvidersFilename() {
-        return providersFilename.toString();
+        return OutputFiles.PROVIDERS.getFilename(experimentName);
     }
 
     public String getTasksFilename() {
-        return tasksFilename.toString();
+        return OutputFiles.TASKS.getFilename(experimentName);
     }
 
     public String getResultsFilename() {
-        return resultsFilename.toString();
+        return OutputFiles.RESULTS.getFilename(experimentName);
     }
 
     public String getStatisticsFilename() {
-        return statisticsFilename.toString();
+        return OutputFiles.STATISTICS.getFilename(experimentName);
     }
 
-    public String getHystogramFilename() {
-        return hystogramFilename.toString();
+    public String getStateStatisticsFilename() {
+        return OutputFiles.STATESTATISTICS.getFilename(experimentName);
     }
 
-    public String getUniformHystogramFilename() {
-        return uniformHystogramFilename.toString();
+    public String getHistogramFilename() {
+        return OutputFiles.HISTOGRAM.getFilename(experimentName);
+    }
+
+    public String getUniformHistogramFilename() {
+        return OutputFiles.UNIFORMHISTOGRAM.getFilename(experimentName);
     }
 
     String getFrequencyFilename() {
-        return frequenciesFilename.toString();
+        return OutputFiles.FREQUENCIES.getFilename(experimentName);
     }
 
     String getCriteriaFilename() {
-        return criteriaFilename.toString();
+        return OutputFiles.CRITERIA.getFilename(experimentName);
     }
 
     public String getReputationsFilename() {
-        return reputationsFilename.toString();
+        return OutputFiles.REPUTATIONS.getFilename(experimentName);
     }
+
+    enum OutputFiles {
+        USERS, PROVIDERS, TASKS, STATISTICS, STATESTATISTICS,
+        RESULTS, CRITERIA, FREQUENCIES, HISTOGRAM, UNIFORMHISTOGRAM, REPUTATIONS;
+
+        StringBuilder sb = new StringBuilder();
+        static Date date = Calendar.getInstance().getTime();
+
+        static String dateFormatted = getFormattedDate();
+
+        static String getFormattedDate(){
+            SimpleDateFormat sdf = new SimpleDateFormat("MMdd-hhmm");
+            return sdf.format(date);
+        }
+
+        public String getFilename(String experiment) {
+            sb.append(experiment).append("/").append(dateFormatted)
+                    .append("/").append(name()).append(".").append(EXTENSION);
+            return sb.toString();
+        }
+    }
+
+
 }

@@ -17,5 +17,5 @@ public abstract class ExplorationStrategy {
         return epsilon;
     }
     
-    public abstract void updateEpsilon();
+    public abstract void updateEpsilon(Double difference);
 }

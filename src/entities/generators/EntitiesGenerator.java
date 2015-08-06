@@ -5,9 +5,9 @@ import entities.Params;
 import entities.Task;
 import entities.providers.ServiceProvider;
 import entities.users.User;
+import io.UtilFunctions;
 import math.Poisson;
 import math.StdRandom;
-import io.UtilFunctions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,15 +25,23 @@ public class EntitiesGenerator {
     protected EntitiesGenerator() {
     }
 
-    public static synchronized EntitiesGenerator getInstance() {
+    public static EntitiesGenerator getInstance() {
         if (instance == null) {
             instance = new EntitiesGenerator();
         }
         return instance;
     }
 
+    public User createUser(ID fixedUserId, Params params) {
+        return new User(fixedUserId, params);
+    }
+
+    public ServiceProvider createProvider(ID fixedProviderId, Params params) {
+        return new ServiceProvider(fixedProviderId, params);
+    }
+
     public User createUser(Params p) {
-        return new User(createID(userCounter++), p);
+        return createUser(createID(userCounter++), p);
     }
 
     public User createUser() {
@@ -54,11 +62,11 @@ public class EntitiesGenerator {
         return sp;
     }
 
-    private ID createID(int param){
+    private ID createID(int param) {
         return createID((long) param);
     }
 
-    protected ID createID(long param){
+    protected ID createID(long param) {
         return new ID(param);
     }
 
@@ -97,12 +105,21 @@ public class EntitiesGenerator {
         Collection<Task> tempT = new ArrayList<>();
         Poisson numbers = new Poisson(42.0);
         for (int i = 0; i < num; i++) {
-            tempT.add(new Task(UtilFunctions.chooseRandomElement(users),
-                    numbers.next()));
+            tempT.add(createTask(getRandomUser(users), numbers.next()));
         }
         return tempT;
     }
 
+    public Task createTask(User user, Integer params) {
+        if (user == null) throw new IllegalArgumentException("User expected, but null found");
+        return new Task(user, params);
+    }
+
+
+    private User getRandomUser(Collection<User> users) {
+        if (users.isEmpty()) throw new IllegalArgumentException("Empty usersCollection");
+        return UtilFunctions.chooseRandomElement(users);
+    }
 
     public void resetProvidersNumberToMaxValue() {
         resetProvidersNumber(maxProvidersNumber);

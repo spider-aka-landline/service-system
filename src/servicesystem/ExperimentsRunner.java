@@ -35,7 +35,7 @@ public final class ExperimentsRunner {
         currentExperiment.logExperimentData(state);
     }
 
-    public void run() {
+    public void run() throws InterruptedException {
 
         for (Experiment exp : experiments) {
             try {

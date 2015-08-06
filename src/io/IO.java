@@ -6,8 +6,10 @@ import entities.providers.ServiceProvider;
 import entities.users.User;
 import experiments.ExperimentData;
 import experiments.ExperimentSettings;
-import experiments.graph.Hystogram;
-import experiments.graph.UniformHystogram;
+import experiments.graph.Histogram;
+import experiments.graph.UniformHistogram;
+import io.files.FileCreator;
+import io.files.FileNameFormatUtil;
 import reputationsystem.DataEntity;
 import servicesystem.ServiceSystemState;
 
@@ -27,9 +29,13 @@ public class IO {
 
 
     public static FileNameFormatUtil fileNameFormatUtil = new FileNameFormatUtil();
-    public static FileSystemUtil fileSystemUtil = new FileSystemUtil();
+    public static FileCreator fileCreator = new FileCreator();
 
     //public static final NumberFormat FORMAT_FOR_DOUBLE = new DecimalFormat("#.00");
+
+    public static File getCurrentDirectory() {
+        return new File(fileNameFormatUtil.getCurrentDirectoryPath());
+    }
 
     public static void setAppendix(String s) {
         fileNameFormatUtil.setAppendix(s);
@@ -44,16 +50,23 @@ public class IO {
     }
 
     public static File createFile(String filepath) {
-        return fileSystemUtil.createFile(filepath);
+        return fileCreator.createFile(filepath);
     }
 
 
     public static <V> void printCollection(Collection<V> smth, String filepath) {
-        if (smth == null) {
+        printCollection(smth, filepath, "");
+    }
+
+    public static <V> void printCollection(Collection<V> smth, String filepath, String header) {
+        if (smth == null || smth.isEmpty()) {
             throw new NullPointerException("Empty collection for print");
         }
         try (PrintWriter writer = new PrintWriter(createFile(filepath))) {
+            writer.append("#").append(header).append("\n");
             smth.forEach(b -> writer.append(b.toString()).append("\n"));
+
+            System.out.println(filepath);
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(IO.class
@@ -87,7 +100,7 @@ public class IO {
         }
         try (PrintWriter writer = new PrintWriter(createFile(filepath))) {
             smth.entrySet().forEach(b -> {
-                writer.append(b.getKey().toString()).append(" ");
+                writer.append(b.getKey().toString()).append(",");
                 writer.append(b.getValue().toString()).append("\n");
             });
         }
@@ -143,49 +156,87 @@ public class IO {
         }
     }
 
-    public static Matrix readMatrixFromFile(String fileName)
-            throws IOException {
-        return Matrix.read(new BufferedReader(new FileReader(fileName)));
+    public static Matrix readMatrixFromFile(String fileName) throws IOException {
+        return readMatrixFromFile(new FileReader(fileName));
     }
 
-    public static Collection<User> readUsers(String fileName)
+    public static Matrix readMatrixFromFile(File file) throws IOException {
+        return readMatrixFromFile(new FileReader(file));
+    }
+
+    private static Matrix readMatrixFromFile(FileReader fileReader) throws IOException {
+        return Matrix.read(new BufferedReader(fileReader));
+    }
+
+    public static Collection<User> readUsers(File file) throws IOException {
+        Matrix input = readMatrixFromFile(file);
+        return createUsersFromMatrix(input);
+    }
+
+    public static Collection<User> readUsers(String fileName) throws IOException {
+        Matrix input = readMatrixFromFile(getFilePath(fileName));
+        return createUsersFromMatrix(input);
+    }
+
+    private static Collection<User> createUsersFromMatrix(Matrix input)
             throws IOException {
         Collection<User> res = new ArrayList<>();
-        Matrix input = readMatrixFromFile(getFilePath(fileName));
         int x = input.getRowDimension();
         int y = input.getColumnDimension();
 
-        for (int i=0; i<x; i++) {
-            res.add(EntitiesParser.createUser(input.getMatrix(i, i, 0, y - 1)));
+        for (int i = 0; i < x; i++) {
+            res.add(EntitiesParser.parseUser(input.getMatrix(i, i, 0, y - 1)));
         }
         return res;
     }
+
 
     public static Collection<ServiceProvider> readProviders(String fileName)
             throws IOException {
+        Matrix input = readMatrixFromFile(getFilePath(fileName));
+        return createProvidersFromMatrix(input);
+    }
+
+    public static Collection<ServiceProvider> readProviders(File file)
+            throws IOException {
+        Matrix input = readMatrixFromFile(file);
+        return createProvidersFromMatrix(input);
+    }
+
+    private static Collection<ServiceProvider> createProvidersFromMatrix(Matrix input)
+            throws IOException {
         Collection<ServiceProvider> res = new ArrayList<>();
-        Matrix smth = readMatrixFromFile(getFilePath(fileName));
+        int x = input.getRowDimension();
+        int y = input.getColumnDimension();
 
-        int x = smth.getRowDimension();
-        int y = smth.getColumnDimension();
-
-        for (int i=0; i<x; i++) {
-            res.add(EntitiesParser.createServiceProvider(smth.getMatrix(i, i, 0, y - 1)));
+        for (int i = 0; i < x; i++) {
+            res.add(EntitiesParser.parseServiceProvider(input.getMatrix(i, i, 0, y - 1)));
         }
         return res;
     }
 
+
     public static Collection<Task> readTasks(String tasksFileName, Collection<User> usersCollection)
             throws IOException {
-        Collection<Task> result = new ArrayList<>();
         Matrix input = readMatrixFromFile(getFilePath(tasksFileName));
+        return createTasksFromMatrix(input, usersCollection);
+    }
+
+    public static Collection<Task> readTasks(File file, Collection<User> usersCollection)
+            throws IOException {
+        Matrix input = readMatrixFromFile(file);
+        return createTasksFromMatrix(input, usersCollection);
+    }
+
+    public static Collection<Task> createTasksFromMatrix(Matrix input, Collection<User> usersCollection)
+            throws IOException {
+        Collection<Task> result = new ArrayList<>();
         int x = input.getRowDimension();
         int y = input.getColumnDimension();
 
-        for (int i=0; i<x; i++) {
+        for (int i = 0; i < x; i++) {
             result.add(EntitiesParser.createTask(input.getMatrix(i, i, 0, y - 1), usersCollection));
         }
-
         return result;
     }
 
@@ -200,12 +251,12 @@ public class IO {
                 getFilePath(settings.getTasksFilename()));
     }
 
-    public static void printHystogramToFile(UniformHystogram evaluations,
+    public static void printHystogramToFile(UniformHistogram evaluations,
                                             String filePath) throws FileNotFoundException {
         printMapToFile(evaluations.getSegmentedData(), filePath);
     }
 
-    public static void printHystogramToFile(Hystogram evaluations,
+    public static void printHystogramToFile(Histogram evaluations,
                                             String filePath) throws FileNotFoundException {
         printMapToFile(evaluations.getData(), filePath);
     }
